@@ -126,20 +126,25 @@
             <input type="text" id="chamado">
         </div>
 
-        <button type="submit" id="btnS" class="btn-submit">ENVIAR RELATÓRIO</button>
+        <button type="submit" id="btnS" class="btn-submit">ENVIAR PARA O FIREBASE</button>
         <div id="msg"></div>
     </form>
 </div>
 
 <script>
+    // Limpar Service Workers antigos para garantir o carregamento do Firebase
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(r) { for(let i of r) i.unregister(); });
+    }
+
     // =========================================================
-    // COLE AQUI AS SUAS CREDENCIAIS DO FIREBASE (PASSO 5)
+    // AS SUAS CREDENCIAIS OFICIAIS DO FIREBASE
     // =========================================================
     const firebaseConfig = {
         apiKey: "AIzaSyA8f8t05-USu8hceG3tEdg-MXsjorur7MM",
         authDomain: "noc-rcr-inspecoes-2dc6d.firebaseapp.com",
         projectId: "noc-rcr-inspecoes-2dc6d",
-        storageBucket: "noc-rcr-inspecoes-2dc6d.appspot.com",
+        storageBucket: "noc-rcr-inspecoes-2dc6d.firebasestorage.app",
         messagingSenderId: "745787948707",
         appId: "1:745787948707:web:599657761a84882cd28916"
     };
@@ -187,7 +192,7 @@
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
                     let w = img.width, h = img.height;
-                    const MAX = 800; // Firebase aguenta fotos de excelente qualidade
+                    const MAX = 900; // Resolução excelente para relatórios profissionais
                     if (w > MAX) { h = Math.round((h * MAX) / w); w = MAX; }
                     canvas.width = w; canvas.height = h;
                     const ctx = canvas.getContext('2d');
@@ -197,7 +202,8 @@
                     ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(0, h-30, w, 30);
                     ctx.fillStyle = '#4eff7e'; ctx.fillText(texto, 10, h-10);
                     
-                    resolve(canvas.toDataURL('image/jpeg', 0.7).split(',')[1]); 
+                    // Retorna no formato Data URL para o Firebase reconhecer nativamente como Imagem
+                    resolve(canvas.toDataURL('image/jpeg', 0.7)); 
                 };
             };
         });
@@ -218,7 +224,7 @@
         }
 
         btn.disabled = true; msg.style.display = "block"; msg.style.background = "#fff3cd"; msg.style.color = "#856404";
-        msg.innerText = "A Enviar para o Servidor RCR...";
+        msg.innerText = "A Iniciar envio para a Nuvem...";
 
         const veiculo = document.getElementById('veiculo').value.toUpperCase();
         const resp = document.getElementById('responsavel').value;
@@ -230,19 +236,20 @@
         let linksImagens = [];
 
         try {
-            // UPLOAD DAS FOTOS PARA O STORAGE DO FIREBASE
+            // 1. UPLOAD DAS FOTOS PARA O STORAGE DO FIREBASE
             if (solucao === "SIM") {
                 const processarFotos = async (arquivos, tipo) => {
                     for (let i = 0; i < arquivos.length; i++) {
-                        btn.innerText = `A gravar foto ${tipo} ${i+1}/${arquivos.length}...`;
-                        const b64 = await compressImage(arquivos[i], carimbo);
+                        btn.innerText = `A enviar foto ${tipo} ${i+1}/${arquivos.length}...`;
+                        const base64DataUrl = await compressImage(arquivos[i], carimbo);
                         const nomeArquivo = `inspecoes/${veiculo}_${Date.now()}_${tipo}_${i+1}.jpg`;
-                        const ref = storage.ref().child(nomeArquivo);
                         
-                        // Envia para o servidor e apanha a URL limpa!
-                        await ref.putString(b64, 'base64', { contentType: 'image/jpeg' });
+                        // Envia para o Storage
+                        const ref = storage.ref().child(nomeArquivo);
+                        await ref.putString(base64DataUrl, 'data_url');
                         const urlDown = await ref.getDownloadURL();
-                        linksImagens.push(`[${tipo}]: ${urlDown}`);
+                        
+                        linksImagens.push(urlDown); // Guarda apenas o link limpo da imagem
                     }
                 };
 
@@ -250,9 +257,9 @@
                 await processarFotos(depois, 'DEPOIS');
             }
 
-            btn.innerText = "A GUARDAR RELATÓRIO...";
+            btn.innerText = "A GUARDAR RELATÓRIO NO BANCO DE DADOS...";
 
-            // GRAVA OS DADOS (E OS LINKS) NO BANCO DE DADOS FIRESTORE
+            // 2. GRAVA OS DADOS NO FIRESTORE
             await db.collection("relatorios").add({
                 data_criacao: firebase.firestore.FieldValue.serverTimestamp(),
                 veiculo: veiculo,
@@ -275,11 +282,11 @@
         } catch (err) {
             console.error("Erro Firebase:", err);
             msg.style.background = "var(--red)"; msg.style.color = "white";
-            msg.innerText = "❌ Falha no envio. Erro: " + err.message;
+            msg.innerText = "❌ Falha no envio. (Abra o F12/Console para detalhes)";
         } finally {
-            btn.disabled = false; btn.innerText = "ENVIAR RELATÓRIO";
+            btn.disabled = false; btn.innerText = "ENVIAR PARA O FIREBASE";
         }
     });
 </script>
 </body>
-</html>
+</html> 
