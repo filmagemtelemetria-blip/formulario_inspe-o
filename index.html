@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NOC RCR - Inspeção Ativa</title>
+    <title>NOC RCR - Inspeção Profissional (Firebase)</title>
     
     <style>
         :root { --parvi-teal: #147b6a; --totalpass-lime: #4eff7e; --parvi-cream: #faf8f5; --parvi-white: #ffffff; --parvi-text: #333333; --parvi-border: #c4e1df; --red: #d93025; --orange: #f9ab00; }
@@ -29,6 +29,10 @@
         .btn-submit:disabled { background: #ccc; cursor: not-allowed; }
         #msg { margin-top: 15px; padding: 12px; border-radius: 8px; text-align: center; font-size: 13px; font-weight: bold; display: none; }
     </style>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
 </head>
 <body>
 
@@ -92,7 +96,7 @@
         </div>
 
         <div class="form-group">
-            <label>Descrição</label>
+            <label>Descrição Detalhada</label>
             <textarea id="defeito" rows="3" required></textarea>
         </div>
 
@@ -128,14 +132,23 @@
 </div>
 
 <script>
-    // ======= COLE O SEU NOVO LINK AQUI =======
-    const APP_URL = "https://script.google.com/macros/s/AKfycbziVItjup7LXPKOqQs1uMmw265cajpPWnLMYfFzuFCuiX-9HyuVAJsYvdD-dLqh_Uasbw/exec";
-    // =========================================
+    // =========================================================
+    // COLE AQUI AS SUAS CREDENCIAIS DO FIREBASE (PASSO 5)
+    // =========================================================
+    const firebaseConfig = {
+        apiKey: "AIzaSyA8f8t05-USu8hceG3tEdg-MXsjorur7MM",
+        authDomain: "noc-rcr-inspecoes-2dc6d.firebaseapp.com",
+        projectId: "noc-rcr-inspecoes-2dc6d",
+        storageBucket: "noc-rcr-inspecoes-2dc6d.appspot.com",
+        messagingSenderId: "745787948707",
+        appId: "1:745787948707:web:599657761a84882cd28916"
+    };
 
-    // Limpa service workers antigos presos no Chrome
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(function(r) { for(let i of r) i.unregister(); });
-    }
+    // Inicializa o Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+    // =========================================================
 
     window.onload = () => {
         const agora = new Date();
@@ -163,7 +176,7 @@
         }
     }
 
-    // Comprime as fotos para 700px (Máximo equilíbrio de qualidade/peso para o Google)
+    // Compressão com Marca D'água
     function compressImage(file, texto) {
         return new Promise((resolve) => {
             const r = new FileReader();
@@ -174,17 +187,17 @@
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
                     let w = img.width, h = img.height;
-                    const MAX = 700;
+                    const MAX = 800; // Firebase aguenta fotos de excelente qualidade
                     if (w > MAX) { h = Math.round((h * MAX) / w); w = MAX; }
                     canvas.width = w; canvas.height = h;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, w, h);
                     
-                    ctx.font = `bold 14px sans-serif`;
-                    ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(0, h-25, w, 25);
-                    ctx.fillStyle = '#4eff7e'; ctx.fillText(texto, 10, h-8);
+                    ctx.font = `bold 16px sans-serif`;
+                    ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(0, h-30, w, 30);
+                    ctx.fillStyle = '#4eff7e'; ctx.fillText(texto, 10, h-10);
                     
-                    resolve(canvas.toDataURL('image/jpeg', 0.6).split(',')[1]); 
+                    resolve(canvas.toDataURL('image/jpeg', 0.7).split(',')[1]); 
                 };
             };
         });
@@ -205,55 +218,64 @@
         }
 
         btn.disabled = true; msg.style.display = "block"; msg.style.background = "#fff3cd"; msg.style.color = "#856404";
-        msg.innerText = "Processando imagens (Aguarde)...";
+        msg.innerText = "A Enviar para o Servidor RCR...";
 
         const veiculo = document.getElementById('veiculo').value.toUpperCase();
         const resp = document.getElementById('responsavel').value;
         const def = `[${document.getElementById('categoriaDefeito').value}] ${document.getElementById('defeito').value}`;
-        const carimbo = `VTR: ${veiculo} | Insp: ${resp.split(' ')[0]}`;
+        const carimbo = `VTR: ${veiculo} | Insp: ${resp.split(' ')[0]} | ${document.getElementById('dataVerificacao').value.split('-').reverse().join('/')}`;
         
         localStorage.setItem('rcr_inspetor', resp);
 
-        let fotosArr = [];
-        if (solucao === "SIM") {
-            for (let i = 0; i < antes.length; i++) {
-                btn.innerText = `Processando Antes ${i+1}...`;
-                fotosArr.push({ base64: await compressImage(antes[i], carimbo), nome: `${veiculo}_ANTES_${i+1}.jpg` });
-            }
-            for (let i = 0; i < depois.length; i++) {
-                btn.innerText = `Processando Depois ${i+1}...`;
-                fotosArr.push({ base64: await compressImage(depois[i], carimbo), nome: `${veiculo}_DEPOIS_${i+1}.jpg` });
-            }
-        }
-
-        const payload = {
-            action: "salvar_inspecao", veiculo: veiculo,
-            data: document.getElementById('dataVerificacao').value,
-            hora: document.getElementById('horarioVerificacao').value,
-            filial: document.getElementById('filial').value,
-            responsavel: resp, defeito: def, solucao: solucao,
-            fotosArray: fotosArr, chamado: document.getElementById('chamado').value
-        };
+        let linksImagens = [];
 
         try {
-            btn.innerText = "ENVIANDO PARA O SISTEMA...";
-            
-            // O Segredo: text/plain garante que o navegador e o Google aceitem o pacote JSON enorme sem bloquear
-            await fetch(APP_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify(payload)
+            // UPLOAD DAS FOTOS PARA O STORAGE DO FIREBASE
+            if (solucao === "SIM") {
+                const processarFotos = async (arquivos, tipo) => {
+                    for (let i = 0; i < arquivos.length; i++) {
+                        btn.innerText = `A gravar foto ${tipo} ${i+1}/${arquivos.length}...`;
+                        const b64 = await compressImage(arquivos[i], carimbo);
+                        const nomeArquivo = `inspecoes/${veiculo}_${Date.now()}_${tipo}_${i+1}.jpg`;
+                        const ref = storage.ref().child(nomeArquivo);
+                        
+                        // Envia para o servidor e apanha a URL limpa!
+                        await ref.putString(b64, 'base64', { contentType: 'image/jpeg' });
+                        const urlDown = await ref.getDownloadURL();
+                        linksImagens.push(`[${tipo}]: ${urlDown}`);
+                    }
+                };
+
+                await processarFotos(antes, 'ANTES');
+                await processarFotos(depois, 'DEPOIS');
+            }
+
+            btn.innerText = "A GUARDAR RELATÓRIO...";
+
+            // GRAVA OS DADOS (E OS LINKS) NO BANCO DE DADOS FIRESTORE
+            await db.collection("relatorios").add({
+                data_criacao: firebase.firestore.FieldValue.serverTimestamp(),
+                veiculo: veiculo,
+                data: document.getElementById('dataVerificacao').value,
+                hora: document.getElementById('horarioVerificacao').value,
+                filial: document.getElementById('filial').value,
+                responsavel: resp,
+                defeito: def,
+                solucao: solucao,
+                chamado: document.getElementById('chamado').value || "N/A",
+                linksFotos: linksImagens
             });
 
             msg.style.background = "var(--totalpass-lime)"; msg.style.color = "#333";
-            msg.innerText = "✅ Sincronizado com Sucesso!";
+            msg.innerText = "✅ Relatório gravado com SUCESSO!";
             document.getElementById('inspectionForm').reset();
             document.getElementById('previewAntes').innerHTML = ""; document.getElementById('previewDepois').innerHTML = "";
             toggleFields(false);
 
         } catch (err) {
+            console.error("Erro Firebase:", err);
             msg.style.background = "var(--red)"; msg.style.color = "white";
-            msg.innerText = "❌ Falha na conexão de rede.";
+            msg.innerText = "❌ Falha no envio. Erro: " + err.message;
         } finally {
             btn.disabled = false; btn.innerText = "ENVIAR RELATÓRIO";
         }
