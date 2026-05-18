@@ -3,71 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NOC RCR - Inspeção Avançada</title>
-    
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#147b6a">
+    <title>NOC RCR - Inspeção Avançada (HARD MODE)</title>
     
     <style>
-        :root { 
-            --parvi-teal: #147b6a;
-            --totalpass-lime: #4eff7e;
-            --parvi-cream: #faf8f5;
-            --parvi-white: #ffffff;
-            --parvi-text: #333333;
-            --parvi-border: #c4e1df;
-            --red: #d93025;
-            --orange: #f9ab00;
-        }
-
+        :root { --parvi-teal: #147b6a; --totalpass-lime: #4eff7e; --parvi-cream: #faf8f5; --parvi-white: #ffffff; --parvi-text: #333333; --parvi-border: #c4e1df; --red: #d93025; --orange: #f9ab00; }
         body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 15px; background: var(--parvi-cream); color: var(--parvi-text); display: flex; justify-content: center; align-items: center; min-height: 100vh; }
         .card { width: 100%; max-width: 580px; background: var(--parvi-white); border-radius: 14px; border: 1px solid var(--parvi-border); padding: 30px; box-shadow: 0 10px 30px rgba(20,123,106,0.05); box-sizing: border-box; }
-        
         .header { text-align: center; margin-bottom: 25px; border-bottom: 2px solid var(--parvi-teal); padding-bottom: 15px; }
-        .header h2 { margin: 0; color: var(--parvi-teal); font-size: 22px; letter-spacing: 0.5px; font-weight: 800; }
-        
-        .offline-badge { display: none; background: var(--orange); color: #333; padding: 8px; border-radius: 6px; text-align: center; font-size: 12px; font-weight: bold; margin-bottom: 15px; cursor: pointer; }
+        .header h2 { margin: 0; color: var(--parvi-teal); font-size: 22px; font-weight: 800; }
         .form-group { margin-bottom: 18px; }
         .form-row { display: flex; gap: 12px; }
         .form-row .form-group { flex: 1; }
-        label { display: block; font-size: 11px; font-weight: 700; color: var(--parvi-teal); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--parvi-border); border-radius: 8px; font-size: 14px; box-sizing: border-box; background: var(--parvi-cream); color: var(--parvi-text); transition: all 0.2s ease; }
-        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--parvi-teal); background: white; box-shadow: 0 0 0 3px rgba(20,123,106,0.1); }
-        
-        optgroup { font-weight: bold; color: var(--parvi-teal); font-style: normal; background: #eef7f6; }
-        option { font-weight: normal; color: var(--parvi-text); background: white; }
-
+        label { display: block; font-size: 11px; font-weight: 700; color: var(--parvi-teal); margin-bottom: 6px; text-transform: uppercase; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--parvi-border); border-radius: 8px; font-size: 14px; box-sizing: border-box; background: var(--parvi-cream); }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--parvi-teal); background: white; }
+        optgroup { font-weight: bold; color: var(--parvi-teal); background: #eef7f6; }
         .radio-box { display: flex; gap: 20px; padding: 12px; background: rgba(20,123,106,0.04); border-radius: 8px; border: 1px dashed var(--parvi-border); }
         .radio-option { display: flex; align-items: center; gap: 6px; font-weight: bold; font-size: 14px; cursor: pointer; }
-        .radio-option input { width: auto; margin: 0; }
         .conditional-field { display: none; padding: 18px; background: rgba(78, 255, 126, 0.08); border-radius: 10px; border-left: 4px solid var(--parvi-teal); margin-top: 10px; box-sizing: border-box; }
         .sub-field-fotos { background: rgba(255, 255, 255, 0.6); padding: 12px; border-radius: 8px; border: 1px solid var(--parvi-border); margin-bottom: 12px; }
         .preview-container { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
-        .preview-item { position: relative; width: 80px; height: 80px; border-radius: 6px; overflow: hidden; border: 2px solid var(--parvi-border); }
+        .preview-item { width: 80px; height: 80px; border-radius: 6px; overflow: hidden; border: 2px solid var(--parvi-border); }
         .preview-item img { width: 100%; height: 100%; object-fit: cover; }
-        .btn-submit { width: 100%; padding: 15px; background: var(--parvi-teal); color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; transition: all 0.3s; margin-top: 15px; box-shadow: 0 4px 12px rgba(20,123,106,0.15); }
-        .btn-submit:hover { background: #0e5e52; transform: translateY(-2px); }
+        .btn-submit { width: 100%; padding: 15px; background: var(--parvi-teal); color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; transition: all 0.3s; margin-top: 15px; }
         .btn-submit:disabled { background: #ccc; cursor: not-allowed; }
         #msg { margin-top: 15px; padding: 12px; border-radius: 8px; text-align: center; font-size: 13px; font-weight: bold; display: none; }
+        
+        /* O IFRAME INVISÍVEL FICA AQUI */
+        #hidden_iframe { display: none; }
     </style>
 </head>
 <body>
 
+<iframe name="hidden_iframe" id="hidden_iframe" onload="if(isSubmitting) finalizarEnvio();"></iframe>
+
 <div class="card">
     <div class="header">
-        <h2>REGISTRO DE INSPEÇÃO - RCR</h2>
-    </div>
-
-    <div id="offlineAlert" class="offline-badge" onclick="tentarSincronizarPendentes()">
-        ⚠️ DETETADOS <span id="offlineCount">0</span> REGISTROS OFFLINE PENDENTES. CLIQUE AQUI PARA SINCRONIZAR.
+        <h2>REGISTRO DE INSPEÇÃO</h2>
     </div>
 
     <form id="inspectionForm">
         <div class="form-row">
             <div class="form-group">
-                <label>Veículo (Nº Ordem ou Placa)</label>
-                <input type="text" id="veiculo" placeholder="Ex: 22013 ou AAA0A00" style="text-transform: uppercase;" required>
+                <label>Veículo (Ordem ou Placa)</label>
+                <input type="text" id="veiculo" style="text-transform: uppercase;" required>
             </div>
             <div class="form-group">
                 <label>Filial</label>
@@ -85,7 +64,7 @@
 
         <div class="form-row">
             <div class="form-group">
-                <label>Data da Verificação</label>
+                <label>Data</label>
                 <input type="date" id="dataVerificacao" required>
             </div>
             <div class="form-group">
@@ -95,45 +74,42 @@
         </div>
 
         <div class="form-group">
-            <label>Nome do Responsável pela Inspeção</label>
-            <input type="text" id="responsavel" placeholder="Digite seu nome completo" required>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group">
-                <label>Categoria</label>
-                <select id="categoriaDefeito" required>
-                    <option value="">Selecione o problema...</option>
-                    <optgroup label="Câmera">
-                        <option value="CÂMERA - Ajuste Frontal/Colisão">Ajuste Câmera Frontal / Colisão</option>
-                        <option value="CÂMERA - Ajuste Fadiga">Ajuste Câmera de Fadiga</option>
-                        <option value="CÂMERA - Ajuste Auxiliar">Ajuste Câmera Auxiliar (Qual?)</option>
-                        <option value="CÂMERA - DVR Inoperante">DVR Inoperante</option>
-                        <option value="CÂMERA - Erro de Disco (Storage)">Erro de Disco (Armazenamento)</option>
-                        <option value="CÂMERA - Inoperante">Câmera inoperante (Descreva)</option>
-                        <option value="CÂMERA - Outro">Outro (Descreva)</option>
-                    </optgroup>
-                    <optgroup label="Telemetria">
-                        <option value="TELEMETRIA - GPS Inoperante">GPS Inoperante</option>
-                        <option value="TELEMETRIA - Sirene ativada constante">Sirene ativada constante</option>
-                        <option value="TELEMETRIA - Sirene não funciona">Sirene não funciona</option>
-                        <option value="TELEMETRIA - Leitora">Leitora</option>
-                        <option value="TELEMETRIA - Outro">Outro (Descreva)</option>
-                    </optgroup>
-                </select>
-            </div>
+            <label>Nome do Responsável</label>
+            <input type="text" id="responsavel" required>
         </div>
 
         <div class="form-group">
-            <label>Descrição Detalhada do Defeito</label>
-            <textarea id="defeito" rows="3" placeholder="Insira detalhes adicionais..." required></textarea>
+            <label>Categoria</label>
+            <select id="categoriaDefeito" required>
+                <option value="">Selecione o problema...</option>
+                <optgroup label="Câmera">
+                    <option value="CÂMERA - Ajuste Frontal/Colisão">Ajuste Câmera Frontal / Colisão</option>
+                    <option value="CÂMERA - Ajuste Fadiga">Ajuste Câmera de Fadiga</option>
+                    <option value="CÂMERA - DVR Inoperante">DVR Inoperante</option>
+                    <option value="CÂMERA - Erro de Disco">Erro de Disco (Armazenamento)</option>
+                    <option value="CÂMERA - Inoperante">Câmera inoperante</option>
+                    <option value="CÂMERA - Outro">Outro</option>
+                </optgroup>
+                <optgroup label="Telemetria">
+                    <option value="TELEMETRIA - GPS Inoperante">GPS Inoperante</option>
+                    <option value="TELEMETRIA - Sirene ativada constante">Sirene ativada constante</option>
+                    <option value="TELEMETRIA - Sirene não funciona">Sirene não funciona</option>
+                    <option value="TELEMETRIA - Leitora">Leitora</option>
+                    <option value="TELEMETRIA - Outro">Outro</option>
+                </optgroup>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Descrição Detalhada</label>
+            <textarea id="defeito" rows="3" required></textarea>
         </div>
 
         <div class="form-group">
             <label>Houve Solução Imediata?</label>
             <div class="radio-box">
-                <label class="radio-option"><input type="radio" name="solucao" value="SIM" onclick="toggleFields(true)" required> Sim, resolvido</label>
-                <label class="radio-option"><input type="radio" name="solucao" value="NAO" onclick="toggleFields(false)"> Não, encaminhado</label>
+                <label class="radio-option"><input type="radio" name="solucao" value="SIM" onclick="toggleFields(true)" required> Sim</label>
+                <label class="radio-option"><input type="radio" name="solucao" value="NAO" onclick="toggleFields(false)"> Não</label>
             </div>
         </div>
 
@@ -151,33 +127,34 @@
         </div>
 
         <div id="fieldNao" class="conditional-field" style="background: rgba(217, 48, 37, 0.05); border-left-color: var(--red);">
-            <label style="color: var(--red);">Número da O.S. / Chamado Segsat</label>
-            <input type="text" id="chamado" placeholder="Ex: OS-98745">
+            <label style="color: var(--red);">Número da O.S. / Chamado</label>
+            <input type="text" id="chamado">
         </div>
 
-        <button type="submit" id="btnS" class="btn-submit">SINCRONIZAR COM A NUVEM</button>
+        <button type="submit" id="btnS" class="btn-submit">FORÇAR ENVIO PARA PLANILHA</button>
         <div id="msg"></div>
     </form>
 </div>
 
 <script>
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js').catch(err => console.error(err));
-        });
-    }
-
-    // ======= ATENÇÃO: COLE A URL DO NOVO WEB APP GERADO AQUI =======
+    // ======= COLE A URL DA SUA NOVA IMPLEMENTAÇÃO AQUI =======
     const APP_URL = "https://script.google.com/macros/s/AKfycbzL92XQRBX0RWjbD3yfyj9odgVEfwnk9PUolokzfsDtuZQRDTScnTHrkfenEv14G37qnQ/exec";
-    // ===============================================================
+    // =========================================================
+
+    let isSubmitting = false;
 
     window.onload = () => {
         const agora = new Date();
         document.getElementById('dataVerificacao').value = agora.toISOString().split('T')[0];
         document.getElementById('horarioVerificacao').value = agora.toTimeString().split(' ')[0].substring(0,5);
-        const ultimoInspetor = localStorage.getItem('rcr_ultimo_inspetor');
-        if (ultimoInspetor) document.getElementById('responsavel').value = ultimoInspetor;
-        atualizarPainelOffline();
+        if (localStorage.getItem('rcr_ultimo_inspetor')) document.getElementById('responsavel').value = localStorage.getItem('rcr_ultimo_inspetor');
+        
+        // Remove service workers antigos para evitar problemas de cache na versão HARD
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for(let registration of registrations) { registration.unregister(); }
+            });
+        }
     };
 
     function toggleFields(houveSolucao) {
@@ -195,18 +172,14 @@
             const div = document.createElement('div');
             div.className = 'preview-item';
             const img = document.createElement('img');
-            reader.onload = (e) => {
-                img.src = e.target.result;
-                div.appendChild(img);
-                previewArea.appendChild(div);
-            }
+            reader.onload = (e) => { img.src = e.target.result; div.appendChild(img); previewArea.appendChild(div); }
             reader.readAsDataURL(file);
         }
     }
 
-    // Reduz para 640px de largura máxima para garantir estabilidade absoluta via Base64 móvel
+    // Mantemos a compactação leve para o envio ser ultra rápido
     function compressImage(file, marcaDaguaTexto) {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = (event) => {
@@ -214,179 +187,128 @@
                 img.src = event.target.result;
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    let width = img.width;
-                    let height = img.height;
-                    const MAX_WIDTH = 640; 
-                    if (width > MAX_WIDTH) { height = Math.round((height * MAX_WIDTH) / width); width = MAX_WIDTH; }
-                    canvas.width = width; canvas.height = height;
+                    let w = img.width, h = img.height;
+                    const MAX = 640;
+                    if (w > MAX) { h = Math.round((h * MAX) / w); w = MAX; }
+                    canvas.width = w; canvas.height = h;
                     const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
+                    ctx.drawImage(img, 0, 0, w, h);
                     
-                    const fontSize = Math.max(12, Math.floor(width * 0.04));
-                    ctx.font = `bold ${fontSize}px sans-serif`;
+                    const fSize = Math.max(12, Math.floor(w * 0.04));
+                    ctx.font = `bold ${fSize}px sans-serif`;
                     ctx.fillStyle = 'rgba(0, 0, 0, 0.6)'; 
-                    ctx.fillRect(0, height - fontSize - 10, width, fontSize + 10);
+                    ctx.fillRect(0, h - fSize - 10, w, fSize + 10);
                     ctx.fillStyle = '#4eff7e'; 
-                    ctx.fillText(marcaDaguaTexto, 10, height - 5);
+                    ctx.fillText(marcaDaguaTexto, 10, h - 5);
                     
-                    resolve(canvas.toDataURL('image/jpeg', 0.55).split(',')[1]); 
+                    resolve(canvas.toDataURL('image/jpeg', 0.6).split(',')[1]); 
                 };
-                img.onerror = (err) => reject(err);
             };
-            reader.onerror = (err) => reject(err);
         });
     }
 
-    function atualizarPainelOffline() {
-        const cache = JSON.parse(localStorage.getItem('rcr_inspecoes_offline') || '[]');
-        const alertBox = document.getElementById('offlineAlert');
-        if (cache.length > 0) {
-            document.getElementById('offlineCount').innerText = cache.length;
-            alertBox.style.display = 'block';
-        } else {
-            alertBox.style.display = 'none';
-        }
+    // Função auxiliar para injetar dados no formulário invisível
+    function addHiddenInput(form, name, value) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        input.value = value;
+        form.appendChild(input);
     }
 
     document.getElementById('inspectionForm').addEventListener('submit', async (e) => {
         e.preventDefault();
+        
         const btn = document.getElementById('btnS');
         const msg = document.getElementById('msg');
-        
         const solucao = document.querySelector('input[name="solucao"]:checked').value;
         const antesFiles = document.getElementById('fotosAntes').files;
         const depoisFiles = document.getElementById('fotosDepois').files;
 
         if (solucao === "SIM" && (antesFiles.length === 0 || depoisFiles.length === 0)) {
-            alert("⚠️ OBRIGATÓRIO: Anexar fotos do ANTES e DEPOIS.");
+            alert("⚠️ Obrigatório anexar fotos do ANTES e DEPOIS.");
             return;
         }
 
+        isSubmitting = true;
         btn.disabled = true;
         msg.style.display = "block";
         msg.style.background = "#fff3cd";
         msg.style.color = "#856404";
-        msg.innerText = "🤖 Redimensionando imagens e carimbando dados...";
+        msg.innerText = "🛠️ Processando envio bruto (Iframe Mode)...";
 
         const veiculoLimpo = document.getElementById('veiculo').value.replace(/[\s-]/g, '').toUpperCase();
         const responsavelStr = document.getElementById('responsavel').value;
         const descCompleta = `[${document.getElementById('categoriaDefeito').value}] ${document.getElementById('defeito').value}`;
+        const textoMarcaDagua = `VTR: ${veiculoLimpo} | Insp: ${responsavelStr.split(' ')[0]}`;
         
         localStorage.setItem('rcr_ultimo_inspetor', responsavelStr);
 
-        const dataStr = document.getElementById('dataVerificacao').value.split('-').reverse().join('/');
-        const horaStr = document.getElementById('horarioVerificacao').value;
-        const textoMarcaDagua = `RCR | VTR: ${veiculoLimpo} | Insp: ${responsavelStr.split(' ')[0]} | ${dataStr}`;
-
-        let listaFotos = [];
+        // 1. Cria o formulário dinâmico e invisível que aponta para o Iframe
+        const formOculto = document.createElement('form');
+        formOculto.method = 'POST';
+        formOculto.action = APP_URL;
+        formOculto.target = 'hidden_iframe'; // O Segredo Mestre
         
+        // 2. Preenche os campos de texto nativamente
+        addHiddenInput(formOculto, 'action', 'salvar_inspecao');
+        addHiddenInput(formOculto, 'veiculo', veiculoLimpo);
+        addHiddenInput(formOculto, 'data', document.getElementById('dataVerificacao').value);
+        addHiddenInput(formOculto, 'hora', document.getElementById('horarioVerificacao').value);
+        addHiddenInput(formOculto, 'filial', document.getElementById('filial').value);
+        addHiddenInput(formOculto, 'responsavel', responsavelStr);
+        addHiddenInput(formOculto, 'defeito', descCompleta);
+        addHiddenInput(formOculto, 'solucao', solucao);
+        addHiddenInput(formOculto, 'chamado', document.getElementById('chamado').value);
+
+        // 3. Processa e insere as fotos como campos separados
+        let fotoIndex = 1;
         if (solucao === "SIM") {
             for (let i = 0; i < antesFiles.length; i++) {
-                btn.innerText = `COMPRIMINDO ANTES (${i+1}/${antesFiles.length})...`;
-                try {
-                    const base64 = await compressImage(antesFiles[i], textoMarcaDagua);
-                    listaFotos.push({ base64: base64, nome: `${veiculoLimpo}_ANTES_${i+1}.jpg` });
-                } catch (errFoto) { console.error(errFoto); }
+                btn.innerText = `COMPRIMINDO ANTES (${i+1})...`;
+                const b64 = await compressImage(antesFiles[i], textoMarcaDagua);
+                addHiddenInput(formOculto, `foto${fotoIndex}`, b64);
+                addHiddenInput(formOculto, `nomeFoto${fotoIndex}`, `${veiculoLimpo}_ANTES_${i+1}.jpg`);
+                fotoIndex++;
             }
-
             for (let i = 0; i < depoisFiles.length; i++) {
-                btn.innerText = `COMPRIMINDO DEPOIS (${i+1}/${depoisFiles.length})...`;
-                try {
-                    const base64 = await compressImage(depoisFiles[i], textoMarcaDagua);
-                    listaFotos.push({ base64: base64, nome: `${veiculoLimpo}_DEPOIS_${i+1}.jpg` });
-                } catch (errFoto) { console.error(errFoto); }
+                btn.innerText = `COMPRIMINDO DEPOIS (${i+1})...`;
+                const b64 = await compressImage(depoisFiles[i], textoMarcaDagua);
+                addHiddenInput(formOculto, `foto${fotoIndex}`, b64);
+                addHiddenInput(formOculto, `nomeFoto${fotoIndex}`, `${veiculoLimpo}_DEPOIS_${i+1}.jpg`);
+                fotoIndex++;
             }
         }
 
-        const payload = {
-            action: "salvar_inspecao",
-            veiculo: veiculoLimpo,
-            data: document.getElementById('dataVerificacao').value,
-            hora: document.getElementById('horarioVerificacao').value,
-            filial: document.getElementById('filial').value,
-            responsavel: responsavelStr,
-            defeito: descCompleta,
-            solucao: solucao,
-            fotosArray: listaFotos,
-            chamado: document.getElementById('chamado').value
-        };
-
-        try {
-            btn.innerText = "ENVIANDO DIRETAMENTE PARA O DRIVE...";
-            const controller = new AbortController();
-            setTimeout(() => controller.abort(), 25000); 
-
-            await fetch(APP_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "text/plain" },
-                body: JSON.stringify(payload),
-                signal: controller.signal
-            });
-
-            msg.style.background = "var(--totalpass-lime)";
-            msg.style.color = "#333";
-            msg.innerText = "✅ Sincronizado perfeitamente com a planilha!";
-            
-            document.getElementById('inspectionForm').reset();
-            document.getElementById('responsavel').value = responsavelStr;
-            document.getElementById('previewAntes').innerHTML = "";
-            document.getElementById('previewDepois').innerHTML = "";
-            toggleFields(false);
-
-        } catch (err) {
-            const cacheAtual = JSON.parse(localStorage.getItem('rcr_inspecoes_offline') || '[]');
-            cacheAtual.push(payload);
-            localStorage.setItem('rcr_inspecoes_offline', JSON.stringify(cacheAtual));
-            
-            msg.style.background = "var(--orange)";
-            msg.style.color = "#333";
-            msg.innerText = "⚠️ Instabilidade de rede! Registro guardado na memória offline.";
-            
-            document.getElementById('inspectionForm').reset();
-            document.getElementById('responsavel').value = responsavelStr;
-            document.getElementById('previewAntes').innerHTML = "";
-            document.getElementById('previewDepois').innerHTML = "";
-            toggleFields(false);
-            atualizarPainelOffline();
-        } finally {
-            btn.disabled = false;
-            btn.innerText = "SINCRONIZAR COM A NUVEM";
-            const nData = new Date();
-            document.getElementById('dataVerificacao').value = nData.toISOString().split('T')[0];
-            document.getElementById('horarioVerificacao').value = nData.toTimeString().split(' ')[0].substring(0,5);
-        }
+        // 4. Dispara a submissão nativa (Imune a CORS)
+        document.body.appendChild(formOculto);
+        btn.innerText = "ENVIANDO VIA PROTOCOLO NATIVO...";
+        formOculto.submit();
+        
+        // Limpa o formulário oculto do DOM
+        setTimeout(() => document.body.removeChild(formOculto), 1000);
     });
 
-    async function tentarSincronizarPendentes() {
-        const cache = JSON.parse(localStorage.getItem('rcr_inspecoes_offline') || '[]');
-        if (cache.length === 0) return;
-
-        const alertBox = document.getElementById('offlineAlert');
-        alertBox.innerText = "🔄 DESCARREGANDO ACUMULADOS... AGUARDE...";
-        alertBox.style.background = "#eee";
-
-        let falhouNovamente = false;
-
-        for (let i = cache.length - 1; i >= 0; i--) {
-            try {
-                await fetch(APP_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(cache[i]) });
-                cache.splice(i, 1);
-            } catch(e) {
-                falhouNovamente = true;
-                break; 
-            }
-        }
-
-        localStorage.setItem('rcr_inspecoes_offline', JSON.stringify(cache));
-        atualizarPainelOffline();
-
-        if (!falhouNovamente) {
-            alert("✅ Excelente! Todos os registros guardados offline foram sincronizados.");
-        } else {
-            alert("⚠️ A conexão falhou. Tentaremos novamente depois.");
-            atualizarPainelOffline();
-        }
+    // Função acionada quando o Iframe termina de carregar a resposta do Google
+    function finalizarEnvio() {
+        if (!isSubmitting) return;
+        isSubmitting = false;
+        
+        const btn = document.getElementById('btnS');
+        const msg = document.getElementById('msg');
+        
+        msg.style.background = "var(--totalpass-lime)";
+        msg.style.color = "#333";
+        msg.innerText = "✅ Sincronizado brutalmente com sucesso!";
+        
+        document.getElementById('inspectionForm').reset();
+        document.getElementById('responsavel').value = localStorage.getItem('rcr_ultimo_inspetor');
+        document.getElementById('previewAntes').innerHTML = "";
+        document.getElementById('previewDepois').innerHTML = "";
+        toggleFields(false);
+        
+        btn.disabled = false;
+        btn.innerText = "FORÇAR ENVIO PARA PLANILHA";
     }
 </script>
 </body>
