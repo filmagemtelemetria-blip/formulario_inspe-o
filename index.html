@@ -9,45 +9,29 @@
     <meta name="theme-color" content="#147b6a">
     
     <style>
-        :root { 
-            --parvi-teal: #147b6a;
-            --totalpass-lime: #4eff7e;
-            --parvi-cream: #faf8f5;
-            --parvi-white: #ffffff;
-            --parvi-text: #333333;
-            --parvi-border: #c4e1df;
-            --red: #d93025;
-            --orange: #f9ab00;
-        }
-
+        :root { --parvi-teal: #147b6a; --totalpass-lime: #4eff7e; --parvi-cream: #faf8f5; --parvi-white: #ffffff; --parvi-text: #333333; --parvi-border: #c4e1df; --red: #d93025; --orange: #f9ab00; }
         body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 15px; background: var(--parvi-cream); color: var(--parvi-text); display: flex; justify-content: center; align-items: center; min-height: 100vh; }
         .card { width: 100%; max-width: 580px; background: var(--parvi-white); border-radius: 14px; border: 1px solid var(--parvi-border); padding: 30px; box-shadow: 0 10px 30px rgba(20,123,106,0.05); box-sizing: border-box; }
-        
         .header { text-align: center; margin-bottom: 25px; border-bottom: 2px solid var(--parvi-teal); padding-bottom: 15px; }
-        .header h2 { margin: 0; color: var(--parvi-teal); font-size: 22px; letter-spacing: 0.5px; font-weight: 800; }
-        
+        .header h2 { margin: 0; color: var(--parvi-teal); font-size: 22px; font-weight: 800; }
         .offline-badge { display: none; background: var(--orange); color: #333; padding: 8px; border-radius: 6px; text-align: center; font-size: 12px; font-weight: bold; margin-bottom: 15px; cursor: pointer; }
         .form-group { margin-bottom: 18px; }
         .form-row { display: flex; gap: 12px; }
         .form-row .form-group { flex: 1; }
-        label { display: block; font-size: 11px; font-weight: 700; color: var(--parvi-teal); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--parvi-border); border-radius: 8px; font-size: 14px; box-sizing: border-box; background: var(--parvi-cream); color: var(--parvi-text); transition: all 0.2s ease; }
-        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--parvi-teal); background: white; box-shadow: 0 0 0 3px rgba(20,123,106,0.1); }
-        
-        optgroup { font-weight: bold; color: var(--parvi-teal); font-style: normal; background: #eef7f6; }
-        option { font-weight: normal; color: var(--parvi-text); background: white; }
-
+        label { display: block; font-size: 11px; font-weight: 700; color: var(--parvi-teal); margin-bottom: 6px; text-transform: uppercase; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--parvi-border); border-radius: 8px; font-size: 14px; box-sizing: border-box; background: var(--parvi-cream); }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--parvi-teal); background: white; }
+        optgroup { font-weight: bold; color: var(--parvi-teal); background: #eef7f6; }
         .radio-box { display: flex; gap: 20px; padding: 12px; background: rgba(20,123,106,0.04); border-radius: 8px; border: 1px dashed var(--parvi-border); }
         .radio-option { display: flex; align-items: center; gap: 6px; font-weight: bold; font-size: 14px; cursor: pointer; }
         .radio-option input { width: auto; margin: 0; }
         .conditional-field { display: none; padding: 18px; background: rgba(78, 255, 126, 0.08); border-radius: 10px; border-left: 4px solid var(--parvi-teal); margin-top: 10px; box-sizing: border-box; }
         .sub-field-fotos { background: rgba(255, 255, 255, 0.6); padding: 12px; border-radius: 8px; border: 1px solid var(--parvi-border); margin-bottom: 12px; }
         .preview-container { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
-        .preview-item { position: relative; width: 80px; height: 80px; border-radius: 6px; overflow: hidden; border: 2px solid var(--parvi-border); }
+        .preview-item { width: 80px; height: 80px; border-radius: 6px; overflow: hidden; border: 2px solid var(--parvi-border); }
         .preview-item img { width: 100%; height: 100%; object-fit: cover; }
-        .btn-submit { width: 100%; padding: 15px; background: var(--parvi-teal); color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; transition: all 0.3s; margin-top: 15px; box-shadow: 0 4px 12px rgba(20,123,106,0.15); }
-        .btn-submit:hover { background: #0e5e52; transform: translateY(-2px); }
+        .btn-submit { width: 100%; padding: 15px; background: var(--parvi-teal); color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; transition: all 0.3s; margin-top: 15px; }
+        .btn-submit:hover { background: #0e5e52; }
         .btn-submit:disabled { background: #ccc; cursor: not-allowed; }
         #msg { margin-top: 15px; padding: 12px; border-radius: 8px; text-align: center; font-size: 13px; font-weight: bold; display: none; }
     </style>
@@ -60,14 +44,14 @@
     </div>
 
     <div id="offlineAlert" class="offline-badge" onclick="tentarSincronizarPendentes()">
-        ⚠️ DETETADOS <span id="offlineCount">0</span> REGISTROS OFFLINE PENDENTES. CLIQUE AQUI PARA SINCRONIZAR.
+        ⚠️ DETETADOS <span id="offlineCount">0</span> REGISTROS OFFLINE. CLIQUE PARA ENVIAR.
     </div>
 
     <form id="inspectionForm">
         <div class="form-row">
             <div class="form-group">
-                <label>Veículo (Nº Ordem ou Placa)</label>
-                <input type="text" id="veiculo" placeholder="Ex: 22013 ou AAA0A00" style="text-transform: uppercase;" required>
+                <label>Veículo (Ordem ou Placa)</label>
+                <input type="text" id="veiculo" style="text-transform: uppercase;" required>
             </div>
             <div class="form-group">
                 <label>Filial</label>
@@ -85,7 +69,7 @@
 
         <div class="form-row">
             <div class="form-group">
-                <label>Data da Verificação</label>
+                <label>Data</label>
                 <input type="date" id="dataVerificacao" required>
             </div>
             <div class="form-group">
@@ -95,38 +79,35 @@
         </div>
 
         <div class="form-group">
-            <label>Nome do Responsável pela Inspeção</label>
-            <input type="text" id="responsavel" placeholder="Digite seu nome completo" required>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group">
-                <label>Categoria</label>
-                <select id="categoriaDefeito" required>
-                    <option value="">Selecione o problema...</option>
-                    <optgroup label="Câmera">
-                        <option value="CÂMERA - Ajuste Frontal/Colisão">Ajuste Câmera Frontal / Colisão</option>
-                        <option value="CÂMERA - Ajuste Fadiga">Ajuste Câmera de Fadiga</option>
-                        <option value="CÂMERA - Ajuste Auxiliar">Ajuste Câmera Auxiliar (Qual?)</option>
-                        <option value="CÂMERA - DVR Inoperante">DVR Inoperante</option>
-                        <option value="CÂMERA - Erro de Disco (Storage)">Erro de Disco (Armazenamento)</option>
-                        <option value="CÂMERA - Inoperante">Câmera inoperante (Descreva)</option>
-                        <option value="CÂMERA - Outro">Outro (Descreva)</option>
-                    </optgroup>
-                    <optgroup label="Telemetria">
-                        <option value="TELEMETRIA - GPS Inoperante">GPS Inoperante</option>
-                        <option value="TELEMETRIA - Sirene ativada constante">Sirene ativada constante</option>
-                        <option value="TELEMETRIA - Sirene não funciona">Sirene não funciona</option>
-                        <option value="TELEMETRIA - Leitora">Leitora</option>
-                        <option value="TELEMETRIA - Outro">Outro (Descreva)</option>
-                    </optgroup>
-                </select>
-            </div>
+            <label>Nome do Responsável</label>
+            <input type="text" id="responsavel" required>
         </div>
 
         <div class="form-group">
-            <label>Descrição Detalhada do Defeito</label>
-            <textarea id="defeito" rows="3" placeholder="Insira detalhes adicionais..." required></textarea>
+            <label>Categoria</label>
+            <select id="categoriaDefeito" required>
+                <option value="">Selecione o problema...</option>
+                <optgroup label="Câmera">
+                    <option value="CÂMERA - Ajuste Frontal/Colisão">Ajuste Câmera Frontal / Colisão</option>
+                    <option value="CÂMERA - Ajuste Fadiga">Ajuste Câmera de Fadiga</option>
+                    <option value="CÂMERA - DVR Inoperante">DVR Inoperante</option>
+                    <option value="CÂMERA - Erro de Disco (Storage)">Erro de Disco (Armazenamento)</option>
+                    <option value="CÂMERA - Inoperante">Câmera inoperante (Descreva)</option>
+                    <option value="CÂMERA - Outro">Outro (Descreva)</option>
+                </optgroup>
+                <optgroup label="Telemetria">
+                    <option value="TELEMETRIA - GPS Inoperante">GPS Inoperante</option>
+                    <option value="TELEMETRIA - Sirene ativada constante">Sirene ativada constante</option>
+                    <option value="TELEMETRIA - Sirene não funciona">Sirene não funciona</option>
+                    <option value="TELEMETRIA - Leitora">Leitora</option>
+                    <option value="TELEMETRIA - Outro">Outro (Descreva)</option>
+                </optgroup>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Descrição Detalhada</label>
+            <textarea id="defeito" rows="3" required></textarea>
         </div>
 
         <div class="form-group">
@@ -140,19 +121,19 @@
         <div id="fieldSim" class="conditional-field">
             <div class="sub-field-fotos">
                 <label>1. Evidência do ANTES</label>
-                <input type="file" id="fotosAntes" accept="image/*" capture="environment" multiple onchange="previewImages('fotosAntes', 'previewAntes')">
+                <input type="file" id="fotosAntes" accept="image/*" multiple onchange="previewImages('fotosAntes', 'previewAntes')">
                 <div class="preview-container" id="previewAntes"></div>
             </div>
             <div class="sub-field-fotos">
                 <label>2. Evidência do DEPOIS</label>
-                <input type="file" id="fotosDepois" accept="image/*" capture="environment" multiple onchange="previewImages('fotosDepois', 'previewDepois')">
+                <input type="file" id="fotosDepois" accept="image/*" multiple onchange="previewImages('fotosDepois', 'previewDepois')">
                 <div class="preview-container" id="previewDepois"></div>
             </div>
         </div>
 
         <div id="fieldNao" class="conditional-field" style="background: rgba(217, 48, 37, 0.05); border-left-color: var(--red);">
-            <label style="color: var(--red);">Número da O.S. / Chamado Segsat</label>
-            <input type="text" id="chamado" placeholder="Ex: OS-98745">
+            <label style="color: var(--red);">Número da O.S. / Chamado</label>
+            <input type="text" id="chamado">
         </div>
 
         <button type="submit" id="btnS" class="btn-submit">SINCRONIZAR COM A NUVEM</button>
@@ -161,21 +142,15 @@
 </div>
 
 <script>
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js').catch(err => console.error(err));
-        });
-    }
-
-    const APP_URL = "https://script.google.com/macros/s/AKfycbzL92XQRBX0RWjbD3yfyj9odgVEfwnk9PUolokzfsDtuZQRDTScnTHrkfenEv14G37qnQ/exec";
+    // ======= COLE A URL GERADA NO PASSO 2 AQUI =======
+    const APP_URL = "COLE_AQUI_A_SUA_URL_DO_APPS_SCRIPT";
+    // =================================================
 
     window.onload = () => {
         const agora = new Date();
         document.getElementById('dataVerificacao').value = agora.toISOString().split('T')[0];
         document.getElementById('horarioVerificacao').value = agora.toTimeString().split(' ')[0].substring(0,5);
-        const ultimoInspetor = localStorage.getItem('rcr_ultimo_inspetor');
-        if (ultimoInspetor) document.getElementById('responsavel').value = ultimoInspetor;
-        atualizarPainelOffline();
+        if (localStorage.getItem('rcr_ultimo_inspetor')) document.getElementById('responsavel').value = localStorage.getItem('rcr_ultimo_inspetor');
     };
 
     function toggleFields(houveSolucao) {
@@ -193,18 +168,14 @@
             const div = document.createElement('div');
             div.className = 'preview-item';
             const img = document.createElement('img');
-            reader.onload = (e) => {
-                img.src = e.target.result;
-                div.appendChild(img);
-                previewArea.appendChild(div);
-            }
+            reader.onload = (e) => { img.src = e.target.result; div.appendChild(img); previewArea.appendChild(div); }
             reader.readAsDataURL(file);
         }
     }
 
-    // Otimização Estrutural: Limita tamanho a 800px para tráfego leve e seguro via Base64
+    // Comprime as fotos para evitar estouro de memória no Google Script
     function compressImage(file, marcaDaguaTexto) {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = (event) => {
@@ -212,39 +183,24 @@
                 img.src = event.target.result;
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    let width = img.width;
-                    let height = img.height;
-                    const MAX_WIDTH = 800; 
-                    if (width > MAX_WIDTH) { height = Math.round((height * MAX_WIDTH) / width); width = MAX_WIDTH; }
-                    canvas.width = width; canvas.height = height;
+                    let w = img.width, h = img.height;
+                    const MAX = 800; // Resolução leve e segura
+                    if (w > MAX) { h = Math.round((h * MAX) / w); w = MAX; }
+                    canvas.width = w; canvas.height = h;
                     const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
+                    ctx.drawImage(img, 0, 0, w, h);
                     
-                    const fontSize = Math.max(14, Math.floor(width * 0.035));
-                    ctx.font = `bold ${fontSize}px sans-serif`;
-                    const padding = fontSize * 0.5;
+                    const fSize = Math.max(14, Math.floor(w * 0.035));
+                    ctx.font = `bold ${fSize}px sans-serif`;
                     ctx.fillStyle = 'rgba(0, 0, 0, 0.6)'; 
-                    ctx.fillRect(0, height - fontSize - padding * 2, width, fontSize + padding * 2);
+                    ctx.fillRect(0, h - fSize - 10, w, fSize + 10);
                     ctx.fillStyle = '#4eff7e'; 
-                    ctx.fillText(marcaDaguaTexto, padding, height - padding - (fontSize * 0.1));
+                    ctx.fillText(marcaDaguaTexto, 10, h - 5);
                     
-                    resolve(canvas.toDataURL('image/jpeg', 0.60).split(',')[1]); 
+                    resolve(canvas.toDataURL('image/jpeg', 0.6).split(',')[1]); 
                 };
-                img.onerror = (err) => reject(err);
             };
-            reader.onerror = (err) => reject(err);
         });
-    }
-
-    function atualizarPainelOffline() {
-        const cache = JSON.parse(localStorage.getItem('rcr_inspecoes_offline') || '[]');
-        const alertBox = document.getElementById('offlineAlert');
-        if (cache.length > 0) {
-            document.getElementById('offlineCount').innerText = cache.length;
-            alertBox.style.display = 'block';
-        } else {
-            alertBox.style.display = 'none';
-        }
     }
 
     document.getElementById('inspectionForm').addEventListener('submit', async (e) => {
@@ -257,7 +213,7 @@
         const depoisFiles = document.getElementById('fotosDepois').files;
 
         if (solucao === "SIM" && (antesFiles.length === 0 || depoisFiles.length === 0)) {
-            alert("⚠️ OBRIGATÓRIO: Anexar fotos do ANTES e DEPOIS.");
+            alert("⚠️ Obrigatório anexar fotos do ANTES e DEPOIS quando a solução é SIM.");
             return;
         }
 
@@ -265,31 +221,27 @@
         msg.style.display = "block";
         msg.style.background = "#fff3cd";
         msg.style.color = "#856404";
-        msg.innerText = "🤖 Processando marcas d'água e convertendo arquivos nativos...";
+        msg.innerText = "Preparando pacote de envio...";
 
         const veiculoLimpo = document.getElementById('veiculo').value.replace(/[\s-]/g, '').toUpperCase();
         const responsavelStr = document.getElementById('responsavel').value;
         const descCompleta = `[${document.getElementById('categoriaDefeito').value}] ${document.getElementById('defeito').value}`;
+        const textoMarcaDagua = `RCR | VTR: ${veiculoLimpo} | Insp: ${responsavelStr.split(' ')[0]}`;
         
         localStorage.setItem('rcr_ultimo_inspetor', responsavelStr);
-
-        const dataStr = document.getElementById('dataVerificacao').value.split('-').reverse().join('/');
-        const horaStr = document.getElementById('horarioVerificacao').value;
-        const textoMarcaDagua = `RCR | VTR: ${veiculoLimpo} | Insp: ${responsavelStr.split(' ')[0]} | ${dataStr} às ${horaStr}`;
 
         let listaArquivosDrive = [];
         
         if (solucao === "SIM") {
             for (let i = 0; i < antesFiles.length; i++) {
-                btn.innerText = `COMPRIMINDO ANTES (${i+1}/${antesFiles.length})...`;
-                const base64 = await compressImage(antesFiles[i], textoMarcaDagua);
-                listaArquivosDrive.push({ base64: base64, nome: `${veiculoLimpo}_ANTES_${i+1}_${Date.now()}.jpg` });
+                btn.innerText = `PROCESSANDO ANTES (${i+1})...`;
+                const b64 = await compressImage(antesFiles[i], textoMarcaDagua);
+                listaArquivosDrive.push({ base64: b64, nome: `${veiculoLimpo}_ANTES_${i+1}.jpg` });
             }
-
             for (let i = 0; i < depoisFiles.length; i++) {
-                btn.innerText = `COMPRIMINDO DEPOIS (${i+1}/${depoisFiles.length})...`;
-                const base64 = await compressImage(depoisFiles[i], textoMarcaDagua);
-                listaArquivosDrive.push({ base64: base64, nome: `${veiculoLimpo}_DEPOIS_${i+1}_${Date.now()}.jpg` });
+                btn.innerText = `PROCESSANDO DEPOIS (${i+1})...`;
+                const b64 = await compressImage(depoisFiles[i], textoMarcaDagua);
+                listaArquivosDrive.push({ base64: b64, nome: `${veiculoLimpo}_DEPOIS_${i+1}.jpg` });
             }
         }
 
@@ -302,27 +254,22 @@
             responsavel: responsavelStr,
             defeito: descCompleta,
             solucao: solucao,
-            fotosArray: listaArquivosDrive, 
+            fotosArray: listaArquivosDrive,
             chamado: document.getElementById('chamado').value
         };
 
         try {
-            btn.innerText = "ENVIANDO DIRETAMENTE PARA O GOOGLE...";
-            const controller = new AbortController();
-            setTimeout(() => controller.abort(), 20000); 
-
+            btn.innerText = "ENVIANDO PARA O GOOGLE DRIVE...";
             await fetch(APP_URL, {
                 method: "POST",
                 mode: "no-cors",
                 headers: { "Content-Type": "text/plain" },
-                body: JSON.stringify(payload),
-                signal: controller.signal
+                body: JSON.stringify(payload)
             });
 
             msg.style.background = "var(--totalpass-lime)";
             msg.style.color = "#333";
-            msg.innerText = "✅ Sincronizado perfeitamente com a planilha!";
-            
+            msg.innerText = "✅ Salvo com sucesso!";
             document.getElementById('inspectionForm').reset();
             document.getElementById('responsavel').value = responsavelStr;
             document.getElementById('previewAntes').innerHTML = "";
@@ -330,59 +277,14 @@
             toggleFields(false);
 
         } catch (err) {
-            const cacheAtual = JSON.parse(localStorage.getItem('rcr_inspecoes_offline') || '[]');
-            cacheAtual.push(payload);
-            localStorage.setItem('rcr_inspecoes_offline', JSON.stringify(cacheAtual));
-            
-            msg.style.background = "var(--orange)";
-            msg.style.color = "#333";
-            msg.innerText = "⚠️ Sem internet! Dados guardados na memória local.";
-            
-            document.getElementById('inspectionForm').reset();
-            document.getElementById('responsavel').value = responsavelStr;
-            document.getElementById('previewAntes').innerHTML = "";
-            document.getElementById('previewDepois').innerHTML = "";
-            toggleFields(false);
-            atualizarPainelOffline();
+            msg.style.background = "var(--red)";
+            msg.style.color = "white";
+            msg.innerText = "❌ Falha na conexão de rede.";
         } finally {
             btn.disabled = false;
             btn.innerText = "SINCRONIZAR COM A NUVEM";
-            const nData = new Date();
-            document.getElementById('dataVerificacao').value = nData.toISOString().split('T')[0];
-            document.getElementById('horarioVerificacao').value = nData.toTimeString().split(' ')[0].substring(0,5);
         }
     });
-
-    async function tentarSincronizarPendentes() {
-        const cache = JSON.parse(localStorage.getItem('rcr_inspecoes_offline') || '[]');
-        if (cache.length === 0) return;
-
-        const alertBox = document.getElementById('offlineAlert');
-        alertBox.innerText = "🔄 ENVIANDO REGISTROS ACUMULADOS...";
-        alertBox.style.background = "#eee";
-
-        let falhouNovamente = false;
-
-        for (let i = cache.length - 1; i >= 0; i--) {
-            try {
-                await fetch(APP_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(cache[i]) });
-                cache.splice(i, 1);
-            } catch(e) {
-                falhouNovamente = true;
-                break; 
-            }
-        }
-
-        localStorage.setItem('rcr_inspecoes_offline', JSON.stringify(cache));
-        atualizarPainelOffline();
-
-        if (!falhouNovamente) {
-            alert("✅ Excelente! Todos os registros pendentes foram descarregados na planilha.");
-        } else {
-            alert("⚠️ Falha na conexão. Tentaremos novamente em breve.");
-            atualizarPainelOffline();
-        }
-    }
 </script>
 </body>
 </html>
