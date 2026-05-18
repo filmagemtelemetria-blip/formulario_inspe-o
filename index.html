@@ -41,7 +41,7 @@
         <div class="form-row">
             <div class="form-group">
                 <label>Veículo (Ordem/Placa)</label>
-                <input type="text" id="veiculo" style="text-transform: uppercase;" required>
+                <input type="text" id="veiculo" placeholder="Ex: 22013" style="text-transform: uppercase;" required>
             </div>
             <div class="form-group">
                 <label>Filial</label>
@@ -65,8 +65,8 @@
         </div>
 
         <div class="form-group">
-            <label>Nome do Responsável</label>
-            <input type="text" id="responsavel" required>
+            <label>Nome Completo do Responsável</label>
+            <input type="text" id="responsavel" placeholder="Digite seu nome completo" required>
         </div>
 
         <div class="form-group">
@@ -92,34 +92,34 @@
         </div>
 
         <div class="form-group">
-            <label>Descrição</label>
-            <textarea id="defeito" rows="3" required></textarea>
+            <label>Descrição Detalhada</label>
+            <textarea id="defeito" rows="3" placeholder="Detalhes adicionais..." required></textarea>
         </div>
 
         <div class="form-group">
             <label>Houve Solução Imediata?</label>
             <div class="radio-box">
-                <label class="radio-option"><input type="radio" name="solucao" value="SIM" onclick="toggleFields(true)" required> Sim</label>
-                <label class="radio-option"><input type="radio" name="solucao" value="NAO" onclick="toggleFields(false)"> Não</label>
+                <label class="radio-option"><input type="radio" name="solucao" value="SIM" onclick="toggleFields(true)" required> Sim, resolvido</label>
+                <label class="radio-option"><input type="radio" name="solucao" value="NAO" onclick="toggleFields(false)"> Não, encaminhado</label>
             </div>
         </div>
 
         <div id="fieldSim" class="conditional-field">
             <div class="sub-field-fotos">
                 <label>1. FOTOS DO ANTES</label>
-                <input type="file" id="fotosAntes" accept="image/*" multiple onchange="previewImages('fotosAntes', 'previewAntes')">
+                <input type="file" id="fotosAntes" accept="image/*" capture="environment" multiple onchange="previewImages('fotosAntes', 'previewAntes')">
                 <div class="preview-container" id="previewAntes"></div>
             </div>
             <div class="sub-field-fotos">
                 <label>2. FOTOS DO DEPOIS</label>
-                <input type="file" id="fotosDepois" accept="image/*" multiple onchange="previewImages('fotosDepois', 'previewDepois')">
+                <input type="file" id="fotosDepois" accept="image/*" capture="environment" multiple onchange="previewImages('fotosDepois', 'previewDepois')">
                 <div class="preview-container" id="previewDepois"></div>
             </div>
         </div>
 
         <div id="fieldNao" class="conditional-field" style="background: rgba(217, 48, 37, 0.05); border-left-color: var(--red);">
             <label style="color: var(--red);">Número da O.S. / Chamado</label>
-            <input type="text" id="chamado">
+            <input type="text" id="chamado" placeholder="Ex: OS-12345">
         </div>
 
         <button type="submit" id="btnS" class="btn-submit">ENVIAR RELATÓRIO</button>
@@ -166,7 +166,7 @@
         }
     }
 
-    // Comprime mantendo excelente proporção e gerando Base64 limpo para a API
+    // AJUSTE: Lógica canvas melhorada para marca d'água mais nítida com mais informações
     function compressImage(file, texto) {
         return new Promise((resolve) => {
             const r = new FileReader();
@@ -177,23 +177,33 @@
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
                     let w = img.width, h = img.height;
-                    const MAX = 900;
+                    
+                    // Resolução ligeiramente maior para acomodar o texto maior mantendo nítido
+                    const MAX = 1000; 
                     if (w > MAX) { h = Math.round((h * MAX) / w); w = MAX; }
                     canvas.width = w; canvas.height = h;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, w, h);
                     
-                    ctx.font = `bold 16px sans-serif`;
-                    ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(0, h-30, w, 30);
-                    ctx.fillStyle = '#4eff7e'; ctx.fillText(texto, 10, h-10);
+                    // Configuração da Fonte dinâmica baseada na largura da imagem
+                    const fontSize = Math.max(14, Math.floor(w * 0.025)); 
+                    ctx.font = `bold ${fontSize}px sans-serif`;
                     
-                    resolve(canvas.toDataURL('image/jpeg', 0.75)); 
+                    // Fundo da marca d'água (faixa preta semi-transparente)
+                    const barHeight = fontSize + 15;
+                    ctx.fillStyle = 'rgba(0,0,0,0.6)'; 
+                    ctx.fillRect(0, h - barHeight, w, barHeight);
+                    
+                    // Texto em Verde Limão Neon
+                    ctx.fillStyle = '#4eff7e'; 
+                    ctx.fillText(texto, 15, h - (barHeight/2) + (fontSize/2.5));
+                    
+                    resolve(canvas.toDataURL('image/jpeg', 0.8)); 
                 };
             };
         });
     }
 
-    // Função de Upload direto para o Servidor de Mídias Cloudinary
     async function uploadToCloudinary(base64Data, filename) {
         const formData = new FormData();
         formData.append("file", base64Data);
@@ -222,23 +232,29 @@
         const depois = document.getElementById('fotosDepois').files;
 
         if (solucao === "SIM" && (antes.length === 0 || depois.length === 0)) {
-            alert("⚠️ Insira fotos do Antes e Depois.");
+            alert("⚠️ Obrigatório anexar fotos do ANTES e DEPOIS.");
             return;
         }
 
         btn.disabled = true; msg.style.display = "block"; msg.style.background = "#fff3cd"; msg.style.color = "#856404";
-        msg.innerText = "Processando e enviando imagens para a Nuvem...";
+        msg.innerText = "Processando e enviando imagens para Cloudinary...";
 
         const veiculo = document.getElementById('veiculo').value.toUpperCase();
         const resp = document.getElementById('responsavel').value;
         const def = `[${document.getElementById('categoriaDefeito').value}] ${document.getElementById('defeito').value}`;
-        const carimbo = `VTR: ${veiculo} | Insp: ${resp.split(' ')[0]}`;
+        
+        // AJUSTE: Captura de Data e Hora para o carimbo
+        const rawDate = document.getElementById('dataVerificacao').value;
+        const formattedDate = rawDate.split('-').reverse().join('/');
+        const rawTime = document.getElementById('horarioVerificacao').value;
+
+        // AJUSTE: Construção do carimbo completo conforme solicitado
+        const carimbo = `RCR | VTR: ${veiculo} | Resp: ${resp} | ${formattedDate} ${rawTime}`;
         
         localStorage.setItem('rcr_inspetor', resp);
         let urlLinks = [];
 
         try {
-            // Envia as mídias para o Cloudinary de forma assíncrona ultra veloz
             if (solucao === "SIM") {
                 for (let i = 0; i < antes.length; i++) {
                     btn.innerText = `Enviando Foto Antes ${i+1}/${antes.length}...`;
@@ -254,9 +270,8 @@
                 }
             }
 
-            btn.innerText = "Registrando na Planilha...";
+            btn.innerText = "Sincronizando dados com Google Sheets...";
 
-            // Envia apenas o payload de texto leve para o Google Sheets
             await fetch(APP_URL, {
                 method: "POST",
                 headers: { "Content-Type": "text/plain;charset=utf-8" },
@@ -269,14 +284,18 @@
                     responsavel: resp,
                     defeito: def,
                     solucao: solucao,
-                    fotosLinks: urlLinks.join("\n"), // Links injetados na Coluna H
+                    fotosLinks: urlLinks.join("\n"),
                     chamado: document.getElementById('chamado').value
                 })
             });
 
             msg.style.background = "var(--totalpass-lime)"; msg.style.color = "#333";
             msg.innerText = "✅ Relatório e links sincronizados com sucesso!";
+            
+            // AJUSTE: Mantém o nome do responsável após reset
             document.getElementById('inspectionForm').reset();
+            document.getElementById('responsavel').value = resp; 
+            
             document.getElementById('previewAntes').innerHTML = ""; document.getElementById('previewDepois').innerHTML = "";
             toggleFields(false);
 
