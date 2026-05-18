@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NOC RCR - Inspeção Profissional (Firebase)</title>
+    <title>NOC RCR - Inspeção Ativa</title>
     
     <style>
         :root { --parvi-teal: #147b6a; --totalpass-lime: #4eff7e; --parvi-cream: #faf8f5; --parvi-white: #ffffff; --parvi-text: #333333; --parvi-border: #c4e1df; --red: #d93025; --orange: #f9ab00; }
@@ -29,10 +29,6 @@
         .btn-submit:disabled { background: #ccc; cursor: not-allowed; }
         #msg { margin-top: 15px; padding: 12px; border-radius: 8px; text-align: center; font-size: 13px; font-weight: bold; display: none; }
     </style>
-
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
 </head>
 <body>
 
@@ -96,7 +92,7 @@
         </div>
 
         <div class="form-group">
-            <label>Descrição Detalhada</label>
+            <label>Descrição</label>
             <textarea id="defeito" rows="3" required></textarea>
         </div>
 
@@ -126,34 +122,23 @@
             <input type="text" id="chamado">
         </div>
 
-        <button type="submit" id="btnS" class="btn-submit">ENVIAR PARA O FIREBASE</button>
+        <button type="submit" id="btnS" class="btn-submit">ENVIAR RELATÓRIO</button>
         <div id="msg"></div>
     </form>
 </div>
 
 <script>
-    // Limpar Service Workers antigos para garantir o carregamento do Firebase
+    // =================================================================
+    // CONFIGURAÇÃO DOS DOIS PAINÉIS (CLOUDINARY + GOOGLE)
+    // =================================================================
+    const CLOUDINARY_CLOUD_NAME = "dwzabiqbl";
+    const CLOUDINARY_PRESET = "noxgjyuu";
+    const APP_URL = "https://script.google.com/macros/s/AKfycbyhs7E_DvMJG0eQKQ1fGl6XzKDaRuC_ZPQZHWzqLQVn-BCX7VWymQ-_jA2AVhC0zTfWvw/exec";
+    // =================================================================
+
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(function(r) { for(let i of r) i.unregister(); });
+        navigator.serviceWorker.getRegistrations().then(r => { for(let i of r) i.unregister(); });
     }
-
-    // =========================================================
-    // AS SUAS CREDENCIAIS OFICIAIS DO FIREBASE
-    // =========================================================
-    const firebaseConfig = {
-        apiKey: "AIzaSyA8f8t05-USu8hceG3tEdg-MXsjorur7MM",
-        authDomain: "noc-rcr-inspecoes-2dc6d.firebaseapp.com",
-        projectId: "noc-rcr-inspecoes-2dc6d",
-        storageBucket: "noc-rcr-inspecoes-2dc6d.appspot.com",
-        messagingSenderId: "745787948707",
-        appId: "1:745787948707:web:599657761a84882cd28916"
-    };
-
-    // Inicializa o Firebase
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const storage = firebase.storage();
-    // =========================================================
 
     window.onload = () => {
         const agora = new Date();
@@ -181,7 +166,7 @@
         }
     }
 
-    // Compressão com Marca D'água
+    // Comprime mantendo excelente proporção e gerando Base64 limpo para a API
     function compressImage(file, texto) {
         return new Promise((resolve) => {
             const r = new FileReader();
@@ -192,7 +177,7 @@
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
                     let w = img.width, h = img.height;
-                    const MAX = 900; // Resolução excelente para relatórios profissionais
+                    const MAX = 900;
                     if (w > MAX) { h = Math.round((h * MAX) / w); w = MAX; }
                     canvas.width = w; canvas.height = h;
                     const ctx = canvas.getContext('2d');
@@ -202,11 +187,29 @@
                     ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(0, h-30, w, 30);
                     ctx.fillStyle = '#4eff7e'; ctx.fillText(texto, 10, h-10);
                     
-                    // Retorna no formato Data URL para o Firebase reconhecer nativamente como Imagem
-                    resolve(canvas.toDataURL('image/jpeg', 0.7)); 
+                    resolve(canvas.toDataURL('image/jpeg', 0.75)); 
                 };
             };
         });
+    }
+
+    // Função de Upload direto para o Servidor de Mídias Cloudinary
+    async function uploadToCloudinary(base64Data, filename) {
+        const formData = new FormData();
+        formData.append("file", base64Data);
+        formData.append("upload_preset", CLOUDINARY_PRESET);
+        formData.append("public_id", filename.split('.')[0]);
+
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+            method: "POST",
+            body: formData
+        });
+        const json = await res.json();
+        if (json.secure_url) {
+            return json.secure_url;
+        } else {
+            throw new Error(json.error ? json.error.message : "Erro Cloudinary");
+        }
     }
 
     document.getElementById('inspectionForm').addEventListener('submit', async (e) => {
@@ -224,69 +227,67 @@
         }
 
         btn.disabled = true; msg.style.display = "block"; msg.style.background = "#fff3cd"; msg.style.color = "#856404";
-        msg.innerText = "A Iniciar envio para a Nuvem...";
+        msg.innerText = "Processando e enviando imagens para a Nuvem...";
 
         const veiculo = document.getElementById('veiculo').value.toUpperCase();
         const resp = document.getElementById('responsavel').value;
         const def = `[${document.getElementById('categoriaDefeito').value}] ${document.getElementById('defeito').value}`;
-        const carimbo = `VTR: ${veiculo} | Insp: ${resp.split(' ')[0]} | ${document.getElementById('dataVerificacao').value.split('-').reverse().join('/')}`;
+        const carimbo = `VTR: ${veiculo} | Insp: ${resp.split(' ')[0]}`;
         
         localStorage.setItem('rcr_inspetor', resp);
-
-        let linksImagens = [];
+        let urlLinks = [];
 
         try {
-            // 1. UPLOAD DAS FOTOS PARA O STORAGE DO FIREBASE
+            // Envia as mídias para o Cloudinary de forma assíncrona ultra veloz
             if (solucao === "SIM") {
-                const processarFotos = async (arquivos, tipo) => {
-                    for (let i = 0; i < arquivos.length; i++) {
-                        btn.innerText = `A enviar foto ${tipo} ${i+1}/${arquivos.length}...`;
-                        const base64DataUrl = await compressImage(arquivos[i], carimbo);
-                        const nomeArquivo = `inspecoes/${veiculo}_${Date.now()}_${tipo}_${i+1}.jpg`;
-                        
-                        // Envia para o Storage
-                        const ref = storage.ref().child(nomeArquivo);
-                        await ref.putString(base64DataUrl, 'data_url');
-                        const urlDown = await ref.getDownloadURL();
-                        
-                        linksImagens.push(urlDown); // Guarda apenas o link limpo da imagem
-                    }
-                };
-
-                await processarFotos(antes, 'ANTES');
-                await processarFotos(depois, 'DEPOIS');
+                for (let i = 0; i < antes.length; i++) {
+                    btn.innerText = `Enviando Foto Antes ${i+1}/${antes.length}...`;
+                    const b64 = await compressImage(antes[i], carimbo);
+                    const linkUrl = await uploadToCloudinary(b64, `${veiculo}_ANTES_${i+1}_${Date.now()}`);
+                    urlLinks.push(`[ANTES ${i+1}]: ${linkUrl}`);
+                }
+                for (let i = 0; i < depois.length; i++) {
+                    btn.innerText = `Enviando Foto Depois ${i+1}/${depois.length}...`;
+                    const b64 = await compressImage(depois[i], carimbo);
+                    const linkUrl = await uploadToCloudinary(b64, `${veiculo}_DEPOIS_${i+1}_${Date.now()}`);
+                    urlLinks.push(`[DEPOIS ${i+1}]: ${linkUrl}`);
+                }
             }
 
-            btn.innerText = "A GUARDAR RELATÓRIO NO BANCO DE DADOS...";
+            btn.innerText = "Registrando na Planilha...";
 
-            // 2. GRAVA OS DADOS NO FIRESTORE
-            await db.collection("relatorios").add({
-                data_criacao: firebase.firestore.FieldValue.serverTimestamp(),
-                veiculo: veiculo,
-                data: document.getElementById('dataVerificacao').value,
-                hora: document.getElementById('horarioVerificacao').value,
-                filial: document.getElementById('filial').value,
-                responsavel: resp,
-                defeito: def,
-                solucao: solucao,
-                chamado: document.getElementById('chamado').value || "N/A",
-                linksFotos: linksImagens
+            // Envia apenas o payload de texto leve para o Google Sheets
+            await fetch(APP_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({
+                    action: "salvar_inspecao",
+                    veiculo: veiculo,
+                    data: document.getElementById('dataVerificacao').value,
+                    hora: document.getElementById('horarioVerificacao').value,
+                    filial: document.getElementById('filial').value,
+                    responsavel: resp,
+                    defeito: def,
+                    solucao: solucao,
+                    fotosLinks: urlLinks.join("\n"), // Links injetados na Coluna H
+                    chamado: document.getElementById('chamado').value
+                })
             });
 
             msg.style.background = "var(--totalpass-lime)"; msg.style.color = "#333";
-            msg.innerText = "✅ Relatório gravado com SUCESSO!";
+            msg.innerText = "✅ Relatório e links sincronizados com sucesso!";
             document.getElementById('inspectionForm').reset();
             document.getElementById('previewAntes').innerHTML = ""; document.getElementById('previewDepois').innerHTML = "";
             toggleFields(false);
 
         } catch (err) {
-            console.error("Erro Firebase:", err);
+            console.error(err);
             msg.style.background = "var(--red)"; msg.style.color = "white";
-            msg.innerText = "❌ Falha no envio. (Abra o F12/Console para detalhes)";
+            msg.innerText = "❌ Falha no envio: " + err.message;
         } finally {
-            btn.disabled = false; btn.innerText = "ENVIAR PARA O FIREBASE";
+            btn.disabled = false; btn.innerText = "ENVIAR RELATÓRIO";
         }
     });
 </script>
 </body>
-</html> 
+</html>
