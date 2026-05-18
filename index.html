@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NOC RCR - Inspeção Avançada</title>
+    <title>NOC RCR - Inspeção (v4.0)</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#147b6a">
@@ -40,11 +40,11 @@
 
 <div class="card">
     <div class="header">
-        <h2>REGISTRO DE INSPEÇÃO - RCR</h2>
+        <h2>REGISTRO DE INSPEÇÃO (v4.0)</h2>
     </div>
 
     <div id="offlineAlert" class="offline-badge" onclick="tentarSincronizarPendentes()">
-        ⚠️ DETETADOS <span id="offlineCount">0</span> REGISTROS OFFLINE. CLIQUE PARA ENVIAR.
+        ⚠️ DETETADOS <span id="offlineCount">0</span> REGISTOS OFFLINE. CLIQUE PARA ENVIAR.
     </div>
 
     <form id="inspectionForm">
@@ -142,9 +142,15 @@
 </div>
 
 <script>
-    // ======= COLE A URL GERADA NO PASSO 2 AQUI =======
+    // ======= COLE O NOVO LINK AQUI (O QUE GEROU NO PASSO 2) =======
     const APP_URL = "https://script.google.com/macros/s/AKfycbzL92XQRBX0RWjbD3yfyj9odgVEfwnk9PUolokzfsDtuZQRDTScnTHrkfenEv14G37qnQ/exec";
-    // =================================================
+    // ===============================================================
+
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            for(let registration of registrations) { registration.unregister(); }
+        });
+    }
 
     window.onload = () => {
         const agora = new Date();
@@ -173,7 +179,6 @@
         }
     }
 
-    // Comprime as fotos para evitar estouro de memória no Google Script
     function compressImage(file, marcaDaguaTexto) {
         return new Promise((resolve) => {
             const reader = new FileReader();
@@ -184,7 +189,7 @@
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
                     let w = img.width, h = img.height;
-                    const MAX = 800; // Resolução leve e segura
+                    const MAX = 800;
                     if (w > MAX) { h = Math.round((h * MAX) / w); w = MAX; }
                     canvas.width = w; canvas.height = h;
                     const ctx = canvas.getContext('2d');
@@ -221,7 +226,7 @@
         msg.style.display = "block";
         msg.style.background = "#fff3cd";
         msg.style.color = "#856404";
-        msg.innerText = "Preparando pacote de envio...";
+        msg.innerText = "Preparando pacote de envio (Aguarde)...";
 
         const veiculoLimpo = document.getElementById('veiculo').value.replace(/[\s-]/g, '').toUpperCase();
         const responsavelStr = document.getElementById('responsavel').value;
@@ -234,12 +239,11 @@
         
         if (solucao === "SIM") {
             for (let i = 0; i < antesFiles.length; i++) {
-                btn.innerText = `PROCESSANDO ANTES (${i+1})...`;
+                btn.innerText = `PROCESSANDO FOTOS...`;
                 const b64 = await compressImage(antesFiles[i], textoMarcaDagua);
                 listaArquivosDrive.push({ base64: b64, nome: `${veiculoLimpo}_ANTES_${i+1}.jpg` });
             }
             for (let i = 0; i < depoisFiles.length; i++) {
-                btn.innerText = `PROCESSANDO DEPOIS (${i+1})...`;
                 const b64 = await compressImage(depoisFiles[i], textoMarcaDagua);
                 listaArquivosDrive.push({ base64: b64, nome: `${veiculoLimpo}_DEPOIS_${i+1}.jpg` });
             }
@@ -259,7 +263,7 @@
         };
 
         try {
-            btn.innerText = "ENVIANDO PARA O GOOGLE DRIVE...";
+            btn.innerText = "A ENVIAR PARA O GOOGLE DRIVE...";
             await fetch(APP_URL, {
                 method: "POST",
                 mode: "no-cors",
