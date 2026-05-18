@@ -1,0 +1,21 @@
+{
+  "name": "NOC RCR Inspeções",
+  "short_name": "Inspeção RCR",
+  "description": "Sistema de Inspeção de Frota e Auditoria RCR",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#faf8f5",
+  "theme_color": "#147b6a",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/192x192.png?text=RCR",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://via.placeholder.com/512x512.png?text=RCR",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
