@@ -47,8 +47,13 @@
                 <label>Filial</label>
                 <select id="filial" required>
                     <option value="">Selecione...</option>
-                    <option value="MA">MA</option><option value="PER">PE</option><option value="BAH">BAH</option>
-                    <option value="BAR">BAR</option><option value="PEB">PEB</option><option value="CE">CE</option>
+                    <option value="AM">AM</option>
+                    <option value="MA">MA</option>
+                    <option value="PER">PE</option>
+                    <option value="BAH">BAH</option>
+                    <option value="BAR">BAR</option>
+                    <option value="PEB">PEB</option>
+                    <option value="CE">CE</option>
                 </select>
             </div>
         </div>
@@ -166,7 +171,7 @@
         }
     }
 
-    // AJUSTE: Lógica canvas melhorada para marca d'água mais nítida com mais informações
+    // Lógica canvas para marca d'água nítida com informações completas
     function compressImage(file, texto) {
         return new Promise((resolve) => {
             const r = new FileReader();
@@ -178,23 +183,19 @@
                     const canvas = document.createElement('canvas');
                     let w = img.width, h = img.height;
                     
-                    // Resolução ligeiramente maior para acomodar o texto maior mantendo nítido
                     const MAX = 1000; 
                     if (w > MAX) { h = Math.round((h * MAX) / w); w = MAX; }
                     canvas.width = w; canvas.height = h;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, w, h);
                     
-                    // Configuração da Fonte dinâmica baseada na largura da imagem
                     const fontSize = Math.max(14, Math.floor(w * 0.025)); 
                     ctx.font = `bold ${fontSize}px sans-serif`;
                     
-                    // Fundo da marca d'água (faixa preta semi-transparente)
                     const barHeight = fontSize + 15;
                     ctx.fillStyle = 'rgba(0,0,0,0.6)'; 
                     ctx.fillRect(0, h - barHeight, w, barHeight);
                     
-                    // Texto em Verde Limão Neon
                     ctx.fillStyle = '#4eff7e'; 
                     ctx.fillText(texto, 15, h - (barHeight/2) + (fontSize/2.5));
                     
@@ -243,12 +244,11 @@
         const resp = document.getElementById('responsavel').value;
         const def = `[${document.getElementById('categoriaDefeito').value}] ${document.getElementById('defeito').value}`;
         
-        // AJUSTE: Captura de Data e Hora para o carimbo
         const rawDate = document.getElementById('dataVerificacao').value;
         const formattedDate = rawDate.split('-').reverse().join('/');
         const rawTime = document.getElementById('horarioVerificacao').value;
 
-        // AJUSTE: Construção do carimbo completo conforme solicitado
+        // Construção do carimbo completo
         const carimbo = `RCR | VTR: ${veiculo} | Resp: ${resp} | ${formattedDate} ${rawTime}`;
         
         localStorage.setItem('rcr_inspetor', resp);
@@ -292,7 +292,6 @@
             msg.style.background = "var(--totalpass-lime)"; msg.style.color = "#333";
             msg.innerText = "✅ Relatório e links sincronizados com sucesso!";
             
-            // AJUSTE: Mantém o nome do responsável após reset
             document.getElementById('inspectionForm').reset();
             document.getElementById('responsavel').value = resp; 
             
