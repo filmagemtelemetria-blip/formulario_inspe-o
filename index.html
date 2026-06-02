@@ -3,309 +3,464 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NOC RCR - Inspeção Ativa</title>
-    
+    <title>RCR | Auditoria de Frota</title>
     <style>
-        :root { --parvi-teal: #147b6a; --totalpass-lime: #4eff7e; --parvi-cream: #faf8f5; --parvi-white: #ffffff; --parvi-text: #333333; --parvi-border: #c4e1df; --red: #d93025; --orange: #f9ab00; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 15px; background: var(--parvi-cream); color: var(--parvi-text); display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .card { width: 100%; max-width: 580px; background: var(--parvi-white); border-radius: 14px; border: 1px solid var(--parvi-border); padding: 30px; box-shadow: 0 10px 30px rgba(20,123,106,0.05); box-sizing: border-box; }
-        .header { text-align: center; margin-bottom: 25px; border-bottom: 2px solid var(--parvi-teal); padding-bottom: 15px; }
-        .header h2 { margin: 0; color: var(--parvi-teal); font-size: 22px; font-weight: 800; }
-        .form-group { margin-bottom: 18px; }
-        .form-row { display: flex; gap: 12px; }
-        .form-row .form-group { flex: 1; }
-        label { display: block; font-size: 11px; font-weight: 700; color: var(--parvi-teal); margin-bottom: 6px; text-transform: uppercase; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--parvi-border); border-radius: 8px; font-size: 14px; box-sizing: border-box; background: var(--parvi-cream); }
-        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--parvi-teal); background: white; }
-        optgroup { font-weight: bold; color: var(--parvi-teal); background: #eef7f6; }
-        .radio-box { display: flex; gap: 20px; padding: 12px; background: rgba(20,123,106,0.04); border-radius: 8px; border: 1px dashed var(--parvi-border); }
+        :root { --teal: #147b6a; --lime: #4eff7e; --bg: #faf8f5; --white: #ffffff; --text: #333; --border: #c4e1df; --red: #d93025; --orange: #f9ab00; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { margin: 0; padding: 15px; background: var(--bg); color: var(--text); display: flex; justify-content: center; min-height: 100vh; flex-direction: column; align-items: center;}
+        .sync-banner { width: 100%; max-width: 580px; background: var(--orange); color: white; text-align: center; padding: 8px; font-size: 12px; font-weight: bold; border-radius: 8px; margin-bottom: 10px; display: none; }
+        .card { width: 100%; max-width: 580px; background: var(--white); border-radius: 14px; border: 1px solid var(--border); padding: 30px; box-shadow: 0 10px 30px rgba(20,123,106,0.05); display: none; }
+        .header { text-align: center; margin-bottom: 25px; border-bottom: 2px solid var(--teal); padding-bottom: 15px; }
+        .header h2 { margin: 0; color: var(--teal); font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+        .form-row { display: flex; gap: 12px; } .form-row > div { flex: 1; }
+        .form-group { margin-bottom: 18px; position: relative; }
+        label { display: block; font-size: 11px; font-weight: 700; color: var(--teal); margin-bottom: 6px; text-transform: uppercase; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; background: var(--bg); outline: none; }
+        input:focus, select:focus, textarea:focus { border-color: var(--teal); background: var(--white); }
+        .radio-box { display: flex; gap: 20px; padding: 12px; background: rgba(20,123,106,0.04); border-radius: 8px; border: 1px dashed var(--border); }
         .radio-option { display: flex; align-items: center; gap: 6px; font-weight: bold; font-size: 14px; cursor: pointer; }
-        .conditional-field { display: none; padding: 18px; background: rgba(78, 255, 126, 0.08); border-radius: 10px; border-left: 4px solid var(--parvi-teal); margin-top: 10px; box-sizing: border-box; }
-        .sub-field-fotos { background: rgba(255, 255, 255, 0.6); padding: 12px; border-radius: 8px; border: 1px solid var(--parvi-border); margin-bottom: 12px; }
+        .conditional-field { display: none; padding: 18px; background: rgba(78, 255, 126, 0.08); border-radius: 10px; border-left: 4px solid var(--teal); margin-top: 10px; }
+        .sub-field-fotos { background: rgba(255,255,255,0.6); padding: 12px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 12px; }
         .preview-container { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
-        .preview-item { width: 80px; height: 80px; border-radius: 6px; overflow: hidden; border: 2px solid var(--parvi-border); }
+        .preview-item { width: 85px; height: 85px; border-radius: 6px; overflow: hidden; border: 2px solid var(--border); position: relative; cursor: pointer; }
         .preview-item img { width: 100%; height: 100%; object-fit: cover; }
-        .btn-submit { width: 100%; padding: 15px; background: var(--parvi-teal); color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; transition: all 0.3s; margin-top: 15px; }
+        .preview-overlay { position: absolute; bottom: 0; background: rgba(0,0,0,0.6); color: #fff; font-size: 9px; width: 100%; text-align: center; padding: 2px; font-weight: bold; }
+        .btn-submit { width: 100%; padding: 15px; background: var(--teal); color: var(--white); border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 15px; }
         .btn-submit:disabled { background: #ccc; cursor: not-allowed; }
-        #msg { margin-top: 15px; padding: 12px; border-radius: 8px; text-align: center; font-size: 13px; font-weight: bold; display: none; }
+        .msg { margin-top: 15px; padding: 12px; border-radius: 8px; text-align: center; font-size: 13px; font-weight: bold; display: none; }
+        .link-btn { display: block; text-align: center; margin-top: 15px; color: var(--teal); text-decoration: underline; cursor: pointer; font-size: 14px; font-weight: bold; background: none; border: none; width: 100%; }
+        .user-badge { display: flex; justify-content: space-between; align-items: center; background: #eef7f6; padding: 10px 15px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; font-size: 13px; color: var(--teal); }
+        .logout-btn { background: var(--red); color: var(--white); border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; }
+        .hist-container { margin-top: 25px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+        .hist-header { padding: 12px 15px; background: #eef7f6; color: var(--teal); font-weight: bold; font-size: 13px; cursor: pointer; display: flex; justify-content: space-between; }
+        .hist-content { display: none; padding: 10px 15px; background: var(--white); max-height: 200px; overflow-y: auto; }
+        .hist-item { border-bottom: 1px solid var(--border); padding: 8px 0; font-size: 12px; }
+        .btn-mic { position:absolute; right:10px; bottom:10px; background:var(--teal); color:#fff; border:none; border-radius:50%; width:36px; height:36px; font-size:16px; cursor:pointer; display:flex; justify-content:center; align-items:center; z-index: 10; }
+        .btn-mic.recording { background: var(--red); animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(217, 48, 37, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(217, 48, 37, 0); } 100% { box-shadow: 0 0 0 0 rgba(217, 48, 37, 0); } }
+        
+        /* Modais Modernizados */
+        #modalEditor, #modalAlert { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:10000; flex-direction:column; justify-content:center; align-items:center; padding:15px; backdrop-filter: blur(4px); }
+        #modalAlert { z-index: 10005; }
+        .alert-box { background: var(--white); border-radius: 14px; width: 100%; max-width: 420px; padding: 25px; text-align: center; border: 1px solid var(--border); box-shadow: 0 15px 35px rgba(0,0,0,0.3); }
+        .alert-box h3 { margin: 0 0 10px 0; color: var(--teal); font-size: 18px; }
+        .alert-box p { margin: 0 0 20px 0; font-size: 14px; color: #555; line-height: 1.5; }
+        .alert-badge { background: rgba(20,123,106,0.1); color: var(--teal); padding: 8px 12px; border-radius: 6px; font-weight: bold; font-family: monospace; font-size: 15px; word-break: break-all; margin-bottom: 20px; display: inline-block; }
+        
+        .user-manage-item { border: 1px solid var(--border); background: var(--white); padding: 15px; border-radius: 8px; margin-bottom: 12px; text-align: left; }
+        .user-manage-title { font-weight: bold; font-size: 14px; color: var(--teal); margin-bottom: 5px; }
+        .user-manage-email { font-size: 12px; color: #666; margin-bottom: 10px; }
+        .row-flex { display: flex; gap: 8px; margin-top: 5px; }
+
+        /* CORREÇÃO DO CHECKLIST */
+        .chk-label { display: flex; align-items: center; justify-content: flex-start; gap: 10px; font-size: 13px; font-weight: bold; color: var(--teal); padding: 12px 0; border-bottom: 1px dashed var(--border); text-transform: uppercase; cursor: pointer; }
+        .chk-label:last-child { border-bottom: none; }
+        .chk-label input[type="checkbox"] { width: 22px !important; height: 22px !important; margin: 0 !important; cursor: pointer; flex-shrink: 0; accent-color: var(--teal); }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <div class="header">
-        <h2>REGISTRO DE INSPEÇÃO</h2>
-    </div>
+<div id="syncBanner" class="sync-banner">⏳ Sincronizando relatórios offline com a base de dados...</div>
+<div class="card" id="viewLoader"><h2 style="color:var(--teal)">Carregando...</h2></div>
 
-    <form id="inspectionForm">
+<div id="modalAlert">
+    <div class="alert-box">
+        <div style="font-size: 40px; margin-bottom: 10px;">👤✅</div>
+        <h3 id="alertTitle">Conta Criada!</h3>
+        <p id="alertMessage">O acesso do novo inspetor foi registado com sucesso no sistema.</p>
+        <div id="alertContent" class="alert-badge"></div>
+        <button type="button" class="btn-submit" style="margin:0; padding:12px;" onclick="$('modalAlert').style.display='none'">Concluído</button>
+    </div>
+</div>
+
+<div id="modalEditor">
+    <h3 style="color:#fff; margin:0 0 10px 0; font-size:14px; text-align:center;">Marque o defeito com o dedo sobre a foto</h3>
+    <canvas id="canvasEditor" style="background:#fff; max-width:100%; max-height:68vh; border-radius:8px; box-shadow: 0 5px 15px rgba(0,0,0,0.5);"></canvas>
+    <div style="margin-top:15px; display:flex; gap:10px; width:100%; max-width:450px;">
+        <button type="button" class="btn-submit" style="background:#555; margin:0; padding:12px;" onclick="$('modalEditor').style.display='none'">Voltar</button>
+        <button type="button" class="btn-submit" style="background:var(--orange); margin:0; padding:12px;" onclick="ctxEd.drawImage(imgFundo, 0, 0)">Limpar</button>
+        <button type="button" class="btn-submit" style="background:var(--lime); color:#333; margin:0; padding:12px;" onclick="salvarDesenho()">Confirmar 💾</button>
+    </div>
+</div>
+
+<div class="card" id="viewLogin">
+    <div class="header"><h2>RCR | AUDITORIA DE FROTA</h2></div>
+    <form id="loginForm">
+        <div class="form-group"><label>Usuário ou E-mail</label><input type="text" id="logEmail" required></div>
+        <div class="form-group"><label>Senha de Acesso</label><input type="password" id="logSenha" required></div>
+        <button type="submit" id="btnLog" class="btn-submit">ACESSAR SISTEMA</button>
+        <div id="msgLog" class="msg"></div>
+    </form>
+    <button class="link-btn" onclick="switchView('viewRegister')">Criar acesso de Inspetor</button>
+</div>
+
+<div class="card" id="viewRegister">
+    <div class="header"><h2>CADASTRAR INSPETOR</h2></div>
+    <form id="regForm">
+        <div class="form-group"><label>Nome e Sobrenome</label><input type="text" id="regNome" required></div>
+        <div class="form-group"><label>E-mail Corporativo</label><input type="email" id="regEmail" required></div>
+        <div class="form-group">
+            <label>Sua Filial Base</label>
+            <select id="regFilial" required>
+                <option value="">Selecione...</option><option value="Matriz">Matriz</option><option value="AM">AM</option><option value="MA">MA</option><option value="PE">PE</option><option value="BAH">BAH</option><option value="BAR">BAR</option><option value="PEB">PEB</option><option value="CE">CE</option>
+            </select>
+        </div>
+        <div class="form-group"><label>Criar Senha</label><input type="password" id="regSenha" required></div>
+        <button type="submit" id="btnReg" class="btn-submit">REGISTRAR ACESSO</button>
+        <div id="msgReg" class="msg"></div>
+    </form>
+    <button class="link-btn" onclick="switchView('viewLogin')">Voltar ao Login</button>
+</div>
+
+<div class="card" id="viewAdmin" style="width: 100%; max-width: 650px;">
+    <div class="header" style="margin-bottom: 15px;"><h2>CENTRO DE COMANDO</h2></div>
+    <div style="display:flex; gap:10px; margin-bottom:15px;">
+        <button class="btn-submit" id="tabUsers" style="margin:0; padding:10px; font-size:12px; background:var(--teal);" onclick="mudarAbaAdmin('users')">👥 Gerir Equipe</button>
+        <button class="btn-submit" id="tabHist" style="margin:0; padding:10px; font-size:12px; background:#ccc;" onclick="mudarAbaAdmin('hist')">📋 Buscar Histórico</button>
+    </div>
+    <div id="abaAdminUsers"><div id="adminUserList" style="max-height: 380px; overflow-y: auto; margin-bottom: 15px;"></div></div>
+    <div id="abaAdminHist" style="display:none;">
+        <div class="form-row" style="margin-bottom:10px;">
+            <div style="flex:1;"><select id="filtroTipo" style="padding:10px; font-size:12px;"><option value="veiculo">Placa/Frota</option><option value="operador">Operador</option></select></div>
+            <div style="flex:2;"><input type="text" id="filtroTermo" placeholder="Buscar..." style="padding:10px; font-size:12px;"></div>
+        </div>
+        <button type="button" class="btn-submit" style="margin:0 0 15px 0; padding:10px; background:var(--lime); color:#333;" onclick="buscarHistoricoAdmin()">🔍 Realizar Busca</button>
+        <div id="adminHistList" style="max-height: 320px; overflow-y: auto; margin-bottom: 15px; border:1px solid var(--border); border-radius:8px; padding:10px; background:#f9f9f9;"><div style="text-align:center; color:#999; padding:20px;">Use a barra acima para pesquisar.</div></div>
+    </div>
+    <button type="button" class="btn-submit" style="background:#555; padding:12px; font-size:14px;" onclick="switchView('viewApp')">VOLTAR</button>
+</div>
+
+<div class="card" id="viewApp">
+    <div class="header" style="margin-bottom:10px"><h2>NOVA AUDITORIA</h2></div>
+    <div class="user-badge">
+        <div>
+            <span id="userBadge">Inspetor</span>
+            <span id="adminBadge" style="background:var(--orange); color:white; font-size:9px; padding:2px 6px; border-radius:4px; margin-left:6px; display:none; cursor:pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2);" onclick="abrirPainelAdmin()">Painel Admin ⚙️</span>
+        </div>
+        <button class="logout-btn" onclick="logout()">SAIR</button>
+    </div>
+    
+    <form id="appForm">
         <div class="form-row">
-            <div class="form-group">
-                <label>Veículo (Ordem/Placa)</label>
-                <input type="text" id="veiculo" placeholder="Ex: 22013" style="text-transform: uppercase;" required>
-            </div>
+            <div class="form-group"><label>Frota ou Placa</label><input type="text" id="veiculo" placeholder="Ex: 22013" required onblur="validarFrota()"></div>
             <div class="form-group">
                 <label>Filial</label>
-                <select id="filial" required>
-                    <option value="">Selecione...</option>
-                    <option value="AM">AM</option>
-                    <option value="MA">MA</option>
-                    <option value="PER">PE</option>
-                    <option value="BAH">BAH</option>
-                    <option value="BAR">BAR</option>
-                    <option value="PEB">PEB</option>
-                    <option value="CE">CE</option>
+                <select id="filial" required style="font-weight:bold; color:var(--teal);">
+                    <option value="">Selecione...</option><option value="Matriz">Matriz</option><option value="AM">AM</option><option value="MA">MA</option><option value="PE">PE</option><option value="BAH">BAH</option><option value="BAR">BAR</option><option value="PEB">PEB</option><option value="CE">CE</option>
                 </select>
             </div>
         </div>
-
         <div class="form-row">
+            <div class="form-group"><label>Data</label><input type="date" id="dt" required></div>
+            <div class="form-group"><label>Horário</label><input type="time" id="hr" required></div>
+        </div>
+
+        <div id="bOK" style="padding:15px; background:#eef7f6; border:1px solid var(--border); border-radius:8px; margin-bottom:18px;">
+            <label style="margin-bottom:10px; font-size: 13px; text-align: center; font-weight: bold; color: var(--teal);">CHECKLIST</label>
+            <div style="background:var(--white); padding:5px 15px; border-radius:6px; border:1px solid var(--border); margin-bottom:15px;">
+                <label class="chk-label"><input type="checkbox" id="cCam" onchange="validarChecklist()"> Câmeras e DVR Operantes</label>
+                <label class="chk-label"><input type="checkbox" id="cTel" onchange="validarChecklist()"> Telemetria e Rastreador Operantes</label>
+                <label class="chk-label"><input type="checkbox" id="cCan" onchange="validarChecklist()"> Rede CAN e Leitores Operantes</label>
+            </div>
+            <div id="boxFotoUnica" class="sub-field-fotos" style="margin-bottom:0;">
+                <label>Foto de Comprovação (Painel ou Frente)</label>
+                <input type="file" id="fComp" accept="image/*" capture="environment" onchange="handleFiles('fComp','comp')">
+                <div class="preview-container" id="pComp"></div>
+            </div>
+        </div>
+
+        <div id="bFalha" style="display:none; margin-top: 10px;">
             <div class="form-group">
-                <label>Data</label>
-                <input type="date" id="dataVerificacao" required>
+                <label>Ocorrência</label>
+                <select id="cat">
+                    <option value="">Selecione a anomalia...</option>
+                    <optgroup label="Câmera"><option>Ajuste Frontal / Colisão</option><option>Ajuste Fadiga</option><option>DVR Inoperante</option><option>Erro de Disco</option><option>Câmera inoperante</option><option>Outro</option></optgroup>
+                    <optgroup label="Telemetria"><option>GPS Inoperante</option><option>Sirene ativada constante</option><option>Sirene não funciona</option><option>Leitora</option><option>Outro</option></optgroup>
+                </select>
             </div>
             <div class="form-group">
-                <label>Horário</label>
-                <input type="time" id="horarioVerificacao" required>
+                <label>Parecer Técnico (Descreva ou Dite)</label>
+                <textarea id="def" rows="3" placeholder="Toque no microfone para falar..."></textarea>
+                <button type="button" id="btnMic" class="btn-mic" onclick="iniciarVoz()">🎤</button>
             </div>
-        </div>
-
-        <div class="form-group">
-            <label>Nome Completo do Responsável</label>
-            <input type="text" id="responsavel" placeholder="Digite seu nome completo" required>
-        </div>
-
-        <div class="form-group">
-            <label>Categoria do Defeito</label>
-            <select id="categoriaDefeito" required>
-                <option value="">Selecione o problema...</option>
-                <optgroup label="Câmera">
-                    <option value="CÂMERA - Frontal/Colisão">Ajuste Frontal / Colisão</option>
-                    <option value="CÂMERA - Fadiga">Ajuste Fadiga</option>
-                    <option value="CÂMERA - DVR Inoperante">DVR Inoperante</option>
-                    <option value="CÂMERA - Erro Disco">Erro de Disco</option>
-                    <option value="CÂMERA - Inoperante">Câmera inoperante</option>
-                    <option value="CÂMERA - Outro">Outro</option>
-                </optgroup>
-                <optgroup label="Telemetria">
-                    <option value="TELEMETRIA - GPS">GPS Inoperante</option>
-                    <option value="TELEMETRIA - Sirene Direta">Sirene ativada constante</option>
-                    <option value="TELEMETRIA - Sirene Quebrada">Sirene não funciona</option>
-                    <option value="TELEMETRIA - Leitora">Leitora</option>
-                    <option value="TELEMETRIA - Outro">Outro</option>
-                </optgroup>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label>Descrição Detalhada</label>
-            <textarea id="defeito" rows="3" placeholder="Detalhes adicionais..." required></textarea>
-        </div>
-
-        <div class="form-group">
-            <label>Houve Solução Imediata?</label>
-            <div class="radio-box">
-                <label class="radio-option"><input type="radio" name="solucao" value="SIM" onclick="toggleFields(true)" required> Sim, resolvido</label>
-                <label class="radio-option"><input type="radio" name="solucao" value="NAO" onclick="toggleFields(false)"> Não, encaminhado</label>
+            <div class="form-group">
+                <label>Resolução Imediata?</label>
+                <div class="radio-box">
+                    <label class="radio-option"><input type="radio" name="sol" value="SIM" onclick="tgl('block',false)"> Sim</label>
+                    <label class="radio-option"><input type="radio" name="sol" value="NAO" onclick="tgl('none',true)"> Não</label>
+                </div>
             </div>
-        </div>
-
-        <div id="fieldSim" class="conditional-field">
-            <div class="sub-field-fotos">
-                <label>1. FOTOS DO ANTES</label>
-                <input type="file" id="fotosAntes" accept="image/*" capture="environment" multiple onchange="previewImages('fotosAntes', 'previewAntes')">
-                <div class="preview-container" id="previewAntes"></div>
+            <div id="fSim" class="conditional-field">
+                <div class="sub-field-fotos"><label>1. ANTES</label><input type="file" id="fAnt" accept="image/*" capture="environment" multiple onchange="handleFiles('fAnt','ant')"><div class="preview-container" id="pAnt"></div></div>
+                <div class="sub-field-fotos"><label>2. DEPOIS</label><input type="file" id="fDep" accept="image/*" capture="environment" multiple onchange="handleFiles('fDep','dep')"><div class="preview-container" id="pDep"></div></div>
             </div>
-            <div class="sub-field-fotos">
-                <label>2. FOTOS DO DEPOIS</label>
-                <input type="file" id="fotosDepois" accept="image/*" capture="environment" multiple onchange="previewImages('fotosDepois', 'previewDepois')">
-                <div class="preview-container" id="previewDepois"></div>
-            </div>
+            <div id="fNao" class="conditional-field" style="background:rgba(217,48,37,0.05);border-color:var(--red)"><label style="color:var(--red)">O.S Segsat / Ticket</label><input type="text" id="os"></div>
         </div>
-
-        <div id="fieldNao" class="conditional-field" style="background: rgba(217, 48, 37, 0.05); border-left-color: var(--red);">
-            <label style="color: var(--red);">Número da O.S. / Chamado</label>
-            <input type="text" id="chamado" placeholder="Ex: OS-12345">
-        </div>
-
-        <button type="submit" id="btnS" class="btn-submit">ENVIAR RELATÓRIO</button>
-        <div id="msg"></div>
+        <button type="submit" id="btnApp" class="btn-submit">REGISTRAR AUDITORIA</button>
+        <div id="msgApp" class="msg"></div>
     </form>
+    <div class="hist-container">
+        <div class="hist-header" onclick="tglHist()"><span>⌚ Histórico Hoje (Sincronizado)</span><span id="hIco">▼</span></div>
+        <div class="hist-content" id="hBox"></div>
+    </div>
 </div>
 
 <script>
-    // =================================================================
-    // CONFIGURAÇÃO DOS DOIS PAINÉIS (CLOUDINARY + GOOGLE)
-    // =================================================================
-    const CLOUDINARY_CLOUD_NAME = "dwzabiqbl";
-    const CLOUDINARY_PRESET = "noxgjyuu";
-    const APP_URL = "https://script.google.com/macros/s/AKfycbyhs7E_DvMJG0eQKQ1fGl6XzKDaRuC_ZPQZHWzqLQVn-BCX7VWymQ-_jA2AVhC0zTfWvw/exec";
-    // =================================================================
+    const C_NAME = "dwzabiqbl", C_PRESET = "noxgjyuu";
+    const URL = "https://script.google.com/macros/s/AKfycbx2Qa6RFqOSW8oDYp5lm5A9tl62Ls_Rv9GujtkvPVCrrzQ8uByV6eukt_6JzIARcosEYw/exec"; 
+    const $ = id => document.getElementById(id);
+    const ls = localStorage;
+    let cacheImgs = { comp: [], ant: [], dep: [] }, editando = { tipo: '', idx: 0 }, ctxEd, cvsEd, desenhando = false, imgFundo = new Image();
 
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(r => { for(let i of r) i.unregister(); });
-    }
-
-    window.onload = () => {
-        const agora = new Date();
-        document.getElementById('dataVerificacao').value = agora.toISOString().split('T')[0];
-        document.getElementById('horarioVerificacao').value = agora.toTimeString().split(' ')[0].substring(0,5);
-        if (localStorage.getItem('rcr_inspetor')) document.getElementById('responsavel').value = localStorage.getItem('rcr_inspetor');
+    const idb = {
+        db: null,
+        init: () => new Promise(r => { const req = indexedDB.open('RCR_App',1); req.onupgradeneeded=e=>e.target.result.createObjectStore('fila',{keyPath:'id'}); req.onsuccess=e=>{idb.db=e.target.result; r();}; }),
+        add: (v) => new Promise(r => { const tx = idb.db.transaction('fila','readwrite'); tx.objectStore('fila').put({id:Date.now(), ...v}); tx.oncomplete=r; }),
+        getAll: () => new Promise(r => { const tx = idb.db.transaction('fila','readonly'); const req = tx.objectStore('fila').getAll(); req.onsuccess=e=>r(e.target.result); }),
+        del: (id) => new Promise(r => { const tx = idb.db.transaction('fila','readwrite'); tx.objectStore('fila').delete(id); tx.oncomplete=r; })
     };
 
-    function toggleFields(isSim) {
-        document.getElementById('fieldSim').style.display = isSim ? 'block' : 'none';
-        document.getElementById('fieldNao').style.display = isSim ? 'none' : 'block';
-        document.getElementById('chamado').required = !isSim;
-    }
+    const switchView = v => ['viewLoader','viewLogin','viewRegister','viewApp','viewAdmin'].forEach(id => $(id).style.display = id === v ? 'block' : 'none');
+    const msg = (id, err, txt) => { const b = $(id); b.style.display = 'block'; b.style.background = err ? 'var(--red)' : 'var(--lime)'; b.style.color = err ? '#fff' : '#333'; b.innerText = txt; };
+    const tgl = (d, r) => { $('fSim').style.display = d; $('fNao').style.display = d === 'block' ? 'none' : 'block'; $('os').required = r; };
+    const preencherFilialPadrao = () => { if(ls.rcr_filial) $('filial').value = ls.rcr_filial; };
 
-    function previewImages(inputId, previewId) {
-        const area = document.getElementById(previewId);
-        area.innerHTML = "";
-        const files = document.getElementById(inputId).files;
-        for(let file of files) {
-            const r = new FileReader();
-            const div = document.createElement('div'); div.className = 'preview-item';
-            const img = document.createElement('img');
-            r.onload = e => { img.src = e.target.result; div.appendChild(img); area.appendChild(div); }
-            r.readAsDataURL(file);
-        }
-    }
+    const showAlert = (title, message, content) => {
+        $('alertTitle').innerText = title;
+        $('alertMessage').innerText = message;
+        $('alertContent').innerText = content || '';
+        $('alertContent').style.display = content ? 'inline-block' : 'none';
+        $('modalAlert').style.display = 'flex';
+    };
 
-    // Lógica canvas para marca d'água nítida com informações completas
-    function compressImage(file, texto) {
-        return new Promise((resolve) => {
-            const r = new FileReader();
-            r.readAsDataURL(file);
-            r.onload = e => {
-                const img = new Image();
-                img.src = e.target.result;
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    let w = img.width, h = img.height;
-                    
-                    const MAX = 1000; 
-                    if (w > MAX) { h = Math.round((h * MAX) / w); w = MAX; }
-                    canvas.width = w; canvas.height = h;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, w, h);
-                    
-                    const fontSize = Math.max(14, Math.floor(w * 0.025)); 
-                    ctx.font = `bold ${fontSize}px sans-serif`;
-                    
-                    const barHeight = fontSize + 15;
-                    ctx.fillStyle = 'rgba(0,0,0,0.6)'; 
-                    ctx.fillRect(0, h - barHeight, w, barHeight);
-                    
-                    ctx.fillStyle = '#4eff7e'; 
-                    ctx.fillText(texto, 15, h - (barHeight/2) + (fontSize/2.5));
-                    
-                    resolve(canvas.toDataURL('image/jpeg', 0.8)); 
-                };
+    const iniciarVoz = () => {
+        const S = window.SpeechRecognition || window.webkitSpeechRecognition; if(!S) return alert("Navegador incompatível.");
+        const r = new S(); r.lang = 'pt-BR'; $('btnMic').classList.add('recording');
+        r.onresult = e => { $('def').value += ($('def').value ? ' ' : '') + e.results[0][0].transcript; };
+        r.onerror = r.onend = () => $('btnMic').classList.remove('recording'); r.start();
+    };
+
+    const carregarFrota = async () => { if(navigator.onLine) try { const r = await api({action: "getFrota"}); if(r.sucesso) ls.rcr_frota = JSON.stringify(r.frota); } catch(e){} };
+    const validarFrota = () => {
+        const v = $('veiculo').value; if(!v || !ls.rcr_frota) return;
+        if(!JSON.parse(ls.rcr_frota).includes(v)) { msg('msgApp', 1, "⚠️ Veículo não localizado na frota."); setTimeout(() => $('msgApp').style.display='none', 4000); }
+    };
+
+    const validarChecklist = () => {
+        const is100 = $('cCam').checked && $('cTel').checked && $('cCan').checked;
+        $('boxFotoUnica').style.display = is100 ? 'block' : 'none'; $('fComp').required = is100 && cacheImgs.comp.length === 0;
+        $('bFalha').style.display = is100 ? 'none' : 'block'; ['cat','def'].forEach(id => $(id).required = !is100);
+        document.querySelectorAll('input[name="sol"]').forEach(e => e.required = !is100);
+    };
+
+    const handleFiles = async (id, tipo) => {
+        msg('msgApp', 0, "Processando imagem..."); $('msgApp').style.background="#fff3cd";
+        let fil = $('filial').value || "N/A", gps = await getGPS(), vtr = $('veiculo').value || "FROTA", user = (ls.rcr_user||"").split(' ')[0], d = $('dt').value, h = $('hr').value;
+        const l1 = `RCR | Filial: ${fil} | VTR: ${vtr} | ${user} | ${d.split('-').reverse().join('/')} ${h}`, l2 = `📍 ${gps}`;
+        if(tipo === 'comp') cacheImgs.comp = []; 
+        for(let f of $(id).files) cacheImgs[tipo].push(await compress(f, l1, l2));
+        renderPreviews(tipo); validarChecklist(); $('msgApp').style.display = 'none';
+    };
+
+    const renderPreviews = (tipo) => {
+        $(tipo === 'comp' ? 'pComp' : (tipo === 'ant' ? 'pAnt' : 'pDep')).innerHTML = cacheImgs[tipo].map((b64, idx) => `<div class="preview-item" onclick="abrirEditor('${tipo}', ${idx})"><img src="${b64}"><div class="preview-overlay">Editar ✏️</div></div>`).join('');
+    };
+
+    const abrirEditor = (tipo, idx) => {
+        editando = { tipo, idx }; imgFundo.src = cacheImgs[tipo][idx];
+        imgFundo.onload = () => { cvsEd.width = imgFundo.width; cvsEd.height = imgFundo.height; ctxEd.drawImage(imgFundo, 0, 0); $('modalEditor').style.display = 'flex'; };
+    };
+
+    const initCanvasEvents = () => {
+        cvsEd = $('canvasEditor'); ctxEd = cvsEd.getContext('2d');
+        const getPos = e => { const r = cvsEd.getBoundingClientRect(), t = e.touches ? e.touches[0] : e; return { x: (t.clientX - r.left) * (cvsEd.width / r.width), y: (t.clientY - r.top) * (cvsEd.height / r.height) }; };
+        cvsEd.onmousedown = cvsEd.ontouchstart = e => { desenhando = true; ctxEd.beginPath(); const p = getPos(e); ctxEd.moveTo(p.x, p.y); };
+        cvsEd.onmousemove = cvsEd.ontouchmove = e => { if(!desenhando) return; e.preventDefault(); const p = getPos(e); ctxEd.lineTo(p.x, p.y); ctxEd.strokeStyle = '#ef4444'; ctxEd.lineWidth = 6; ctxEd.lineCap = 'round'; ctxEd.stroke(); };
+        window.onmouseup = window.ontouchend = () => desenhando = false;
+    };
+
+    const salvarDesenho = () => { cacheImgs[editando.tipo][editando.idx] = cvsEd.toDataURL('image/jpeg', 0.85); renderPreviews(editando.tipo); $('modalEditor').style.display = 'none'; };
+
+    const compress = (file, t1, t2) => new Promise(res => {
+        const r = new FileReader(); r.readAsDataURL(file);
+        r.onload = e => {
+            const i = new Image(); i.src = e.target.result;
+            i.onload = () => {
+                const cvs = document.createElement('canvas'), ctx = cvs.getContext('2d');
+                let w = i.width, h = i.height; if(w>1000) { h = Math.round(h*1000/w); w = 1000; }
+                cvs.width = w; cvs.height = h; ctx.drawImage(i,0,0,w,h);
+                const fs = Math.max(14, Math.floor(w*0.025)), bh = fs*2+20;
+                ctx.font = `bold ${fs}px sans-serif`; ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(0, h-bh, w, bh);
+                ctx.fillStyle = '#4eff7e'; ctx.fillText(t1, 15, h-bh+fs+5); ctx.fillStyle = '#fff'; ctx.fillText(t2, 15, h-bh+fs*2+12);
+                res(cvs.toDataURL('image/jpeg', 0.8));
             };
-        });
-    }
-
-    async function uploadToCloudinary(base64Data, filename) {
-        const formData = new FormData();
-        formData.append("file", base64Data);
-        formData.append("upload_preset", CLOUDINARY_PRESET);
-        formData.append("public_id", filename.split('.')[0]);
-
-        const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
-            method: "POST",
-            body: formData
-        });
-        const json = await res.json();
-        if (json.secure_url) {
-            return json.secure_url;
-        } else {
-            throw new Error(json.error ? json.error.message : "Erro Cloudinary");
-        }
-    }
-
-    document.getElementById('inspectionForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const btn = document.getElementById('btnS');
-        const msg = document.getElementById('msg');
-        
-        const solucao = document.querySelector('input[name="solucao"]:checked').value;
-        const antes = document.getElementById('fotosAntes').files;
-        const depois = document.getElementById('fotosDepois').files;
-
-        if (solucao === "SIM" && (antes.length === 0 || depois.length === 0)) {
-            alert("⚠️ Obrigatório anexar fotos do ANTES e DEPOIS.");
-            return;
-        }
-
-        btn.disabled = true; msg.style.display = "block"; msg.style.background = "#fff3cd"; msg.style.color = "#856404";
-        msg.innerText = "Processando e enviando imagens para Cloudinary...";
-
-        const veiculo = document.getElementById('veiculo').value.toUpperCase();
-        const resp = document.getElementById('responsavel').value;
-        const def = `[${document.getElementById('categoriaDefeito').value}] ${document.getElementById('defeito').value}`;
-        
-        const rawDate = document.getElementById('dataVerificacao').value;
-        const formattedDate = rawDate.split('-').reverse().join('/');
-        const rawTime = document.getElementById('horarioVerificacao').value;
-
-        // Construção do carimbo completo
-        const carimbo = `RCR | VTR: ${veiculo} | Resp: ${resp} | ${formattedDate} ${rawTime}`;
-        
-        localStorage.setItem('rcr_inspetor', resp);
-        let urlLinks = [];
-
-        try {
-            if (solucao === "SIM") {
-                for (let i = 0; i < antes.length; i++) {
-                    btn.innerText = `Enviando Foto Antes ${i+1}/${antes.length}...`;
-                    const b64 = await compressImage(antes[i], carimbo);
-                    const linkUrl = await uploadToCloudinary(b64, `${veiculo}_ANTES_${i+1}_${Date.now()}`);
-                    urlLinks.push(`[ANTES ${i+1}]: ${linkUrl}`);
-                }
-                for (let i = 0; i < depois.length; i++) {
-                    btn.innerText = `Enviando Foto Depois ${i+1}/${depois.length}...`;
-                    const b64 = await compressImage(depois[i], carimbo);
-                    const linkUrl = await uploadToCloudinary(b64, `${veiculo}_DEPOIS_${i+1}_${Date.now()}`);
-                    urlLinks.push(`[DEPOIS ${i+1}]: ${linkUrl}`);
-                }
-            }
-
-            btn.innerText = "Sincronizando dados com Google Sheets...";
-
-            await fetch(APP_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({
-                    action: "salvar_inspecao",
-                    veiculo: veiculo,
-                    data: document.getElementById('dataVerificacao').value,
-                    hora: document.getElementById('horarioVerificacao').value,
-                    filial: document.getElementById('filial').value,
-                    responsavel: resp,
-                    defeito: def,
-                    solucao: solucao,
-                    fotosLinks: urlLinks.join("\n"),
-                    chamado: document.getElementById('chamado').value
-                })
-            });
-
-            msg.style.background = "var(--totalpass-lime)"; msg.style.color = "#333";
-            msg.innerText = "✅ Relatório e links sincronizados com sucesso!";
-            
-            document.getElementById('inspectionForm').reset();
-            document.getElementById('responsavel').value = resp; 
-            
-            document.getElementById('previewAntes').innerHTML = ""; document.getElementById('previewDepois').innerHTML = "";
-            toggleFields(false);
-
-        } catch (err) {
-            console.error(err);
-            msg.style.background = "var(--red)"; msg.style.color = "white";
-            msg.innerText = "❌ Falha no envio: " + err.message;
-        } finally {
-            btn.disabled = false; btn.innerText = "ENVIAR RELATÓRIO";
-        }
+        };
     });
+
+    const api = async p => await (await fetch(URL, { method: "POST", body: JSON.stringify(p) })).json();
+
+    const mudarAbaAdmin = (aba) => {
+        const u = aba === 'users'; $('abaAdminUsers').style.display = u ? 'block' : 'none'; $('abaAdminHist').style.display = u ? 'none' : 'block';
+        $('tabUsers').style.background = u ? 'var(--teal)' : '#ccc'; $('tabHist').style.background = u ? '#ccc' : 'var(--teal)';
+    };
+
+    const abrirPainelAdmin = async () => {
+        switchView('viewLoader');
+        try {
+            const r = await api({ action: "get_usuarios" });
+            if(r.sucesso) {
+                $('adminUserList').innerHTML = r.usuarios.length === 0 ? '<div style="text-align:center;color:#999;padding:10px">Nenhum inspetor localizado.</div>' : r.usuarios.map((u, idx) => `
+                    <div class="user-manage-item">
+                        <div class="user-manage-title">${u.nome} <span style="font-size:10px; color:#999;">(${u.filial})</span></div>
+                        <div class="user-manage-email">${u.email}</div>
+                        <div class="row-flex">
+                            <div style="flex:1;"><select id="role_${idx}" onchange="salvarMudancaUsuario('${u.email}', ${idx})" style="padding:8px; font-size:11px;"><option value="OPERADOR" ${u.nivel === 'OPERADOR' ? 'selected' : ''}>OPERADOR</option><option value="ADMINISTRADOR" ${u.nivel === 'ADMINISTRADOR' ? 'selected' : ''}>ADMINISTRADOR</option></select></div>
+                            <div style="flex:1;"><select id="status_${idx}" onchange="salvarMudancaUsuario('${u.email}', ${idx})" style="padding:8px; font-size:11px;"><option value="Ativo" ${u.status === 'Ativo' ? 'selected' : ''}>Ativo ✅</option><option value="Inativo" ${u.status === 'Inativo' ? 'selected' : ''}>Bloqueado 🚫</option></select></div>
+                        </div>
+                    </div>
+                `).join('');
+                mudarAbaAdmin('users'); switchView('viewAdmin');
+            } else { alert("Erro de resposta."); switchView('viewApp'); }
+        } catch(e) { alert("Erro de conexão."); switchView('viewApp'); }
+    };
+
+    const salvarMudancaUsuario = async (email, idx) => {
+        try {
+            const r = await api({ action: "atualizar_usuario", targetEmail: email, targetStatus: $(`status_${idx}`).value, targetNivel: $(`role_${idx}`).value });
+            if(r.sucesso && email.toLowerCase().trim() === ls.rcr_email.toLowerCase().trim() && $(`role_${idx}`).value === "OPERADOR") logout();
+        } catch(e) { alert("Erro ao salvar."); }
+    };
+
+    const buscarHistoricoAdmin = async () => {
+        $('adminHistList').innerHTML = '<div style="text-align:center; color:#999; padding:20px;">⏳ Pesquisando...</div>';
+        try {
+            const r = await api({ action: "consultar_historico", tipo: $('filtroTipo').value, termo: $('filtroTermo').value });
+            if(r.sucesso) {
+                $('adminHistList').innerHTML = r.historico.length === 0 ? '<div style="text-align:center; color:#999; padding:20px;">Nenhum registro encontrado.</div>' : r.historico.map(h => {
+                    let fHtml = ''; if(h.links && h.links !== 'Sem fotos') { const urlF = h.links.split('\n')[0].split(': ')[1]; if(urlF) fHtml = `<div style="margin-top:8px;"><a href="${urlF}" target="_blank" style="color:var(--orange); font-size:11px; font-weight:bold;">📸 VER FOTO DO RELATÓRIO</a></div>`; }
+                    return `<div class="user-manage-item"><div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span style="font-weight:bold; color:var(--teal); font-size:14px;">Veículo: ${h.veiculo}</span><span style="font-size:10px; color:#666; background:#eee; padding:2px 6px; border-radius:4px;">${h.data} às ${h.hora}</span></div><div style="font-size:11px; color:#444; margin-bottom:8px; border-bottom:1px dashed #ccc; padding-bottom:5px;">👤 <b>Operador:</b> ${h.responsavel} | 📍 <b>Local:</b> ${h.filial}</div><div style="font-size:11px; color:#333; background:rgba(20,123,106,0.05); padding:8px; border-radius:4px; white-space:pre-wrap; border-left:3px solid var(--teal);">${h.defeito}</div>${fHtml}</div>`;
+                }).join('');
+            }
+        } catch(e) { $('adminHistList').innerHTML = '<div style="text-align:center; color:var(--red); padding:20px;">Falha de comunicação.</div>'; }
+    };
+
+    window.onload = async () => {
+        await idb.init(); initCanvasEvents(); 
+        if(ls.rcr_in === '1') {
+            if(ls.rcr_email === "elvis.lira@yahoo.com.br") { ls.rcr_nivel = "ADMINISTRADOR"; ls.rcr_user = "Elvis Lira"; }
+            $('userBadge').innerText = ls.rcr_user || ls.rcr_email;
+            if(ls.rcr_nivel === "ADMINISTRADOR") $('adminBadge').style.display = "inline-block";
+            const d = new Date(); $('dt').value = d.toISOString().split('T')[0]; $('hr').value = d.toTimeString().substring(0,5);
+            preencherFilialPadrao(); ['cCam','cTel','cCan'].forEach(id => $(id).checked = true); validarChecklist();
+            loadHist(); carregarFrota(); syncQueue(); switchView('viewApp');
+        } else switchView('viewLogin');
+    };
+
+    let isSyncing = false;
+    const syncQueue = async () => {
+        if(!navigator.onLine || isSyncing) return; const items = await idb.getAll(); if(!items.length) return;
+        isSyncing = true; $('syncBanner').style.display = 'block';
+        for(let i of items) {
+            try {
+                let links = i.fotosLinks ? i.fotosLinks.split('\n') : [];
+                if(!i.fotosLinks) {
+                    if(i.compB64 && i.compB64.length) links.push(`[COMPROVANTE]: ${await upCloud(i.compB64[0], `${i.veiculo}_C_${Date.now()}`)}`);
+                    else if(i.solucao === "SIM") {
+                        for(let b64 of i.antB64) links.push(`[ANTES]: ${await upCloud(b64, `${i.veiculo}_A_${Date.now()}`)}`);
+                        for(let b64 of i.depB64) links.push(`[DEPOIS]: ${await upCloud(b64, `${i.veiculo}_D_${Date.now()}`)}`);
+                    } i.fotosLinks = links.join("\n");
+                }
+                const p = {...i}; delete p.compB64; delete p.antB64; delete p.depB64; delete p.id; delete p.catPura; delete p.filialBadge;
+                const r = await api(p); if(r.sucesso) await idb.del(i.id); else break; 
+            } catch(e) { break; } 
+        }
+        $('syncBanner').style.display = 'none'; isSyncing = false;
+    };
+    window.addEventListener('online', syncQueue);
+    const upCloud = async (b64, n) => {
+        const fd = new FormData(); fd.append("file", b64); fd.append("upload_preset", C_PRESET); fd.append("public_id", n);
+        return (await (await fetch(`https://api.cloudinary.com/v1_1/${C_NAME}/image/upload`, {method:"POST",body:fd})).json()).secure_url;
+    };
+
+    const logout = () => { ls.clear(); location.reload(); };
+
+    $('regForm').onsubmit = async e => {
+        e.preventDefault(); $('btnReg').disabled = true;
+        const nme = $('regNome').value, eml = $('regEmail').value;
+        try {
+            const r = await api({ action: "register", nome: nme, email: eml, senha: $('regSenha').value, filial: $('regFilial').value });
+            if(r.sucesso) { 
+                showAlert("Funcionário Registado!", `O utilizador para ${nme} foi configurado na base de dados com sucesso.`, eml);
+                $('logEmail').value = eml; switchView('viewLogin'); $('regForm').reset();
+            } else msg('msgReg',1,r.erro);
+        } catch(e) { msg('msgReg',1,"Erro de conexão."); } $('btnReg').disabled = false;
+    };
+
+    $('loginForm').onsubmit = async e => {
+        e.preventDefault(); $('btnLog').disabled = true;
+        const em = $('logEmail').value.toLowerCase().trim(), pw = $('logSenha').value;
+        if (em === "elvis.lira@yahoo.com.br" && pw === "El123!@#") {
+            ls.rcr_in = '1'; ls.rcr_email = em; ls.rcr_filial = "Matriz"; ls.rcr_user = "Elvis Lira"; ls.rcr_nivel = "ADMINISTRADOR";
+            api({ action: "login", email: em, senha: pw }); location.reload(); return;
+        }
+        try {
+            const r = await api({ action: "login", email: em, senha: pw });
+            if(r.sucesso) { ls.rcr_in = '1'; ls.rcr_email = r.email; ls.rcr_filial = r.filial; ls.rcr_user = r.nome; ls.rcr_nivel = r.nivel; location.reload(); }
+            else msg('msgLog',1,r.erro);
+        } catch(e) { msg('msgLog',1,"Erro de conexão."); } $('btnLog').disabled = false;
+    };
+
+    $('veiculo').oninput = e => { 
+        let v = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        if(v.length===7 && /^[A-Z]{3}[0-9]{4}$/.test(v)) v = v.slice(0,3)+'-'+v.slice(3); e.target.value = v; 
+    };
+
+    const getGPS = () => new Promise(r => navigator.geolocation ? navigator.geolocation.getCurrentPosition(p => r(`Lat: ${p.coords.latitude.toFixed(5)}, Lng: ${p.coords.longitude.toFixed(5)}`), () => r("GPS Indisponível"), {timeout:6000}) : r("Sem GPS"));
+
+    const finalizarFormulario = (vtr, d, h, cat, filial) => {
+        let hist = JSON.parse(ls[`h_${ls.rcr_email}`] || '[]'); hist.unshift({ v: vtr, d: d, h: h, cat: cat, fil: filial });
+        ls[`h_${ls.rcr_email}`] = JSON.stringify(hist.slice(0,50)); loadHist();
+        $('appForm').reset(); $('pAnt').innerHTML=''; $('pDep').innerHTML=''; $('pComp').innerHTML=''; tgl('none',true);
+        cacheImgs = { comp: [], ant: [], dep: [] }; ['cCam','cTel','cCan'].forEach(id => $(id).checked = true); validarChecklist(); preencherFilialPadrao();
+    };
+
+    $('appForm').onsubmit = async e => {
+        e.preventDefault(); const filialVal = $('filial').value; if(!filialVal) return alert("⚠️ Selecione a Filial!");
+        const isOK = $('cCam').checked && $('cTel').checked && $('cCan').checked; let sol = "";
+        if(!isOK) {
+            const sN = document.querySelector('input[name="sol"]:checked'); if(!sN) return alert("⚠️ Selecione a resolução!"); sol = sN.value;
+            if(sol==="SIM" && (!cacheImgs.ant.length || !cacheImgs.dep.length)) return alert("⚠️ Adicione as fotos de Antes/Depois!");
+        } else if(!cacheImgs.comp.length) return alert("⚠️ Tire a foto de comprovação!");
+
+        $('btnApp').disabled = true; msg('msgApp',0,"Gravando..."); $('msgApp').style.background="#fff3cd";
+        const gps = await getGPS(), vtr = $('veiculo').value.toUpperCase(), user = (ls.rcr_user || ls.rcr_email).split(' ')[0], d = $('dt').value, h = $('hr').value;
+        const sCm = $('cCam').checked ? "OK" : "DEFEITO", sTl = $('cTel').checked ? "OK" : "DEFEITO", sCn = $('cCan').checked ? "OK" : "DEFEITO";
+        const rcd = { action: "salvar_inspecao", veiculo: vtr, data: d, hora: h, filial: filialVal, responsavel: user, chamado: isOK ? "N/A" : $('os').value, email_logado: ls.rcr_email };
+        
+        if(isOK) {
+            rcd.catPura = "VISTORIA OK"; rcd.defeito = `[VISTORIA OK]\n\n- Câmeras e DVR: OK\n- Telemetria: OK\n- Rede CAN: OK\n\n📍 GPS: ${gps}`; rcd.solucao = "N/A"; rcd.compB64 = cacheImgs.comp;
+        } else {
+            rcd.catPura = $('cat').value; rcd.defeito = `[ANOMALIA]\nOcorrência: ${rcd.catPura}\nParecer: ${$('def').value}\n\nSTATUS:\n- Câmeras: ${sCm}\n- Telemetria: ${sTl}\n- Rede CAN: ${sCn}\n\n📍 GPS: ${gps}`;
+            rcd.solucao = sol; rcd.antB64 = cacheImgs.ant; rcd.depB64 = cacheImgs.dep;
+        }
+        if(!navigator.onLine) { await idb.add(rcd); msg('msgApp',0,"📶 Salvo Offline!"); finalizarFormulario(vtr, d, h, rcd.catPura, filialVal); $('btnApp').disabled = false; return; }
+        try {
+            let links = []; if(isOK) links.push(`[COMPROVANTE]: ${await upCloud(cacheImgs.comp[0], `${vtr}_C_${Date.now()}`)}`);
+            else if(sol==="SIM"){
+                for(let i=0; i<cacheImgs.ant.length; i++) links.push(`[ANTES ${i+1}]: ${await upCloud(cacheImgs.ant[i], `${vtr}_A_${Date.now()}`)}`);
+                for(let i=0; i<cacheImgs.dep.length; i++) links.push(`[DEPOIS ${i+1}]: ${await upCloud(cacheImgs.dep[i], `${vtr}_D_${Date.now()}`)}`);
+            }
+            rcd.fotosLinks = links.join("\n"); delete rcd.compB64; delete rcd.antB64; delete rcd.depB64;
+            const r = await api(rcd); if(r.sucesso) { msg('msgApp',0,"✅ Gravado na Nuvem!"); finalizarFormulario(vtr, d, h, rcd.catPura, filialVal); }
+        } catch(err) { await idb.add(rcd); msg('msgApp',0,"⚠️ Erro de rede. Guardado offline."); finalizarFormulario(vtr, d, h, rcd.catPura, filialVal); } $('btnApp').disabled = false;
+    };
+
+    const loadHist = () => {
+        const hist = JSON.parse(ls[`h_${ls.rcr_email}`] || '[]'); if(!hist.length) return $('hBox').innerHTML = '<div style="text-align:center;color:#999;padding:10px">Sem dados.</div>';
+        const hj = new Date().toISOString().split('T')[0]; let hjH = hist.filter(i => i.d === hj); if(!hjH.length && hist.length) hjH = [hist[0]];
+        $('hBox').innerHTML = hjH.map(i => `<div class="hist-item"><b>${i.h} - VTR: ${i.v} (${i.fil})</b><br><span style="color:#666">${i.cat}</span></div>`).join('');
+    };
+    const tglHist = () => { const b = $('hBox'), o = b.style.display==='block'; b.style.display = o?'none':'block'; $('hIco').innerText = o?'▼':'▲'; };
 </script>
 </body>
 </html>
