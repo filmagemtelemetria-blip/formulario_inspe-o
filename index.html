@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>RCR | Auditoria de Frota</title>
+    <title>RCR | Verificação de Frota</title>
     <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web" defer></script>
@@ -62,7 +62,7 @@
 <div id="modalEditor"><h3 style="color:#fff; margin:0 0 10px 0; font-size:13px;">Marque o defeito na foto</h3><canvas id="canvasEditor"></canvas><div style="margin-top:15px; display:flex; gap:10px; width:100%; max-width:450px;"><button class="btn-submit" style="background:#555;" onclick="$('modalEditor').style.display='none'"><span class="btn-text">Voltar</span></button><button class="btn-submit" style="background:var(--orange);" onclick="ctxEd.drawImage(imgFundo,0,0)"><span class="btn-text">Limpar</span></button><button class="btn-submit" style="background:var(--lime); color:#333;" onclick="salvarDesenho()"><span class="btn-text">Confirmar</span></button></div></div>
 
 <div class="card" id="viewLogin">
-    <div class="header"><h2>RCR | AUDITORIA</h2></div>
+    <div class="header"><h2>RCR | VERIFICAÇÃO</h2></div>
     <form id="loginForm">
         <div class="form-group"><label>Usuário ou E-mail</label><input type="text" id="logEmail" required></div>
         <div class="form-group"><label>Senha de Acesso</label><input type="password" id="logSenha" required></div>
@@ -76,7 +76,7 @@
     <form id="regForm">
         <div class="form-group"><label>Nome</label><input type="text" id="regNome" required></div>
         <div class="form-group"><label>E-mail</label><input type="email" id="regEmail" required></div>
-        <div class="form-group"><label>Filial Base</label><select id="regFilial" required><option value="">Selecione...</option><option value="Matriz">Matriz</option><option value="AM">AM</option><option value="MA">MA</option><option value="PE">PE</option><option value="BAH">BAH</option><option value="BAR">BAR</option><option value="PEB">PEB</option><option value="CE">CE</option></select></div>
+        <div class="form-group"><label>Filial Base</label><select id="regFilial" required><option value="">Selecione...</option><option value="Matriz">Matriz</option><option value="AM">AM</option><option value="MA">MA</option><option value="PE">PE</option><option value="BA">BA</option><option value="BAR">BAR</option><option value="PEB">PEB</option><option value="CE">CE</option></select></div>
         <div class="form-group"><label>Senha</label><input type="password" id="regSenha" required></div>
         <button type="submit" id="btnReg" class="btn-submit"><span class="btn-text">REGISTRAR ACESSO</span><div class="btn-loader"></div></button><div id="msgReg" class="msg"></div>
     </form>
@@ -104,13 +104,13 @@
 </div>
 
 <div class="card" id="viewApp">
-    <div class="header" style="margin-bottom:10px"><h2>NOVA AUDITORIA</h2></div>
+    <div class="header" style="margin-bottom:10px"><h2>NOVA VERIFICAÇÃO</h2></div>
     <div class="user-badge">
         <div style="display:flex; align-items:center; gap:8px;"><span id="userBadge">Inspetor</span><button class="theme-toggle-btn" type="button" onclick="document.body.classList.toggle('dark-mode'); ls.rcr_dark=document.body.classList.contains('dark-mode')?'1':'0'; this.innerHTML=ls.rcr_dark==='1'?'<i class=\'ph ph-sun\'></i>':'<i class=\'ph ph-moon\'></i>';"><i class="ph ph-moon"></i></button></div>
         <button class="logout-btn" type="button" onclick="ls.clear(); location.reload();">SAIR</button>
     </div>
     <form id="appForm">
-        <div class="form-row"><div class="form-group"><label>Placa</label><input type="text" id="veiculo" required onblur="validarFrota()"></div><div class="form-group"><label>Filial</label><select id="filial" required style="font-weight:bold; color:var(--teal);"><option value="">Selecione...</option><option value="Matriz">Matriz</option><option value="AM">AM</option><option value="MA">MA</option><option value="PE">PE</option><option value="BAH">BAH</option><option value="BAR">BAR</option><option value="PEB">PEB</option><option value="CE">CE</option></select></div></div>
+        <div class="form-row"><div class="form-group"><label>Placa</label><input type="text" id="veiculo" required onblur="validarFrota()"></div><div class="form-group"><label>Filial</label><select id="filial" required style="font-weight:bold; color:var(--teal);"><option value="">Selecione...</option><option value="Matriz">Matriz</option><option value="AM">AM</option><option value="MA">MA</option><option value="PE">PE</option><option value="BA">BA</option><option value="BAR">BAR</option><option value="PEB">PEB</option><option value="CE">CE</option></select></div></div>
         <div class="form-row"><div class="form-group"><label>Data</label><input type="date" id="dt" required></div><div class="form-group"><label>Horário</label><input type="time" id="hr" required></div></div>
         
         <div style="padding:15px; background:var(--sub-bg); border:1px solid var(--border); border-radius:8px; margin-bottom:15px;">
@@ -131,7 +131,7 @@
             <div class="form-group"><label>Parecer Técnico</label><textarea id="def" rows="3"></textarea><button type="button" id="btnMic" class="btn-mic" onclick="iniciarVoz()"><i class="ph ph-microphone"></i></button></div>
             <div class="form-group"><label>Resolução Imediata?</label><div class="radio-box"><label class="radio-option"><input type="radio" name="sol" value="SIM" onclick="tgl('block',false)"> Sim</label><label class="radio-option"><input type="radio" name="sol" value="NAO" onclick="tgl('none',true)"> Não</label></div></div>
             
-            <div id="fSim" class="conditional-field"><div class="sub-field-fotos"><label>1. ANTES</label><input type="file" id="fAnt" accept="image/*" capture="environment" multiple onchange="hFiles('ant')"><div class="preview-container" id="pAnt"></div></div><div class="sub-field-fotos"><label>2. DEPOIS</label><input type="file" id="fDep" accept="image/*" capture="environment" multiple onchange="hFiles('dep')"><div class="preview-container" id="pDep"></div></div></div>
+            <div id="fSim" class="conditional-field"><div class="sub-field-fotos"><label>1. FOTO ANTES OU DEPOIS</label><input type="file" id="fAnt" accept="image/*" capture="environment" multiple onchange="hFiles('ant')"><div class="preview-container" id="pAnt"></div></div><div class="sub-field-fotos"><label>2. DEPOIS</label><input type="file" id="fDep" accept="image/*" capture="environment" multiple onchange="hFiles('dep')"><div class="preview-container" id="pDep"></div></div></div>
             
             <div id="fNao" class="conditional-field" style="border-color:var(--red)">
                 <label style="color:var(--red); margin-bottom:10px;">Vincular O.S / Tickets por Falha</label>
@@ -139,13 +139,13 @@
             </div>
         </div>
         
-        <button type="submit" id="btnApp" class="btn-submit"><span class="btn-text">REGISTRAR AUDITORIA</span><div class="btn-loader"></div></button><div id="msgApp" class="msg"></div>
+        <button type="submit" id="btnApp" class="btn-submit"><span class="btn-text">REGISTRAR VERIFICAÇÃO</span><div class="btn-loader"></div></button><div id="msgApp" class="msg"></div>
     </form>
     <div class="hist-container"><div class="hist-header" onclick="let b=$('hBox'); b.style.display=b.style.display==='block'?'none':'block';"><span>⌚ Histórico Hoje</span></div><div class="hist-content" id="hBox"></div></div>
 </div>
 
 <div class="bottom-nav" id="globalNav">
-    <button class="nav-item active" id="navAuditoria" onclick="navGlob('auditoria')"><i class="ph ph-clipboard-text"></i>Auditoria</button>
+    <button class="nav-item active" id="navAuditoria" onclick="navGlob('auditoria')"><i class="ph ph-clipboard-text"></i>Verificação</button>
     <button class="nav-item" id="navEquipe" style="display:none;" onclick="navGlob('equipe')"><i class="ph ph-users-three"></i>Equipe</button>
     <button class="nav-item" id="navHist" style="display:none;" onclick="navGlob('historico')"><i class="ph ph-clock-counter-clockwise"></i>Histórico</button>
 </div>
@@ -191,49 +191,22 @@
     };
 
     // ---------------------------------------------------------
-    // LÓGICA DE AUDITORIA E TAGS MÚLTIPLAS
+    // LÓGICA DE VERIFICAÇÃO E TAGS MÚLTIPLAS
     // ---------------------------------------------------------
     const triggerChk = id => {
-        const c = $(id), cd = $(id === 'cCam' ? 'cardCam' : (id === 'cTel' ? 'cardTel' : 'cardCan')); c.checked = !c.checked;
-        cd.className = c.checked ? "chk-card active" : "chk-card defect";
-        cd.querySelector('i:last-child').className = c.checked ? "ph ph-circle-wavy-check" : "ph ph-warning-circle";
+        const c = $(id), cd = $(id === 'cCam' ? 'cardCam' : (id === 'cTel' ? 'cardTel' : 'cardCan')); if(id !== 'none') c.checked = !c.checked;
+        if($(id)) { cd.className = c.checked ? "chk-card active" : "chk-card defect"; cd.querySelector('i:last-child').className = c.checked ? "ph ph-circle-wavy-check" : "ph ph-warning-circle"; }
         const o = $('cCam').checked && $('cTel').checked && $('cCan').checked;
         $('boxFotoUnica').style.display = o ? 'block' : 'none'; $('fComp').required = o && !cImgs.comp.length;
         $('bFalha').style.display = o ? 'none' : 'block'; ['def'].forEach(i => $(i).required = !o);
         document.querySelectorAll('input[name="sol"]').forEach(e => e.required = !o);
         
-        if(o) {
-            selDefects = []; renderDef();
-        } else {
+        if(o) { selDefects = []; renderDef(); } 
+        else {
             let h = '<option value="">Selecione para adicionar...</option>';
-            if(!$('cCam').checked) {
-                h += `<optgroup label="VIDEO MONITORAMENTO | KIT I.A">
-                    <option>Ajuste câmera fadiga</option>
-                    <option>Ajuste câmera colisão</option>
-                    <option>Ajuste câmera auxiliar</option>
-                    <option>Manutenção câmera fadiga</option>
-                    <option>Manutenção câmera colisão</option>
-                    <option>Manutenção câmera auxiliar</option>
-                    <option>DVR Inoperante</option>
-                    <option>Ajustar canal fadiga</option>
-                    <option>Monitor de informações com defeito</option>
-                    <option>Manutenção de DVR</option>
-                </optgroup>`;
-            }
-            if(!$('cTel').checked) {
-                h += `<optgroup label="TELEMETRIA">
-                    <option>Gps sem comunicação (Atraso de comunicação)</option>
-                    <option>Manutenção telemetria (Funcionando com falhas)</option>
-                </optgroup>`;
-            }
-            if(!$('cCan').checked) {
-                h += `<optgroup label="REDE CAN | LEITORA">
-                    <option>Divergencia na Quilometragem</option>
-                    <option>Divergencia de velocidade</option>
-                    <option>Manutenção Leitora</option>
-                    <option>Manutenção Sirene</option>
-                </optgroup>`;
-            }
+            if(!$('cCam').checked) { h += `<optgroup label="VIDEO MONITORAMENTO | KIT I.A"><option>Ajuste câmera fadiga</option><option>Ajuste câmera colisão</option><option>Ajuste câmera auxiliar</option><option>Manutenção câmera fadiga</option><option>Manutenção câmera colisão</option><option>Manutenção câmera auxiliar</option><option>DVR Inoperante</option><option>Ajustar canal fadiga</option><option>Monitor de informações com defeito</option><option>Manutenção de DVR</option></optgroup>`; }
+            if(!$('cTel').checked) { h += `<optgroup label="TELEMETRIA"><option>Gps sem comunicação (Atraso de comunicação)</option><option>Manutenção telemetria (Funcionando com falhas)</option></optgroup>`; }
+            if(!$('cCan').checked) { h += `<optgroup label="REDE CAN | LEITORA"><option>Divergencia na Quilometragem</option><option>Divergencia de velocidade</option><option>Manutenção Leitora</option><option>Manutenção Sirene</option></optgroup>`; }
             $('cat').innerHTML = h + `<option>Outro</option>`;
         }
     };
@@ -242,7 +215,7 @@
     const removeDefeito = v => { selDefects = selDefects.filter(d => d !== v); renderDef(); };
     const renderDef = () => {
         $('listaOcorrencias').innerHTML = selDefects.map(d => `<div class="defect-badge">${d} <span onclick="removeDefeito('${d}')">×</span></div>`).join('');
-        $('osContainer').innerHTML = selDefects.length ? selDefects.map(d => `<div style="margin-bottom:8px;"><label style="font-size:10px; color:var(--text);">TICKET: ${d.toUpperCase()}</label><input type="text" class="os-input" data-def="${d}" placeholder="Digite a O.S." required></div>`).join('') : '<div style="font-size:11px; color:#666;">Selecione uma ocorrência acima.</div>';
+        $('osContainer').innerHTML = selDefects.length ? selDefects.map(d => `<div style="margin-bottom:8px;"><label style="font-size:10px;">TICKET: ${d.toUpperCase()}</label><input type="text" class="os-input" data-def="${d}" placeholder="Digite a O.S." required></div>`).join('') : '<div style="font-size:11px; color:#666;">Selecione uma ocorrência acima.</div>';
         const isNao = $('fNao').style.display === 'block'; document.querySelectorAll('.os-input').forEach(i => i.required = isNao);
     };
 
@@ -250,10 +223,13 @@
     // LÓGICA DO EDITOR E UPLOAD DE IMAGENS UNIFICADO
     // ---------------------------------------------------------
     const hFiles = async t => {
+        if(t === 'reload_ui_only' || t === 'none') return;
         let fId = t==='comp'?'fComp':(t==='ant'?'fAnt':'fDep'); if(!$(fId).files.length) return;
         msg('msgApp', 0, "Processando imagem..."); $('msgApp').style.background="#fff3cd"; $('msgApp').style.color="#333";
         let gps = navigator.geolocation ? await new Promise(r => navigator.geolocation.getCurrentPosition(p => r(`${p.coords.latitude.toFixed(5)},${p.coords.longitude.toFixed(5)}`), () => r("S/GPS"),{timeout:4000})) : "S/GPS";
-        let l1 = `VTR:${$('veiculo').value} | ${(ls.rcr_user||"").split(' ')[0]} | ${$('dt').value.split('-').reverse().join('/')}`;
+        
+        let l1 = `VEÍCULO: ${$('veiculo').value} | ${(ls.rcr_user||"").split(' ')[0]} | ${$('dt').value.split('-').reverse().join('/')}`;
+        
         if(t==='comp') cImgs.comp = []; 
         for(let f of $(fId).files) cImgs[t].push(await compFile(f, l1, `📍 ${gps}`));
         $(`p${t.charAt(0).toUpperCase()+t.slice(1)}`).innerHTML = cImgs[t].map((b,i) => `<div class="preview-item" onclick="abrirEditor('${t}',${i})"><img src="${b}"><div class="preview-overlay">Editar</div></div>`).join('');
@@ -280,72 +256,82 @@
         let l = [];
         if(r.compB64) l.push(`[COMPROVANTE]: ${await upC(r.compB64[0], `${vtr}_C_${Date.now()}`)}`);
         else if(sol==="SIM") {
-            if(r.antB64) for(let i=0; i<r.antB64.length; i++) l.push(`[ANTES ${i+1}]: ${await upC(r.antB64[i], `${vtr}_A_${Date.now()}`)}`);
-            if(r.depB64) for(let i=0; i<r.depB64.length; i++) l.push(`[DEPOIS ${i+1}]: ${await upC(r.depB64[i], `${vtr}_D_${Date.now()}`)}`);
+            if(r.antB64) for(let i=0; i<r.antB64.length; i++) l.push(`[FOTO_ANTES_${i+1}]: ${await upC(r.antB64[i], `${vtr}_A_${Date.now()}`)}`);
+            if(r.depB64) for(let i=0; i<r.depB64.length; i++) l.push(`[FOTO_DEPOIS_${i+1}]: ${await upC(r.depB64[i], `${vtr}_D_${Date.now()}`)}`);
         } return l.join("\n");
     };
     const upC = async (b, n) => { const fd = new FormData(); fd.append("file", b); fd.append("upload_preset", C_PRESET); fd.append("public_id", n); return (await (await fetch(`https://api.cloudinary.com/v1_1/${C_NAME}/image/upload`,{method:"POST",body:fd})).json()).secure_url; };
 
-    // ---------------------------------------------------------
-    // GESTÃO ADMIN E EXPORTAÇÃO
-    // ---------------------------------------------------------
     const carregarUsuariosAdmin = async () => {
         try {
             const r = await api({ action: "get_usuarios" });
             if(r.sucesso) {
                 const tAt = r.usuarios.filter(u => u.status === 'Ativo').length;
                 $('stTotal').innerText = r.usuarios.length; $('stAtivos').innerText = tAt; $('stInativos').innerText = r.usuarios.length - tAt;
-                $('adminUserList').innerHTML = r.usuarios.map((u, i) => `<div class="user-manage-item"><b>${u.nome}</b> (${u.filial})<br><span style="color:#666">${u.email}</span><div class="row-flex"><select onchange="api({action:'atualizar_usuario',targetEmail:'${u.email}',targetStatus:$('s_${i}').value,targetNivel:this.value})"><option ${u.nivel==='OPERADOR'?'selected':''}>OPERADOR</option><option ${u.nivel==='ADMINISTRADOR'?'selected':''}>ADMINISTRADOR</option></select><select id="s_${i}" onchange="api({action:'atualizar_usuario',targetEmail:'${u.email}',targetStatus:this.value,targetNivel:this.previousSibling.value})"><option ${u.status==='Ativo'?'selected':''}>Ativo</option><option ${u.status==='Inativo'?'selected':''}>Inativo</option></select></div></div>`).join('');
+                $('adminUserList').innerHTML = r.usuarios.length === 0 ? '<div style="text-align:center;color:#999;padding:10px">Nenhum inspetor.</div>' : r.usuarios.map((u, i) => `
+                    <div class="user-manage-item" style="cursor:default;">
+                        <div class="user-manage-title">${u.nome} <span style="font-size:10px; color:#999;">(${u.filial})</span></div>
+                        <div class="user-manage-email">${u.email}</div>
+                        <div class="row-flex">
+                            <div style="flex:1;"><select onchange="api({action:'atualizar_usuario',targetEmail:'${u.email}',targetStatus:$('s_${i}').value,targetNivel:this.value})"><option ${u.nivel==='OPERADOR'?'selected':''}>OPERADOR</option><option ${u.nivel==='ADMINISTRADOR'?'selected':''}>ADMINISTRADOR</option></select></div>
+                            <div style="flex:1;"><select id="s_${i}" onchange="api({action:'atualizar_usuario',targetEmail:'${u.email}',targetStatus:this.value,targetNivel:this.previousSibling.value})"><option ${u.status==='Ativo'?'selected':''}>Ativo ✅</option><option ${u.status==='Inativo'?'selected':''}>Bloqueado 🚫</option></select></div>
+                        </div>
+                    </div>`).join('');
             }
         } catch(e) {}
     };
 
     const buscarHistoricoAdmin = async () => {
-        setBtn('btnBuscaHist', true); $('adminHistList').innerHTML = '<div style="padding:20px;text-align:center;"><i class="ph ph-circle-notch spin"></i> Buscando...</div>'; $('btnExport').style.display = 'none';
+        setBtn('btnBuscaHist', true); $('adminHistList').innerHTML = '<div style="padding:20px;text-align:center;"><i class="ph ph-circle-notch spin" style="font-size:24px; animation: spin 1s linear infinite; display:inline-block;"></i> Pesquisando...</div>'; $('btnExport').style.display = 'none';
         try {
             const r = await api({ action: "consultar_historico", tipo: $('filtroTipo').value, termo: $('filtroTermo').value, dtIni: $('filtroDtIni').value, dtFim: $('filtroDtFim').value });
             if(r.sucesso) {
                 window.lastSearchData = r.historico;
-                $('btnExport').style.display = r.historico.length ? 'block' : 'none';
-                $('adminHistList').innerHTML = r.historico.length ? r.historico.map((h, i) => `<div class="user-manage-item" onclick="abrirDetalheOS(${i})"><div style="display:flex; justify-content:space-between;"><b>VTR: ${h.veiculo}</b>${h.os&&h.os!=="N/A"?`<span class="os-badge" style="max-width:130px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${h.os}</span>`:`<span class="ok-badge">OK</span>`}</div><div style="font-size:10px; color:#666; margin:4px 0;">${h.data} | ${h.responsavel}</div><i>${h.defeito.substring(0,35)}...</i></div>`).join('') : '<div style="padding:20px;text-align:center;">Nenhum registro.</div>';
+                if(!r.historico.length) { $('adminHistList').innerHTML = '<div style="text-align:center; color:#999; padding:20px;">Nenhum registro.</div>'; }
+                else {
+                    $('btnExport').style.display = 'block';
+                    $('adminHistList').innerHTML = r.historico.map((h, i) => {
+                        let badge = (h.os && h.os !== "N/A" && h.os !== "") ? `<span class="os-badge" style="max-width:130px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${h.os}</span>` : `<span class="ok-badge">OK</span>`;
+                        return `<div class="user-manage-item" onclick="abrirDetalheOS(${i})"><div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span style="font-weight:bold; color:var(--teal); font-size:14px;">VEÍCULO: ${h.veiculo}</span>${badge}</div><div style="font-size:11px; color:#666; margin-bottom:5px;">📅 ${h.data} às ${h.hora} | 👤 ${h.responsavel}</div><div style="font-size:11px; color:#333; font-style:italic;">[${h.equipamento}] - ${h.defeito.substring(0,45)}...</div></div>`;
+                    }).join('');
+                }
             }
-        } catch(e) {} setBtn('btnBuscaHist', false);
+        } catch(e) { $('adminHistList').innerHTML = '<div style="text-align:center; color:var(--red); padding:20px;">Falha comunicação.</div>'; }
+        setBtn('btnBuscaHist', false);
     };
 
     const abrirDetalheOS = i => {
-        const h = window.lastSearchData[i];
-        let links = h.links!=='Sem fotos' ? h.links.split('\n').map(l => {let p=l.split(': '); return p[1]?`<a href="${p[1]}" target="_blank" style="display:block; padding:10px; background:var(--sub-bg); color:var(--teal); font-weight:bold; text-decoration:none; margin-top:5px; border-radius:6px; text-align:center;"><i class="ph ph-image"></i> VER ${p[0]}</a>`:'';}).join(''):'';
+        const h = window.lastSearchData[i]; let osB = (h.os && h.os !== "N/A" && h.os !== "") ? `<span class="os-badge" style="font-size:14px;">O.S / Ticket: ${h.os}</span>` : `<span class="ok-badge" style="font-size:14px;">VISTORIA PREVENTIVA (OK)</span>`, fHtml = ''; 
+        if(h.links && h.links !== 'Sem fotos') { h.links.split('\n').forEach(l => { let p = l.split(': '); if(p.length > 1) fHtml += `<a href="${p[1]}" target="_blank" style="display:block; padding:12px; background:rgba(20,123,106,0.06); color:var(--teal); font-weight:bold; text-decoration:none; margin-bottom:8px; border-radius:6px; text-align:center;"><i class="ph ph-image"></i> VER ${p[0]}</a>`; }); }
         let printOS = h.os; if(h.os.includes(' | ')) printOS = h.os.replace(/ \| /g, '<br>');
-        $('boxDetalheOS').innerHTML = `<h3 style="margin-top:0;">Detalhe: VTR ${h.veiculo}</h3><p style="font-size:12px; line-height:1.6;"><b>Data:</b> ${h.data} ${h.hora}<br><b>Operador:</b> ${h.responsavel}<br><b>Equipamento:</b> ${h.equipamento}<br><b>OS / Tickets:</b><br><span style="color:var(--orange);font-weight:bold;">${printOS}</span><br><b>Ação Imediata:</b> ${h.solucao}</p><div style="font-size:12px; background:var(--sub-bg); padding:10px; border-left:3px solid var(--teal); white-space:pre-wrap; margin-bottom:15px;">${h.defeito}</div>${links}<button class="btn-submit" onclick="$('modalOS').style.display='none'">Fechar</button>`;
+        $('boxDetalheOS').innerHTML = `<h3 style="margin-top:0;">Detalhe: VEÍCULO ${h.veiculo}</h3><p style="font-size:12px; line-height:1.6;"><b>Data:</b> ${h.data} ${h.hora}<br><b>Operador:</b> ${h.responsavel}<br><b>Equipamento:</b> ${h.equipamento}<br><b>OS / Tickets:</b><br><span style="color:var(--orange);font-weight:bold;">${printOS}</span><br><b>Ação Imediata:</b> ${h.solucao}</p><div style="font-size:12px; background:var(--sub-bg); padding:10px; border-left:3px solid var(--teal); white-space:pre-wrap; margin-bottom:15px;">${h.defeito}</div>${fHtml}<button type="button" class="btn-submit" style="margin-top:20px; background:#555; padding:10px;" onclick="$('modalOS').style.display='none'"><span class="btn-text">Fechar</span></button>`;
         $('modalOS').style.display = 'flex';
     };
 
     const baixarCSV = (nome, csv) => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(["\ufeff", csv], { type: 'text/csv;charset=utf-8;' })); a.download = nome; a.click(); };
     const exportarCSV = () => { if(!window.lastSearchData.length)return; let c="Data;Hora;Veiculo;Filial;Operador;Tipo_Equipamento;N_OS;Solucao_Imediata;Defeito_Descricao;Links_Fotos\n"; window.lastSearchData.forEach(h => c+=`${h.data};${h.hora};${h.veiculo};${h.filial};${h.responsavel};${h.equipamento};${h.os};${h.solucao};${h.defeito.replace(/\n/g," | ").replace(/;/g,",")};${h.links.replace(/\n/g," | ")}\n`); baixarCSV(`Export_Filtro_${Date.now()}.csv`, c); };
-    const exportarBaseCompleta = async () => { setBtn('btnExportTudo', true); try { const r = await api({ action: "exportar_tudo" }); if(r.sucesso && r.csv) baixarCSV(`Base_Completa_${Date.now()}.csv`, r.csv); } catch(e) { alert("Erro de Rede"); } setBtn('btnExportTudo', false); };
+    const exportarBaseCompleta = async () => { setBtn('btnExportTudo', true); $('adminHistList').innerHTML = '<div style="text-align:center; color:#999; padding:20px;"><i class="ph ph-circle-notch spin" style="animation: spin 1s linear infinite; display:inline-block;"></i> Processando planilha...</div>'; try { const r = await api({ action: "exportar_tudo" }); if(r.sucesso && r.csv) { baixarCSV(`Base_Completa_${Date.now()}.csv`, r.csv); buscarHistoricoAdmin(); } else $('adminHistList').innerHTML = '<div style="text-align:center; color:var(--red); padding:20px;">Erro servidor.</div>'; } catch(e) { $('adminHistList').innerHTML = '<div style="text-align:center; color:var(--red); padding:20px;">Falha de comunicação.</div>'; } setBtn('btnExportTudo', false); };
 
-    // ---------------------------------------------------------
-    // INICIALIZAÇÃO BLINDADA E FORMULÁRIO PRINCIPAL
-    // ---------------------------------------------------------
+    const initCanvasEvents = () => {
+        cvsEd = $('canvasEditor'); ctxEd = cvsEd.getContext('2d');
+        const getPos = e => { const r = cvsEd.getBoundingClientRect(), t = e.touches ? e.touches[0] : e; return { x: (t.clientX - r.left) * (cvsEd.width / r.width), y: (t.clientY - r.top) * (cvsEd.height / r.height) }; };
+        const sDraw = e => { if(e.cancelable) e.preventDefault(); draw = true; ctxEd.beginPath(); const p = getPos(e); ctxEd.moveTo(p.x, p.y); };
+        const mDraw = e => { if(!draw) return; if(e.cancelable) e.preventDefault(); const p = getPos(e); ctxEd.lineTo(p.x, p.y); ctxEd.strokeStyle = '#ef4444'; ctxEd.lineWidth = 5; ctxEd.lineCap = 'round'; ctxEd.stroke(); };
+        cvsEd.addEventListener('mousedown', sDraw); cvsEd.addEventListener('mousemove', mDraw); window.addEventListener('mouseup', () => draw=false);
+        cvsEd.addEventListener('touchstart', sDraw, {passive: false}); cvsEd.addEventListener('touchmove', mDraw, {passive: false}); window.addEventListener('touchend', () => draw=false);
+    };
+
     window.onload = async () => {
         try {
-            await idb.init(); cvsEd = $('canvasEditor'); ctxEd = cvsEd.getContext('2d');
-            const getPos = e => { const r = cvsEd.getBoundingClientRect(), t = e.touches ? e.touches[0] : e; return { x: (t.clientX - r.left) * (cvsEd.width / r.width), y: (t.clientY - r.top) * (cvsEd.height / r.height) }; };
-            const sDraw = e => { if(e.cancelable) e.preventDefault(); draw = true; ctxEd.beginPath(); const p = getPos(e); ctxEd.moveTo(p.x, p.y); };
-            const mDraw = e => { if(!draw) return; if(e.cancelable) e.preventDefault(); const p = getPos(e); ctxEd.lineTo(p.x, p.y); ctxEd.strokeStyle = '#ef4444'; ctxEd.lineWidth = 5; ctxEd.lineCap = 'round'; ctxEd.stroke(); };
-            cvsEd.addEventListener('mousedown', sDraw); cvsEd.addEventListener('mousemove', mDraw); window.addEventListener('mouseup', () => draw=false);
-            cvsEd.addEventListener('touchstart', sDraw, {passive: false}); cvsEd.addEventListener('touchmove', mDraw, {passive: false}); window.addEventListener('touchend', () => draw=false);
-            
+            await idb.init(); initCanvasEvents();
             if(ls.rcr_dark === '1') { document.body.classList.add('dark-mode'); document.querySelector('.theme-toggle-btn').innerHTML = '<i class="ph ph-sun"></i>'; }
-
             if(ls.rcr_in === '1') {
                 if(ls.rcr_email === "elvis.lira@yahoo.com.br" || ls.rcr_email === "elvis lira") { ls.rcr_nivel = "ADMINISTRADOR"; ls.rcr_user = "Elvis Lira"; }
-                $('userBadge').innerText = (ls.rcr_user && ls.rcr_user !== "undefined") ? ls.rcr_user : (ls.rcr_email || "Inspetor");
-                $('globalNav').style.display = 'flex';
+                $('userBadge').innerText = ls.rcr_user || "Inspetor"; $('globalNav').style.display = 'flex';
                 if(ls.rcr_nivel === "ADMINISTRADOR") { $('navEquipe').style.display = "flex"; $('navHist').style.display = "flex"; carregarUsuariosAdmin(); }
                 $('dt').value = new Date().toISOString().split('T')[0]; $('hr').value = new Date().toTimeString().substring(0,5);
-                if(ls.rcr_filial) $('filial').value = ls.rcr_filial; 
-                $('hBox').innerHTML = JSON.parse(ls[`h_${ls.rcr_email}`] || '[]').filter(i=>i.d===$('dt').value).map(i=>`<div class="hist-item"><b>${i.h} - VTR: ${i.v}</b><br><span style="color:#666">${i.cat}</span></div>`).join('');
+                if(ls.rcr_filial) $('filial').value = ls.rcr_filial; triggerChk('none');
+                $('hBox').innerHTML = JSON.parse(ls[`h_${ls.rcr_email}`] || '[]').filter(i=>i.d===$('dt').value).map(i=>`<div class="hist-item"><b>${i.h} - VEÍCULO: ${i.v}</b><br><span style="color:#666">${i.cat}</span></div>`).join('');
                 if(navigator.onLine) api({action: "getFrota"}).then(r=>{if(r.sucesso) ls.rcr_frota = JSON.stringify(r.frota)});
                 syncQueue(); switchView('viewApp');
             } else switchView('viewLogin');
@@ -365,19 +351,15 @@
     $('appForm').onsubmit = async e => {
         e.preventDefault(); const fV = $('filial').value; if(!fV) return alert("⚠️ Filial!");
         const isOK = $('cCam').checked && $('cTel').checked && $('cCan').checked; let sol = "";
-        
-        let eqL = [];
-        if (!$('cCam').checked) eqL.push("Vídeo / I.A.");
-        if (!$('cTel').checked) eqL.push("Telemetria");
-        if (!$('cCan').checked) eqL.push("Rede CAN / Leitora");
+        let eqL = []; if(!$('cCam').checked) eqL.push("Vídeo / I.A."); if(!$('cTel').checked) eqL.push("Telemetria"); if(!$('cCan').checked) eqL.push("Rede CAN / Leitora");
         
         let tktStr = "N/A";
         if(!isOK) { 
             if(!selDefects.length) return alert("⚠️ Adicione uma Ocorrência!");
             const sN = document.querySelector('input[name="sol"]:checked'); if(!sN) return alert("⚠️ Resolução?"); sol = sN.value; 
-            if(sol==="SIM" && (!cImgs.ant.length || !cImgs.dep.length)) return alert("⚠️ Fotos Antes/Depois!"); 
+            if(sol==="SIM" && (!cImgs.ant.length && !cImgs.dep.length)) return alert("⚠️ Adicione pelo menos uma foto da verificação (Antes ou Depois)!"); 
             if(sol === "NAO") { let m = []; document.querySelectorAll('.os-input').forEach(i => m.push(`${i.getAttribute('data-def')}: ${i.value}`)); tktStr = m.join(" | "); }
-        } else if(!cImgs.comp.length) return alert("⚠️ Adicione foto!");
+        } else if(!cImgs.comp.length) return alert("⚠️ Adicione a foto de Comprovação!");
 
         setBtn('btnApp', true); msg('msgApp',0,"Gravando...");
         const vtr = $('veiculo').value.toUpperCase(), rcd = { action: "salvar_inspecao", veiculo: vtr, data: $('dt').value, hora: $('hr').value, filial: fV, responsavel: (ls.rcr_user||ls.rcr_email).split(' ')[0], chamado: tktStr, email_logado: ls.rcr_email, equipamento: isOK?"N/A":eqL.join(", ") };
