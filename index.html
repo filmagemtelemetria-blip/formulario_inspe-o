@@ -26,7 +26,7 @@
         .sync-banner { width: 100%; max-width: 580px; background: var(--orange); color: #fff; text-align: center; padding: 8px; font-size: 12px; font-weight: bold; border-radius: 8px; margin-bottom: 10px; display: none; }
         .link-btn { display: block; text-align: center; margin-top: 15px; color: var(--teal); text-decoration: underline; cursor: pointer; font-size: 13px; font-weight: bold; background: none; border: none; width: 100%; }
         .user-badge { display: flex; justify-content: space-between; align-items: center; background: var(--sub-bg); padding: 8px 12px; border-radius: 8px; margin-bottom: 15px; font-weight: bold; font-size: 12px; color: var(--teal); }
-        .logout-btn { background: var(--red); color: #fff; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; }
+        .logout-btn { background: var(--red); color: #fff; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; display:flex; align-items:center; gap:4px; justify-content:center; }
         .chk-card { display: flex; align-items: center; justify-content: space-between; padding: 12px 15px; border-radius: 8px; border: 2px solid var(--border); margin-bottom: 10px; cursor: pointer; background: var(--card-bg); font-weight: 700; font-size: 12px; text-transform: uppercase; }
         .chk-card.active { border-color: var(--teal); background: rgba(20,123,106,0.06); color: var(--teal); } .chk-card.defect { border-color: var(--red); background: rgba(217,48,37,0.06); color: var(--red); }
         .radio-box { display: flex; gap: 20px; padding: 10px; background: var(--sub-bg); border-radius: 8px; border: 1px dashed var(--border); }
@@ -42,7 +42,7 @@
         .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; color: #777; cursor: pointer; font-weight: 700; background: none; border: none; } .nav-item.active { color: var(--teal); } .nav-item i { font-size: 22px; }
         #modalEditor, #modalAlert, #modalOS { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:10000; flex-direction:column; justify-content:center; align-items:center; padding:15px; }
         .alert-box { background: var(--card-bg); border-radius: 12px; width: 100%; max-width: 450px; padding: 20px; border: 1px solid var(--border); max-height: 85vh; overflow-y: auto; }
-        .user-manage-item { border: 1px solid var(--border); background: var(--card-bg); padding: 12px; border-radius: 8px; margin-bottom: 10px; font-size: 12px; cursor:pointer; }
+        .user-manage-item { border: 1px solid var(--border); background: var(--card-bg); padding: 12px; border-radius: 8px; margin-bottom: 10px; font-size: 12px; cursor:default; }
         .dash-card { flex:1; padding:10px; border-radius:8px; text-align:center; border:1px solid; } .dash-num { font-size:20px; font-weight:800;} .dash-lbl { font-size:9px; font-weight:bold; text-transform:uppercase; opacity:0.8;}
         .theme-toggle-btn { background: none; border: none; color: var(--teal); font-size: 18px; padding: 0; display: flex; }
         #canvasEditor { touch-action: none; background:#fff; max-width:100%; max-height:65vh; border-radius:8px; }
@@ -90,7 +90,23 @@
         <div class="dash-card" style="background:rgba(78,255,126,0.15); border-color:var(--teal); color:var(--teal);"><div class="dash-num" id="stAtivos">-</div><div class="dash-lbl">Ativos</div></div>
         <div class="dash-card" style="background:rgba(217,48,37,0.08); border-color:var(--red); color:var(--red);"><div class="dash-num" id="stInativos">-</div><div class="dash-lbl">Bloqueados</div></div>
     </div>
-    <div id="abaAdminUsers"><input type="text" id="liveSearchUsers" placeholder="🔍 Buscar operador..." style="margin-bottom:10px;" oninput="document.querySelectorAll('#adminUserList .user-manage-item').forEach(i=>i.style.display=i.innerText.toLowerCase().includes(this.value.toLowerCase())?'block':'none')"><div id="adminUserList" style="max-height: 350px; overflow-y: auto;"></div></div>
+    
+    <div id="abaAdminUsers">
+        <button type="button" class="btn-submit" style="margin:0 0 12px 0; background:var(--teal);" onclick="const f=$('adminUserFormContainer'); f.style.display=f.style.display==='block'?'none':'block';"><i class="ph ph-user-plus"></i> <span class="btn-text">Cadastrar Novo Usuário</span></button>
+        <div id="adminUserFormContainer" style="display:none; background:var(--sub-bg); padding:15px; border-radius:10px; border:1px solid var(--border); margin-bottom:15px;">
+            <form id="adminRegForm">
+                <div class="form-group"><label>Nome Completo</label><input type="text" id="admRegNome" required></div>
+                <div class="form-group"><label>E-mail Corporativo / Usuário</label><input type="text" id="admRegEmail" required></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Filial</label><select id="admRegFilial" required><option value="">Selecione...</option><option value="Matriz">Matriz</option><option value="AM">AM</option><option value="MA">MA</option><option value="PE">PE</option><option value="BA">BA</option><option value="BAR">BAR</option><option value="PEB">PEB</option><option value="CE">CE</option></select></div>
+                    <div class="form-group"><label>Criar Senha</label><input type="password" id="admRegSenha" required></div>
+                </div>
+                <button type="submit" id="btnAdmReg" class="btn-submit" style="margin:10px 0 0 0; background:var(--teal); font-size:13px; padding:10px;"><span class="btn-text">Salvar Novo Inspetor</span><div class="btn-loader"></div></button>
+            </form>
+        </div>
+        <input type="text" id="liveSearchUsers" placeholder="🔍 Buscar operador..." style="margin-bottom:10px;" oninput="document.querySelectorAll('#adminUserList .user-manage-item').forEach(i=>i.style.display=i.innerText.toLowerCase().includes(this.value.toLowerCase())?'block':'none')"><div id="adminUserList" style="max-height: 350px; overflow-y: auto;"></div>
+    </div>
+    
     <div id="abaAdminHist" style="display:none;">
         <div class="form-row" style="margin-bottom:10px;"><div style="flex:1;"><label>Filtro</label><select id="filtroTipo"><option value="veiculo">Placa</option><option value="os">Nº O.S.</option><option value="operador">Operador</option></select></div><div style="flex:2;"><label>Busca</label><input type="text" id="filtroTermo" placeholder="Aperte Enter..." onkeypress="if(event.key==='Enter') buscarHistoricoAdmin()"></div></div>
         <div class="form-row" style="margin-bottom:15px; border-bottom:1px solid var(--border); padding-bottom:15px;"><div style="flex:1;"><label>Início</label><input type="date" id="filtroDtIni"></div><div style="flex:1;"><label>Fim</label><input type="date" id="filtroDtFim"></div></div>
@@ -107,7 +123,11 @@
     <div class="header" style="margin-bottom:10px"><h2>NOVA VERIFICAÇÃO</h2></div>
     <div class="user-badge">
         <div style="display:flex; align-items:center; gap:8px;"><span id="userBadge">Inspetor</span><button class="theme-toggle-btn" type="button" onclick="document.body.classList.toggle('dark-mode'); ls.rcr_dark=document.body.classList.contains('dark-mode')?'1':'0'; this.innerHTML=ls.rcr_dark==='1'?'<i class=\'ph ph-sun\'></i>':'<i class=\'ph ph-moon\'></i>';"><i class="ph ph-moon"></i></button></div>
-        <button class="logout-btn" type="button" onclick="ls.clear(); location.reload();">SAIR</button>
+        
+        <div style="display:flex; gap:5px;">
+            <button class="logout-btn" style="background:var(--teal);" type="button" onclick="mudarMinhaSenha()"><i class="ph ph-key"></i> SENHA</button>
+            <button class="logout-btn" type="button" onclick="ls.clear(); location.reload();">SAIR</button>
+        </div>
     </div>
     <form id="appForm">
         <div class="form-row"><div class="form-group"><label>Placa</label><input type="text" id="veiculo" required onblur="validarFrota()"></div><div class="form-group"><label>Filial</label><select id="filial" required style="font-weight:bold; color:var(--teal);"><option value="">Selecione...</option><option value="Matriz">Matriz</option><option value="AM">AM</option><option value="MA">MA</option><option value="PE">PE</option><option value="BA">BA</option><option value="BAR">BAR</option><option value="PEB">PEB</option><option value="CE">CE</option></select></div></div>
@@ -177,7 +197,7 @@
     const switchView = v => ['viewLoader','viewLogin','viewRegister','viewApp','viewAdmin'].forEach(id => $(id).style.display = id === v ? 'block' : 'none');
     const msg = (id, err, txt) => { const b = $(id); b.style.display = 'block'; b.style.background = err ? 'var(--red)' : 'var(--teal)'; b.style.color = '#fff'; b.innerText = txt; };
     const tgl = (d, r) => { $('fSim').style.display = d; $('fNao').style.display = d === 'block' ? 'none' : 'block'; document.querySelectorAll('.os-input').forEach(i => i.required = r); };
-    const setBtn = (id, l) => { const b = $(id); if(!b) return; b.disabled = l; const t = b.querySelector('.btn-text'), ld = b.querySelector('.btn-loader'); if(t) t.style.display = l?'none':'block'; if(ld) ld.style.display = l?'block':'none'; };
+    const setBtn = (id, l) => { const b = $(id); if(!b) return; b.disabled = l; const t = b.querySelector('.btn-text'), ldr = b.querySelector('.btn-loader'); if(t) t.style.display = l?'none':'block'; if(ldr) ldr.style.display = l?'block':'none'; };
     const api = async p => await (await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(p) })).json();
 
     const navGlob = d => {
@@ -190,9 +210,6 @@
         }
     };
 
-    // ---------------------------------------------------------
-    // LÓGICA DE VERIFICAÇÃO E TAGS MÚLTIPLAS
-    // ---------------------------------------------------------
     const triggerChk = id => {
         const c = $(id), cd = $(id === 'cCam' ? 'cardCam' : (id === 'cTel' ? 'cardTel' : 'cardCan')); if(id !== 'none') c.checked = !c.checked;
         if($(id)) { cd.className = c.checked ? "chk-card active" : "chk-card defect"; cd.querySelector('i:last-child').className = c.checked ? "ph ph-circle-wavy-check" : "ph ph-warning-circle"; }
@@ -219,9 +236,6 @@
         const isNao = $('fNao').style.display === 'block'; document.querySelectorAll('.os-input').forEach(i => i.required = isNao);
     };
 
-    // ---------------------------------------------------------
-    // LÓGICA DO EDITOR E UPLOAD DE IMAGENS UNIFICADO
-    // ---------------------------------------------------------
     const hFiles = async t => {
         if(t === 'reload_ui_only' || t === 'none') return;
         let fId = t==='comp'?'fComp':(t==='ant'?'fAnt':'fDep'); if(!$(fId).files.length) return;
@@ -262,6 +276,39 @@
     };
     const upC = async (b, n) => { const fd = new FormData(); fd.append("file", b); fd.append("upload_preset", C_PRESET); fd.append("public_id", n); return (await (await fetch(`https://api.cloudinary.com/v1_1/${C_NAME}/image/upload`,{method:"POST",body:fd})).json()).secure_url; };
 
+    // ---------------------------------------------------------
+    // NOVA FUNÇÃO: O UTILIZADOR MUDA A SUA PRÓPRIA SENHA
+    // ---------------------------------------------------------
+    const mudarMinhaSenha = async () => {
+        const nova = prompt("🔑 Alterar Minha Senha\n\nDigite a sua nova senha de acesso:");
+        if(!nova || nova.trim() === '') return;
+        
+        // Pega no botão usando o atributo onclick (garante que funciona no ecrã de verificação)
+        const btn = document.querySelector('button[onclick="mudarMinhaSenha()"]');
+        if(btn) { btn.innerHTML = '<i class="ph ph-circle-notch spin"></i>'; btn.disabled = true; }
+        
+        try {
+            const r = await api({ action: "alterar_senha", targetEmail: ls.rcr_email, novaSenha: nova });
+            if(r.sucesso) alert("✅ Sua senha foi atualizada com sucesso!");
+            else alert("⚠️ " + r.erro);
+        } catch(e) { alert("⚠️ Erro de comunicação com o servidor."); }
+        
+        if(btn) { btn.innerHTML = '<i class="ph ph-key"></i> SENHA'; btn.disabled = false; }
+    };
+
+    // ---------------------------------------------------------
+    // FUNÇÃO DO ADMIN: RESET DE SENHA DE FUNCIONÁRIOS
+    // ---------------------------------------------------------
+    const alterarSenhaAdmin = async (email) => {
+        const novaSenha = prompt(`🔄 Reset de senha para:\n${email}\n\nDigite a nova senha que quer definir:`);
+        if(!novaSenha || novaSenha.trim() === '') return;
+        try {
+            const r = await api({ action: "alterar_senha", targetEmail: email, novaSenha: novaSenha });
+            if(r.sucesso) alert("✅ Senha alterada com sucesso na base de dados!");
+            else alert("⚠️ " + r.erro);
+        } catch(e) { alert("⚠️ Falha de comunicação com o servidor."); }
+    };
+
     const carregarUsuariosAdmin = async () => {
         try {
             const r = await api({ action: "get_usuarios" });
@@ -269,9 +316,11 @@
                 const tAt = r.usuarios.filter(u => u.status === 'Ativo').length;
                 $('stTotal').innerText = r.usuarios.length; $('stAtivos').innerText = tAt; $('stInativos').innerText = r.usuarios.length - tAt;
                 $('adminUserList').innerHTML = r.usuarios.length === 0 ? '<div style="text-align:center;color:#999;padding:10px">Nenhum inspetor.</div>' : r.usuarios.map((u, i) => `
-                    <div class="user-manage-item" style="cursor:default;">
-                        <div class="user-manage-title">${u.nome} <span style="font-size:10px; color:#999;">(${u.filial})</span></div>
-                        <div class="user-manage-email">${u.email}</div>
+                    <div class="user-manage-item">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                            <div><b>${u.nome}</b> <span style="font-size:10px; color:#666;">(${u.filial})</span><br><span style="color:#666; font-size:11px;">${u.email}</span></div>
+                            <button type="button" style="background:var(--orange); border:none; border-radius:4px; padding:4px 8px; color:#fff; font-size:10px; font-weight:bold; cursor:pointer; display:flex; align-items:center; gap:4px;" onclick="alterarSenhaAdmin('${u.email}')"><i class="ph ph-arrow-counter-clockwise"></i> RESET</button>
+                        </div>
                         <div class="row-flex">
                             <div style="flex:1;"><select onchange="api({action:'atualizar_usuario',targetEmail:'${u.email}',targetStatus:$('s_${i}').value,targetNivel:this.value})"><option ${u.nivel==='OPERADOR'?'selected':''}>OPERADOR</option><option ${u.nivel==='ADMINISTRADOR'?'selected':''}>ADMINISTRADOR</option></select></div>
                             <div style="flex:1;"><select id="s_${i}" onchange="api({action:'atualizar_usuario',targetEmail:'${u.email}',targetStatus:this.value,targetNivel:this.previousSibling.value})"><option ${u.status==='Ativo'?'selected':''}>Ativo ✅</option><option ${u.status==='Inativo'?'selected':''}>Bloqueado 🚫</option></select></div>
@@ -304,7 +353,7 @@
         const h = window.lastSearchData[i]; let osB = (h.os && h.os !== "N/A" && h.os !== "") ? `<span class="os-badge" style="font-size:14px;">O.S / Ticket: ${h.os}</span>` : `<span class="ok-badge" style="font-size:14px;">VISTORIA PREVENTIVA (OK)</span>`, fHtml = ''; 
         if(h.links && h.links !== 'Sem fotos') { h.links.split('\n').forEach(l => { let p = l.split(': '); if(p.length > 1) fHtml += `<a href="${p[1]}" target="_blank" style="display:block; padding:12px; background:rgba(20,123,106,0.06); color:var(--teal); font-weight:bold; text-decoration:none; margin-bottom:8px; border-radius:6px; text-align:center;"><i class="ph ph-image"></i> VER ${p[0]}</a>`; }); }
         let printOS = h.os; if(h.os.includes(' | ')) printOS = h.os.replace(/ \| /g, '<br>');
-        $('boxDetalheOS').innerHTML = `<h3 style="margin-top:0;">Detalhe: VEÍCULO ${h.veiculo}</h3><p style="font-size:12px; line-height:1.6;"><b>Data:</b> ${h.data} ${h.hora}<br><b>Operador:</b> ${h.responsavel}<br><b>Equipamento:</b> ${h.equipamento}<br><b>OS / Tickets:</b><br><span style="color:var(--orange);font-weight:bold;">${printOS}</span><br><b>Ação Imediata:</b> ${h.solucao}</p><div style="font-size:12px; background:var(--sub-bg); padding:10px; border-left:3px solid var(--teal); white-space:pre-wrap; margin-bottom:15px;">${h.defeito}</div>${fHtml}<button type="button" class="btn-submit" style="margin-top:20px; background:#555; padding:10px;" onclick="$('modalOS').style.display='none'"><span class="btn-text">Fechar</span></button>`;
+        $('boxDetalheOS').innerHTML = `<h3 style="margin-top:0;">Detalhes do Relatório</h3><div style="margin-bottom:15px; text-align:center;">${osB}</div><p><b>VEÍCULO:</b> ${h.veiculo} | <b>Filial:</b> ${h.filial} | <b>Equipamento:</b> ${h.equipamento}</p><p><b>Data:</b> ${h.data} às ${h.hora}</p><p><b>Operador:</b> ${h.responsavel}</p><p><b>Solução:</b> ${h.solucao}</p><hr style="border:0; border-top:1px dashed var(--border); margin:15px 0;"><p><b>Parecer Técnico:</b></p><div style="font-size:12px; background:rgba(20,123,106,0.04); padding:10px; border-radius:6px; border-left:3px solid var(--teal); white-space:pre-wrap; max-height:200px; overflow-y:auto; margin-bottom:15px;">${h.defeito}</div>${fHtml}<button type="button" class="btn-submit" style="margin-top:20px; background:#555; padding:10px;" onclick="$('modalOS').style.display='none'"><span class="btn-text">Fechar</span></button>`;
         $('modalOS').style.display = 'flex';
     };
 
@@ -343,8 +392,18 @@
         if((em === "elvis.lira@yahoo.com.br" || em === "elvis lira") && pw === "El123!@#") { ls.rcr_in = '1'; ls.rcr_email = "elvis.lira@yahoo.com.br"; ls.rcr_filial = "Matriz"; ls.rcr_user = "Elvis Lira"; ls.rcr_nivel = "ADMINISTRADOR"; api({ action: "login", email: em, senha: pw }); location.reload(); return; } 
         try { const r = await api({ action: "login", email: em, senha: pw }); if(r.sucesso) { ls.rcr_in = '1'; ls.rcr_email = r.email; ls.rcr_filial = r.filial; ls.rcr_user = r.nome; ls.rcr_nivel = r.nivel; location.reload(); } else msg('msgLog',1,r.erro); } catch(e) { msg('msgLog',1,"Erro rede"); } setBtn('btnLog', false); 
     };
+    
     $('regForm').onsubmit = async e => { e.preventDefault(); setBtn('btnReg', true); const nme = $('regNome').value, eml = $('regEmail').value; try { const r = await api({ action: "register", nome: nme, email: eml, senha: $('regSenha').value, filial: $('regFilial').value }); if(r.sucesso) { $('alertTitle').innerText="Sucesso!"; $('alertMessage').innerText=`Conta de ${nme} criada.`; $('modalAlert').style.display='flex'; $('logEmail').value = eml; switchView('viewLogin'); $('regForm').reset(); } else msg('msgReg',1,r.erro); } catch(e) { msg('msgReg',1,"Erro."); } setBtn('btnReg', false); };
     
+    $('adminRegForm').onsubmit = async e => {
+        e.preventDefault(); setBtn('btnAdmReg', true); const nme = $('admRegNome').value, eml = $('admRegEmail').value;
+        try {
+            const r = await api({ action: "register", nome: nme, email: eml, senha: $('admRegSenha').value, filial: $('admRegFilial').value });
+            if(r.sucesso) { alert(`Usuário ${nme} cadastrado com sucesso!`); $('adminRegForm').reset(); $('adminUserFormContainer').style.display = 'none'; carregarUsuariosAdmin(); } 
+            else alert(r.erro);
+        } catch(e) { alert("Erro de comunicação com o servidor."); } setBtn('btnAdmReg', false);
+    };
+
     const iniciarVoz = () => { const S = window.SpeechRecognition || window.webkitSpeechRecognition; if(!S) return alert("Incompatível."); const r = new S(); r.lang = 'pt-BR'; $('btnMic').classList.add('recording'); r.onresult = e => $('def').value += ($('def').value ? ' ' : '') + e.results[0][0].transcript; r.onerror = r.onend = () => $('btnMic').classList.remove('recording'); r.start(); };
     $('veiculo').oninput = e => { let v = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); if(v.length===7 && /^[A-Z]{3}[0-9]{4}$/.test(v)) v = v.slice(0,3)+'-'+v.slice(3); e.target.value = v; };
 
