@@ -103,13 +103,13 @@
     <div id="boxLoteChamados" class="lote-box">
         <div class="form-row" style="margin-bottom:8px">
             <div>
-                <label style="margin:0 0 4px 0;font-size:10px">Filial Padrão (se omitida)</label>
+                <label style="margin:0 0 4px 0;font-size:10px">Filial Padrão (se vazio)</label>
                 <select id="loteFilial" style="padding:7px 8px;font-size:12px;font-weight:bold;color:var(--teal)">
                     <option value="Matriz">Matriz</option><option value="AM">AM</option><option value="MA">MA</option><option value="PE">PE</option><option value="BA">BA</option><option value="BAR">BAR</option><option value="PEB">PEB</option><option value="CE">CE</option>
                 </select>
             </div>
             <div>
-                <label style="margin:0 0 4px 0;font-size:10px">Equipamento Padrão (se omitido)</label>
+                <label style="margin:0 0 4px 0;font-size:10px">Equipamento Padrão (se vazio)</label>
                 <select id="loteEquipamento" style="padding:7px 8px;font-size:12px;font-weight:bold;color:var(--teal)">
                     <option value="AUTO">Automático (pelo defeito)</option>
                     <option value="Vídeo / I.A.">Vídeo / I.A.</option>
@@ -119,12 +119,10 @@
             </div>
         </div>
         <p style="font-size:11px;color:#555;margin:0 0 8px 0;line-height:1.4">
-            Cole do Excel ou digite por linha separando por <code>;</code>:<br>
-            • <b>5 colunas:</b> <span style="color:var(--teal);font-weight:600">Veículo; Filial; Equipamento; Defeito; Chamado</span><br>
-            • <b>4 colunas:</b> <span style="color:var(--teal);font-weight:600">Veículo; Equipamento; Defeito; Chamado</span><br>
-            • <b>3 colunas:</b> <span style="color:var(--teal);font-weight:600">Veículo; Defeito; Chamado</span>
+            Cole do Excel ou digite uma linha por registro separando por <code>;</code> na ordem:<br>
+            <span style="color:var(--teal);font-weight:600">Veiculo | Chamado | Filial | Equipamento (Defeito) | Nº O.S</span>
         </p>
-        <textarea id="txtLoteChamados" rows="5" placeholder="1045; PE; Vídeo / I.A.; Câmera fadiga desalinhada; OS-98412&#10;2088; BA; Telemetria; GPS sem comunicação; OS-98415&#10;3110; CE; Rede CAN; Manutenção Leitora; OS-98420" style="font-size:12px;font-family:monospace"></textarea>
+        <textarea id="txtLoteChamados" rows="5" placeholder="1045; TKT-5012; PE; Vídeo / I.A. (Câmera fadiga desalinhada); OS-98412&#10;2088; TKT-5013; BA; Telemetria (GPS sem comunicação); OS-98415&#10;3110; TKT-5014; CE; Rede CAN (Manutenção Leitora); OS-98420" style="font-size:12px;font-family:monospace"></textarea>
         <div style="display:flex;gap:8px;margin-top:8px">
             <button type="button" id="btnProcLote" class="btn-submit" style="margin:0;flex:2;padding:10px;font-size:13px" onclick="processarLoteChamados()"><i class="ph ph-paper-plane-tilt"></i> <span class="btn-text">Processar Lote</span><div class="btn-loader"></div></button>
             <button type="button" class="btn-submit" style="margin:0;flex:1;padding:10px;font-size:12px;background:#666" onclick="$('txtLoteChamados').value='';$('logLoteChamados').style.display='none'">Limpar</button>
@@ -232,19 +230,30 @@
         return s;
     };
 
-    const normalizarEquipamento = (rawEq, defeitoTexto, padraoSelect) => {
-        const mapEq = (txt) => {
-            const s = (txt || '').toLowerCase().trim();
-            if (!s) return null;
-            if (s.includes('vídeo') || s.includes('video') || s.includes('câmera') || s.includes('camera') || s.includes('dvr') || s.includes('i.a') || s.includes('ia')) return "Vídeo / I.A.";
-            if (s.includes('telemetria') || s.includes('gps') || s.includes('rastreador')) return "Telemetria";
-            if (s.includes('can') || s.includes('leitor') || s.includes('sirene') || s.includes('velocidade') || s.includes('quilometragem')) return "Rede CAN";
-            return rawEq.trim();
-        };
-        const explicito = mapEq(rawEq);
-        if (explicito) return explicito;
+    const classificarEquipamento = (txt, padraoSelect) => {
+        const s = (txt || '').toLowerCase().trim();
+        if (s.includes('vídeo') || s.includes('video') || s.includes('câmera') || s.includes('camera') || s.includes('dvr') || s.includes('i.a') || s.includes('ia')) return "Vídeo / I.A.";
+        if (s.includes('telemetria') || s.includes('gps') || s.includes('rastreador')) return "Telemetria";
+        if (s.includes('can') || s.includes('leitor') || s.includes('sirene') || s.includes('velocidade') || s.includes('quilometragem')) return "Rede CAN";
         if (padraoSelect && padraoSelect !== 'AUTO') return padraoSelect;
-        return mapEq(defeitoTexto) || "Vídeo / I.A.";
+        return "Vídeo / I.A.";
+    };
+
+    const parseEquipDefeito = (rawCol, padraoSelect) => {
+        const texto = (rawCol || '').trim();
+        const match = texto.match(/^([^\(]+)\(([^\)]+)\)\s*$/);
+        if (match) {
+            const eqParte = match[1].trim();
+            const defParte = match[2].trim();
+            return {
+                eq: classificarEquipamento(eqParte || defParte, padraoSelect),
+                def: defParte || eqParte
+            };
+        }
+        return {
+            eq: classificarEquipamento(texto, padraoSelect),
+            def: texto
+        };
     };
 
     const processarLoteChamados=async()=>{
@@ -271,29 +280,31 @@
             const linha=linhas[idx];
             const cols=linha.includes('\t') ? linha.split('\t').map(c=>c.trim()) : linha.split(';').map(c=>c.trim());
 
-            let vtr="", fil="", eq="", def="", osNum="";
+            // Ordem: Veiculo | Chamado | Filial | Equipamento (Defeito) | Nº O.S
+            let vtr="", chamadoRef="", fil="", eqDefRaw="", osNum="";
             if(cols.length >= 5){
-                [vtr, fil, eq, def, osNum] = cols;
-                fil = normalizarFilial(fil, filialPadrao);
-                eq = normalizarEquipamento(eq, def, eqPadrao);
+                [vtr, chamadoRef, fil, eqDefRaw, osNum] = cols;
             } else if(cols.length === 4){
-                [vtr, eq, def, osNum] = cols;
-                fil = filialPadrao;
-                eq = normalizarEquipamento(eq, def, eqPadrao);
+                [vtr, chamadoRef, eqDefRaw, osNum] = cols;
             } else if(cols.length === 3){
-                [vtr, def, osNum] = cols;
-                fil = filialPadrao;
-                eq = normalizarEquipamento("", def, eqPadrao);
+                [vtr, eqDefRaw, osNum] = cols;
             }
+
+            fil = normalizarFilial(fil, filialPadrao);
+            const parsed = parseEquipDefeito(eqDefRaw, eqPadrao);
+            const eq = parsed.eq;
+            const def = parsed.def;
 
             if(!vtr || !def || !osNum){
                 erros++;
-                logBox.innerHTML+=`<div style="color:var(--red);padding:3px 0;border-bottom:1px solid #eee">❌ Linha ${idx+1} inválida (use Veículo; [Filial]; [Equipamento]; Defeito; Chamado): <i>${linha}</i></div>`;
+                logBox.innerHTML+=`<div style="color:var(--red);padding:3px 0;border-bottom:1px solid #eee">❌ Linha ${idx+1} inválida (use Veiculo | Chamado | Filial | Equipamento (Defeito) | Nº O.S): <i>${linha}</i></div>`;
                 continue;
             }
 
             vtr=vtr.toUpperCase().replace(/[^A-Z0-9-]/g,'');
             if(vtr.length===7 && /^[A-Z]{3}[0-9]{4}$/.test(vtr)) vtr=vtr.slice(0,3)+'-'+vtr.slice(3);
+
+            const chamadoTexto = chamadoRef ? `${chamadoRef} - ${def}: ${osNum}` : `${def}: ${osNum}`;
 
             const payload={
                 action:"salvar_inspecao",
@@ -302,11 +313,11 @@
                 hora:hrStr,
                 filial:fil,
                 responsavel:resp,
-                chamado:`${def}: ${osNum}`,
+                chamado:chamadoTexto,
                 email_logado:ls.rcr_email,
                 equipamento:eq,
                 osList:[osNum],
-                defeito:`⚠️ ${def}\nEquipamento: ${eq}\nParecer: Lançamento em lote`,
+                defeito:`⚠️ ${def}\nEquipamento: ${eq}${chamadoRef ? `\nChamado: ${chamadoRef}` : ''}\nParecer: Lançamento em lote`,
                 solucao:"NAO",
                 fotosLinks:"Sem fotos"
             };
@@ -315,10 +326,10 @@
                 const r=await api(payload);
                 if(r.erro){
                     erros++;
-                    logBox.innerHTML+=`<div style="color:var(--red);padding:3px 0;border-bottom:1px solid #eee">⚠️ <b>${vtr}</b> (${fil}) [${eq}] (${osNum}): ${r.erro}</div>`;
+                    logBox.innerHTML+=`<div style="color:var(--red);padding:3px 0;border-bottom:1px solid #eee">⚠️ <b>${vtr}</b> (${fil}) [${eq}]: ${r.erro}</div>`;
                 } else {
                     sucessos++;
-                    logBox.innerHTML+=`<div style="color:var(--teal);padding:3px 0;border-bottom:1px solid #eee">✅ <b>${vtr}</b> | <b>${fil}</b> | <b>${eq}</b> | ${def} | O.S: <b>${osNum}</b> gravado!</div>`;
+                    logBox.innerHTML+=`<div style="color:var(--teal);padding:3px 0;border-bottom:1px solid #eee">✅ <b>${vtr}</b> | ${chamadoRef||'-'} | <b>${fil}</b> | <b>${eq}</b> (${def}) | O.S: <b>${osNum}</b></div>`;
                 }
             }catch(e){
                 erros++;
