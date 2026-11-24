@@ -103,13 +103,13 @@
     <div id="boxLoteChamados" class="lote-box">
         <div class="form-row" style="margin-bottom:8px">
             <div>
-                <label style="margin:0 0 4px 0;font-size:10px">Filial</label>
+                <label style="margin:0 0 4px 0;font-size:10px">Filial Padrão (se omitida)</label>
                 <select id="loteFilial" style="padding:7px 8px;font-size:12px;font-weight:bold;color:var(--teal)">
                     <option value="Matriz">Matriz</option><option value="AM">AM</option><option value="MA">MA</option><option value="PE">PE</option><option value="BA">BA</option><option value="BAR">BAR</option><option value="PEB">PEB</option><option value="CE">CE</option>
                 </select>
             </div>
             <div>
-                <label style="margin:0 0 4px 0;font-size:10px">Equipamento Padrão (se 3 colunas)</label>
+                <label style="margin:0 0 4px 0;font-size:10px">Equipamento Padrão (se omitido)</label>
                 <select id="loteEquipamento" style="padding:7px 8px;font-size:12px;font-weight:bold;color:var(--teal)">
                     <option value="AUTO">Automático (pelo defeito)</option>
                     <option value="Vídeo / I.A.">Vídeo / I.A.</option>
@@ -120,10 +120,11 @@
         </div>
         <p style="font-size:11px;color:#555;margin:0 0 8px 0;line-height:1.4">
             Cole do Excel ou digite por linha separando por <code>;</code>:<br>
+            • <b>5 colunas:</b> <span style="color:var(--teal);font-weight:600">Veículo; Filial; Equipamento; Defeito; Chamado</span><br>
             • <b>4 colunas:</b> <span style="color:var(--teal);font-weight:600">Veículo; Equipamento; Defeito; Chamado</span><br>
             • <b>3 colunas:</b> <span style="color:var(--teal);font-weight:600">Veículo; Defeito; Chamado</span>
         </p>
-        <textarea id="txtLoteChamados" rows="5" placeholder="1045; Vídeo / I.A.; Câmera fadiga desalinhada; OS-98412&#10;2088; Telemetria; GPS sem comunicação; OS-98415&#10;3110; Rede CAN; Manutenção Leitora; OS-98420" style="font-size:12px;font-family:monospace"></textarea>
+        <textarea id="txtLoteChamados" rows="5" placeholder="1045; PE; Vídeo / I.A.; Câmera fadiga desalinhada; OS-98412&#10;2088; BA; Telemetria; GPS sem comunicação; OS-98415&#10;3110; CE; Rede CAN; Manutenção Leitora; OS-98420" style="font-size:12px;font-family:monospace"></textarea>
         <div style="display:flex;gap:8px;margin-top:8px">
             <button type="button" id="btnProcLote" class="btn-submit" style="margin:0;flex:2;padding:10px;font-size:13px" onclick="processarLoteChamados()"><i class="ph ph-paper-plane-tilt"></i> <span class="btn-text">Processar Lote</span><div class="btn-loader"></div></button>
             <button type="button" class="btn-submit" style="margin:0;flex:1;padding:10px;font-size:12px;background:#666" onclick="$('txtLoteChamados').value='';$('logLoteChamados').style.display='none'">Limpar</button>
@@ -222,6 +223,15 @@
         else{$(d==='equipe'?'navEquipe':(d==='historico'?'navHist':'navChamados')).classList.add('active');switchView('viewAdmin');$('abaAdminUsers').style.display=d==='equipe'?'block':'none';$('abaAdminHist').style.display=d==='historico'?'block':'none';$('abaAdminChamados').style.display=d==='chamados'?'block':'none';if(d==='historico'&&!window.lastSearchData.length)buscarHistoricoAdmin();if(d==='chamados'){if(ls.rcr_filial)$('loteFilial').value=ls.rcr_filial;buscarChamadosAdmin(true)}}
     };
 
+    const normalizarFilial = (rawFilial, padraoSelect) => {
+        const s = (rawFilial || '').trim();
+        if (!s) return padraoSelect || "Matriz";
+        const up = s.toUpperCase();
+        if (up === 'MATRIZ' || up === 'MTZ') return "Matriz";
+        if (['AM', 'MA', 'PE', 'BA', 'BAR', 'PEB', 'CE'].includes(up)) return up;
+        return s;
+    };
+
     const normalizarEquipamento = (rawEq, defeitoTexto, padraoSelect) => {
         const mapEq = (txt) => {
             const s = (txt || '').toLowerCase().trim();
@@ -231,8 +241,8 @@
             if (s.includes('can') || s.includes('leitor') || s.includes('sirene') || s.includes('velocidade') || s.includes('quilometragem')) return "Rede CAN";
             return rawEq.trim();
         };
-        const explícito = mapEq(rawEq);
-        if (explícito) return explícito;
+        const explicito = mapEq(rawEq);
+        if (explicito) return explicito;
         if (padraoSelect && padraoSelect !== 'AUTO') return padraoSelect;
         return mapEq(defeitoTexto) || "Vídeo / I.A.";
     };
@@ -251,7 +261,7 @@
         const nD=new Date();
         const dtStr=nD.getFullYear()+'-'+String(nD.getMonth()+1).padStart(2,'0')+'-'+String(nD.getDate()).padStart(2,'0');
         const hrStr=String(nD.getHours()).padStart(2,'0')+':'+String(nD.getMinutes()).padStart(2,'0');
-        const filialLote=$('loteFilial').value || ls.rcr_filial || "Matriz";
+        const filialPadrao=$('loteFilial').value || ls.rcr_filial || "Matriz";
         const eqPadrao=$('loteEquipamento').value || "AUTO";
         const resp=(ls.rcr_user||ls.rcr_email||"Operador").split(' ')[0];
 
@@ -261,18 +271,24 @@
             const linha=linhas[idx];
             const cols=linha.includes('\t') ? linha.split('\t').map(c=>c.trim()) : linha.split(';').map(c=>c.trim());
 
-            let vtr="", eq="", def="", osNum="";
-            if(cols.length >= 4){
+            let vtr="", fil="", eq="", def="", osNum="";
+            if(cols.length >= 5){
+                [vtr, fil, eq, def, osNum] = cols;
+                fil = normalizarFilial(fil, filialPadrao);
+                eq = normalizarEquipamento(eq, def, eqPadrao);
+            } else if(cols.length === 4){
                 [vtr, eq, def, osNum] = cols;
+                fil = filialPadrao;
                 eq = normalizarEquipamento(eq, def, eqPadrao);
             } else if(cols.length === 3){
                 [vtr, def, osNum] = cols;
+                fil = filialPadrao;
                 eq = normalizarEquipamento("", def, eqPadrao);
             }
 
             if(!vtr || !def || !osNum){
                 erros++;
-                logBox.innerHTML+=`<div style="color:var(--red);padding:3px 0;border-bottom:1px solid #eee">❌ Linha ${idx+1} inválida (use Veículo; [Equipamento]; Defeito; Chamado): <i>${linha}</i></div>`;
+                logBox.innerHTML+=`<div style="color:var(--red);padding:3px 0;border-bottom:1px solid #eee">❌ Linha ${idx+1} inválida (use Veículo; [Filial]; [Equipamento]; Defeito; Chamado): <i>${linha}</i></div>`;
                 continue;
             }
 
@@ -284,7 +300,7 @@
                 veiculo:vtr,
                 data:dtStr,
                 hora:hrStr,
-                filial:filialLote,
+                filial:fil,
                 responsavel:resp,
                 chamado:`${def}: ${osNum}`,
                 email_logado:ls.rcr_email,
@@ -299,10 +315,10 @@
                 const r=await api(payload);
                 if(r.erro){
                     erros++;
-                    logBox.innerHTML+=`<div style="color:var(--red);padding:3px 0;border-bottom:1px solid #eee">⚠️ <b>${vtr}</b> [${eq}] (${osNum}): ${r.erro}</div>`;
+                    logBox.innerHTML+=`<div style="color:var(--red);padding:3px 0;border-bottom:1px solid #eee">⚠️ <b>${vtr}</b> (${fil}) [${eq}] (${osNum}): ${r.erro}</div>`;
                 } else {
                     sucessos++;
-                    logBox.innerHTML+=`<div style="color:var(--teal);padding:3px 0;border-bottom:1px solid #eee">✅ <b>${vtr}</b> | <b>${eq}</b> | ${def} | O.S: <b>${osNum}</b> gravado!</div>`;
+                    logBox.innerHTML+=`<div style="color:var(--teal);padding:3px 0;border-bottom:1px solid #eee">✅ <b>${vtr}</b> | <b>${fil}</b> | <b>${eq}</b> | ${def} | O.S: <b>${osNum}</b> gravado!</div>`;
                 }
             }catch(e){
                 erros++;
