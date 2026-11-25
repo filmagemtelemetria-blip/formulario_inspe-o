@@ -120,9 +120,9 @@
         </div>
         <p style="font-size:11px;color:#555;margin:0 0 8px 0;line-height:1.4">
             Cole do Excel ou digite uma linha por registro separando por <code>;</code> na ordem:<br>
-            <span style="color:var(--teal);font-weight:600">Veiculo | Chamado | Filial | Equipamento (Defeito) | Nº O.S</span>
+            <span style="color:var(--teal);font-weight:600">Veiculo | Nº O.S | Filial | Equipamento (Defeito)</span>
         </p>
-        <textarea id="txtLoteChamados" rows="5" placeholder="1045; TKT-5012; PE; Vídeo / I.A. (Câmera fadiga desalinhada); OS-98412&#10;2088; TKT-5013; BA; Telemetria (GPS sem comunicação); OS-98415&#10;3110; TKT-5014; CE; Rede CAN (Manutenção Leitora); OS-98420" style="font-size:12px;font-family:monospace"></textarea>
+        <textarea id="txtLoteChamados" rows="5" placeholder="1045; OS-98412; PE; Vídeo / I.A. (Câmera fadiga desalinhada)&#10;2088; OS-98415; BA; Telemetria (GPS sem comunicação)&#10;3110; OS-98420; CE; Rede CAN (Manutenção Leitora)" style="font-size:12px;font-family:monospace"></textarea>
         <div style="display:flex;gap:8px;margin-top:8px">
             <button type="button" id="btnProcLote" class="btn-submit" style="margin:0;flex:2;padding:10px;font-size:13px" onclick="processarLoteChamados()"><i class="ph ph-paper-plane-tilt"></i> <span class="btn-text">Processar Lote</span><div class="btn-loader"></div></button>
             <button type="button" class="btn-submit" style="margin:0;flex:1;padding:10px;font-size:12px;background:#666" onclick="$('txtLoteChamados').value='';$('logLoteChamados').style.display='none'">Limpar</button>
@@ -280,14 +280,12 @@
             const linha=linhas[idx];
             const cols=linha.includes('\t') ? linha.split('\t').map(c=>c.trim()) : linha.split(';').map(c=>c.trim());
 
-            // Ordem: Veiculo | Chamado | Filial | Equipamento (Defeito) | Nº O.S
-            let vtr="", chamadoRef="", fil="", eqDefRaw="", osNum="";
-            if(cols.length >= 5){
-                [vtr, chamadoRef, fil, eqDefRaw, osNum] = cols;
-            } else if(cols.length === 4){
-                [vtr, chamadoRef, eqDefRaw, osNum] = cols;
+            // Ordem: Veiculo | Nº O.S | Filial | Equipamento (Defeito)
+            let vtr="", osNum="", fil="", eqDefRaw="";
+            if(cols.length >= 4){
+                [vtr, osNum, fil, eqDefRaw] = cols;
             } else if(cols.length === 3){
-                [vtr, eqDefRaw, osNum] = cols;
+                [vtr, osNum, eqDefRaw] = cols;
             }
 
             fil = normalizarFilial(fil, filialPadrao);
@@ -297,14 +295,14 @@
 
             if(!vtr || !def || !osNum){
                 erros++;
-                logBox.innerHTML+=`<div style="color:var(--red);padding:3px 0;border-bottom:1px solid #eee">❌ Linha ${idx+1} inválida (use Veiculo | Chamado | Filial | Equipamento (Defeito) | Nº O.S): <i>${linha}</i></div>`;
+                logBox.innerHTML+=`<div style="color:var(--red);padding:3px 0;border-bottom:1px solid #eee">❌ Linha ${idx+1} inválida (use Veiculo | Nº O.S | Filial | Equipamento (Defeito)): <i>${linha}</i></div>`;
                 continue;
             }
 
             vtr=vtr.toUpperCase().replace(/[^A-Z0-9-]/g,'');
             if(vtr.length===7 && /^[A-Z]{3}[0-9]{4}$/.test(vtr)) vtr=vtr.slice(0,3)+'-'+vtr.slice(3);
 
-            const chamadoTexto = chamadoRef ? `${chamadoRef} - ${def}: ${osNum}` : `${def}: ${osNum}`;
+            const chamadoTexto = `${def}: ${osNum}`;
 
             const payload={
                 action:"salvar_inspecao",
@@ -317,7 +315,7 @@
                 email_logado:ls.rcr_email,
                 equipamento:eq,
                 osList:[osNum],
-                defeito:`⚠️ ${def}\nEquipamento: ${eq}${chamadoRef ? `\nChamado: ${chamadoRef}` : ''}\nParecer: Lançamento em lote`,
+                defeito:`⚠️ ${def}\nEquipamento: ${eq}\nParecer: Lançamento em lote`,
                 solucao:"NAO",
                 fotosLinks:"Sem fotos"
             };
@@ -329,7 +327,7 @@
                     logBox.innerHTML+=`<div style="color:var(--red);padding:3px 0;border-bottom:1px solid #eee">⚠️ <b>${vtr}</b> (${fil}) [${eq}]: ${r.erro}</div>`;
                 } else {
                     sucessos++;
-                    logBox.innerHTML+=`<div style="color:var(--teal);padding:3px 0;border-bottom:1px solid #eee">✅ <b>${vtr}</b> | ${chamadoRef||'-'} | <b>${fil}</b> | <b>${eq}</b> (${def}) | O.S: <b>${osNum}</b></div>`;
+                    logBox.innerHTML+=`<div style="color:var(--teal);padding:3px 0;border-bottom:1px solid #eee">✅ <b>${vtr}</b> | Nº O.S: <b>${osNum}</b> | <b>${fil}</b> | <b>${eq}</b> (${def})</div>`;
                 }
             }catch(e){
                 erros++;
@@ -511,7 +509,7 @@
 
     const upC=async(b,n)=>{const fd=new FormData();fd.append("file",b);fd.append("upload_preset",C_PRESET);fd.append("public_id",n);return(await(await fetch(`https://api.cloudinary.com/v1_1/${C_NAME}/image/upload`,{method:"POST",body:fd})).json()).secure_url};
     const mudarMinhaSenha=async()=>{const nova=prompt("🔑 Alterar Minha Senha\n\nDigite a sua nova senha:");if(!nova||nova.trim()==='')return;const btn=document.querySelector('button[onclick="mudarMinhaSenha()"]');if(btn){btn.innerHTML='<i class="ph ph-circle-notch spin"></i>';btn.disabled=true}try{const r=await api({action:"alterar_senha",targetEmail:ls.rcr_email,novaSenha:nova});alert(r.sucesso?"✅ Senha atualizada!":"⚠️ "+r.erro)}catch(e){alert("⚠️ Erro.")}if(btn){btn.innerHTML='<i class="ph ph-key"></i> SENHA';btn.disabled=false}};
-    const alterarSenhaAdmin=async(email)=>{const novaSenha=prompt(`🔄 Reset de senha:\n${email}\n\nDigite a nova senha:`);if(!novaSenha||novaSenha.trim()==='')return;try{const r=await api({action:"alterar_senha",targetEmail:email,novaSenha:nova});alert(r.sucesso?"✅ Senha alterada!":"⚠️ "+r.erro)}catch(e){alert("⚠️ Erro.")}};
+    const alterarSenhaAdmin=async(email)=>{const novaSenha=prompt(`🔄 Reset de senha:\n${email}\n\nDigite a nova senha:`);if(!novaSenha||nova.trim()==='')return;try{const r=await api({action:"alterar_senha",targetEmail:email,novaSenha:nova});alert(r.sucesso?"✅ Senha alterada!":"⚠️ "+r.erro)}catch(e){alert("⚠️ Erro.")}};
     const carregarUsuariosAdmin=async()=>{try{const r=await api({action:"get_usuarios"});if(r.sucesso){const tAt=r.usuarios.filter(u=>u.status==='Ativo').length;$('stTotal').innerText=r.usuarios.length;$('stAtivos').innerText=tAt;$('stInativos').innerText=r.usuarios.length-tAt;$('adminUserList').innerHTML=r.usuarios.length===0?'<div style="text-align:center;color:#999;padding:10px">Vazio.</div>':r.usuarios.map((u,i)=>`<div class="user-manage-item"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px"><div><b>${u.nome}</b> <span style="font-size:10px;color:#666">(${u.filial})</span><br><span style="color:#666;font-size:11px">${u.email}</span></div><button type="button" style="background:var(--orange);border:none;border-radius:4px;padding:4px 8px;color:#fff;font-size:10px;font-weight:bold;cursor:pointer" onclick="alterarSenhaAdmin('${u.email}')"><i class="ph ph-arrow-counter-clockwise"></i> RESET</button></div><div class="row-flex"><div style="flex:1"><select onchange="api({action:'atualizar_usuario',targetEmail:'${u.email}',targetStatus:$('s_${i}').value,targetNivel:this.value})"><option ${u.nivel==='OPERADOR'?'selected':''}>OPERADOR</option><option ${u.nivel==='ADMINISTRADOR'?'selected':''}>ADMINISTRADOR</option></select></div><div style="flex:1"><select id="s_${i}" onchange="api({action:'atualizar_usuario',targetEmail:'${u.email}',targetStatus:this.value,targetNivel:this.previousSibling.value})"><option ${u.status==='Ativo'?'selected':''}>Ativo ✅</option><option ${u.status==='Inativo'?'selected':''}>Bloqueado 🚫</option></select></div></div></div>`).join('')}}catch(e){}};
 
     const buscarHistoricoAdmin=async()=>{setBtn('btnBuscaHist',true);$('adminHistList').innerHTML='<div style="padding:20px;text-align:center"><i class="ph ph-circle-notch spin" style="font-size:24px;display:inline-block"></i> Buscando...</div>';$('btnExport').style.display='none';try{const r=await api({action:"consultar_historico",tipo:$('filtroTipo').value,termo:$('filtroTermo').value,dtIni:$('filtroDtIni').value,dtFim:$('filtroDtFim').value,filial:ls.rcr_filial});if(r.v!=="6.3"){$('adminHistList').innerHTML=`<div style="text-align:center;color:var(--red);padding:20px">⚠️ Atualize o Apps Script para V6.3!</div>`;setBtn('btnBuscaHist',false);return}if(r.sucesso){window.lastSearchData=r.historico;if(!r.historico.length){$('adminHistList').innerHTML='<div style="text-align:center;color:#999;padding:20px">Nenhum registro.</div>'}else{$('btnExport').style.display='block';$('adminHistList').innerHTML=r.historico.map((h,i)=>{let badge=(h.os&&h.os!=="-"&&h.os!=="N/A"&&h.os!=="")?`<span class="os-badge" style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${h.os}</span>`:`<span class="ok-badge">OK</span>`;return `<div class="user-manage-item" onclick="abrirDetalheOS(${i})"><div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-weight:bold;color:var(--teal);font-size:14px">FROTA: ${h.veiculo}</span>${badge}</div><div style="font-size:11px;color:#666;margin-bottom:5px">📅 ${h.data} às ${h.hora} | 👤 ${h.responsavel}</div><div style="font-size:11px;color:#333;font-style:italic">[${h.equipamento}] - ${h.defeito.substring(0,45)}...</div></div>`}).join('')}}}catch(e){$('adminHistList').innerHTML='<div style="text-align:center;color:var(--red);padding:20px">Falha.</div>'}setBtn('btnBuscaHist',false)};
@@ -519,7 +517,7 @@
 
     const baixarCSV=(nome,csv)=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff",csv],{type:'text/csv;charset=utf-8;'}));a.download=nome;a.click()};
     const exportarCSV=()=>{if(!window.lastSearchData.length)return;let c="Data;Hora;Veiculo;Filial;Operador;Tipo_Equipamento;N_OS;Solucao_Imediata;Defeito_Descricao;Links_Fotos\n";window.lastSearchData.forEach(h=>c+=`${h.data};${h.hora};${h.veiculo};${h.filial};${h.responsavel};${h.equipamento};${h.os};${h.solucao};${h.defeito.replace(/\n/g," | ").replace(/;/g,",")};${h.links.replace(/\n/g," | ")}\n`);baixarCSV(`Export_${Date.now()}.csv`,c)};
-    const exportarBaseCompleta=async()=>{setBtn('btnExportTudo',true);$('adminHistList').innerHTML='<div style="text-align:center;color:#999;padding:20px"><i class="ph ph-circle-notch spin" style="font-size:24px;display:inline-block"></i> Processando...</div>';try{const r=await api({action:"exportar_tudo", filial:ls.rcr_filial});if(r.sucesso&&r.csv){baixarCSV(`Base_${Date.now()}.csv`,r.csv);buscarHistoricoAdmin()}else $('adminHistList').innerHTML='<div style="text-align:center;color:var(--red);padding:20px">Erro.</div>'}catch(e){$('adminHistList').innerHTML='<div style="text-align:center;color:var(--red);padding:20px">Falha.</div>'}setBtn('btnExportTudo',false)};
+    const exportarBaseCompleta=async()=>{setBtn('btnExportTudo',true);$('adminHistList').innerHTML='<div style="padding:20px;text-align:center"><i class="ph ph-circle-notch spin" style="font-size:24px;display:inline-block"></i> Processando...</div>';try{const r=await api({action:"exportar_tudo", filial:ls.rcr_filial});if(r.sucesso&&r.csv){baixarCSV(`Base_${Date.now()}.csv`,r.csv);buscarHistoricoAdmin()}else $('adminHistList').innerHTML='<div style="text-align:center;color:var(--red);padding:20px">Erro.</div>'}catch(e){$('adminHistList').innerHTML='<div style="text-align:center;color:var(--red);padding:20px">Falha.</div>'}setBtn('btnExportTudo',false)};
 
     const exportarChamadosExcel=()=>{let arr=getFilteredChamados();if(!arr.length)return alert("Vazio.");let csv="Data;FROTA;O.S.;Descricao;Status\n";arr.forEach(h=>{let def=h.defeito.replace(/\n/g," | ").replace(/;/g,",");csv+=`${h.data};${h.veiculo};${h.os};${def};${h.status}\n`});baixarCSV(`Chamados_${Date.now()}.csv`,csv)};
     const exportarChamadosPDF=()=>{let arr=getFilteredChamados();if(!arr.length)return alert("Vazio.");const win=window.open("","_blank");let th=arr.map(h=>{let s=h.status.toUpperCase(),isF=s.includes('FECHADA')||s.includes('FECHADO')||s.includes('CONCLU')||s.includes('RESOLV')||s.includes('FINALIZ'),c=isF?'#147b6a':'#d93025';return `<tr><td>${h.data}</td><td>${h.veiculo}</td><td>${h.os}</td><td>${h.defeito}</td><td style="color:${c};font-weight:bold">${h.status}</td></tr>`}).join("");win.document.write(`<html><head><title>Relatório</title><style>body{font-family:Arial,sans-serif;font-size:12px;margin:20px}h2{color:#147b6a;text-align:center}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ddd;padding:8px}th{background:#147b6a;color:#fff}</style></head><body><h2>Chamados - RCR Frota</h2><table><thead><tr><th>Data</th><th>FROTA</th><th>O.S.</th><th>Defeito</th><th>Status</th></tr></thead><tbody>${th}</tbody></table><script>window.onload=function(){window.print();window.close()};<\/script></body></html>`);win.document.close()};
