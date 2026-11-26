@@ -11,21 +11,25 @@
         .perf-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: var(--sub-bg); border-radius: 6px; margin-bottom: 6px; font-size: 12px; border-left:3px solid var(--teal); }
         .perf-bar-bg { width: 100%; background: #e0e0e0; height: 6px; border-radius: 3px; margin-top: 5px; overflow: hidden; display: flex; }
         .perf-bar-ok { height: 100%; background: var(--teal); } .perf-bar-err { height: 100%; background: var(--red); }
-        .filter-box { background: rgba(0,0,0,0.02); padding: 12px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 15px; }
+        .filter-box { background: var(--sub-bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 15px; }
         .btn-filter { background:var(--card-bg); border:1px solid var(--border); padding:6px 12px; border-radius:15px; font-size:11px; font-weight:700; color:var(--teal); cursor:pointer; white-space:nowrap; }
-        .btn-filter:hover { background:rgba(20,123,106,0.1); }
+        .btn-filter:hover, .btn-filter.active-filt { background:var(--teal); color:#fff; border-color:var(--teal); }
         .live-dot { width:8px; height:8px; background:#4eff7e; border-radius:50%; display:inline-block; margin-right:4px; box-shadow: 0 0 0 rgba(78,255,126,0.8); animation: pulse-green 1.5s infinite; }
         @keyframes pulse-green { 0% {box-shadow: 0 0 0 0 rgba(78,255,126,0.7)} 70% {box-shadow: 0 0 0 6px rgba(78,255,126,0)} 100% {box-shadow: 0 0 0 0 rgba(78,255,126,0)} }
         .chart-wrapper { display: flex; align-items: stretch; justify-content: center; gap: 10px; margin-bottom: 15px; }
         .donut-box { display: flex; flex-direction: column; align-items: center; background: var(--card-bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border); flex: 1; box-shadow: 0 2px 6px rgba(0,0,0,0.03); }
         .donut { width: 90px; height: 90px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; transition: background 0.5s; background: #e0e0e0; }
         .donut-inner { width: 65px; height: 65px; background: var(--card-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-direction: column; font-weight: 800; font-size: 16px; color: var(--text); }
-        .donut-lbl { font-size: 12px; font-weight: 800; color: #333; text-transform: uppercase; text-align: center; margin-bottom: 15px; }
+        .donut-lbl { font-size: 12px; font-weight: 800; color: var(--text); text-transform: uppercase; text-align: center; margin-bottom: 15px; }
         .legend-box { display: flex; gap: 10px; font-size: 9px; font-weight: 700; margin-top: 5px; color:#666; }
         .leg-item { display: flex; align-items: center; gap: 4px; }
         .dot { width: 8px; height: 8px; border-radius: 50%; }
         .lote-box { display: none; background: var(--sub-bg); border: 1px solid var(--teal); border-radius: 10px; padding: 15px; margin-bottom: 15px; }
         .lote-log { max-height: 150px; overflow-y: auto; font-size: 11px; margin-top: 10px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; padding: 8px; display: none; }
+        .hist-user-item { background: var(--card-bg); border: 1px solid var(--border); border-left: 3px solid var(--teal); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; font-size: 11px; cursor: pointer; transition: transform 0.15s; }
+        .hist-user-item:hover { transform: translateX(2px); }
+        .hist-user-item.anomalia { border-left-color: var(--red); }
+        .pill-tag { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 10px; font-weight: 800; }
 </style>
 </head><body>
 <div class="elvis-sig">By Elvis_Tech</div>
@@ -41,17 +45,34 @@
 <div class="card" id="viewPainel" style="max-width:650px;">
     <div class="header" style="margin-bottom:10px;"><h2>PAINEL OPERACIONAL</h2></div>
     <div class="filter-box">
-        <label style="margin-bottom:8px; display:block;">Filtros Rápidos</label>
+        <label style="margin-bottom:8px; display:block;">Período e Usuário</label>
         <div style="display:flex; gap:5px; margin-bottom:10px; overflow-x:auto; padding-bottom:5px;">
-            <button class="btn-filter" onclick="qFilt(0)">Total (Tudo)</button>
-            <button class="btn-filter" onclick="qFilt('hoje')">Hoje</button>
-            <button class="btn-filter" onclick="qFilt(1)">Ontem</button>
-            <button class="btn-filter" onclick="qFilt(7)">Últimos 7 Dias</button>
-            <button class="btn-filter" onclick="qFilt(30)">Este Mês</button>
+            <button type="button" class="btn-filter" id="btnQFilt0" onclick="qFilt(0)">Total (Tudo)</button>
+            <button type="button" class="btn-filter" id="btnQFiltHoje" onclick="qFilt('hoje')">Hoje</button>
+            <button type="button" class="btn-filter" id="btnQFilt1" onclick="qFilt(1)">Ontem</button>
+            <button type="button" class="btn-filter" id="btnQFilt7" onclick="qFilt(7)">Últimos 7 Dias</button>
+            <button type="button" class="btn-filter" id="btnQFilt30" onclick="qFilt(30)">Este Mês</button>
         </div>
-        <div class="form-row">
-            <div><input type="date" id="dashDtIni" onchange="carregarDashboard()"></div>
-            <div><input type="date" id="dashDtFim" onchange="carregarDashboard()"></div>
+        <div class="form-row" style="margin-bottom:10px;">
+            <div>
+                <label style="font-size:10px;margin-bottom:3px;">Data Inicial</label>
+                <input type="date" id="dashDtIni" onchange="aplicarFiltrosPainel()">
+            </div>
+            <div>
+                <label style="font-size:10px;margin-bottom:3px;">Data Final</label>
+                <input type="date" id="dashDtFim" onchange="aplicarFiltrosPainel()">
+            </div>
+        </div>
+        <div class="form-row" style="align-items:flex-end;">
+            <div style="flex:2;">
+                <label style="font-size:10px;margin-bottom:3px;">Filtrar por Usuário</label>
+                <select id="dashUsuario" onchange="aplicarFiltrosPainel()" style="padding:10px;font-size:13px;font-weight:700;color:var(--teal);">
+                    <option value="TODOS">Todos os Usuários</option>
+                </select>
+            </div>
+            <div style="flex:1;">
+                <button type="button" class="btn-submit" style="margin:0;padding:10px;font-size:12px;" onclick="carregarDashboard(true)"><i class="ph ph-arrows-clockwise"></i> Atualizar</button>
+            </div>
         </div>
     </div>
     <div style="text-align:center; font-size:11px; margin-bottom:15px; color:#666;" id="painelSubtitle">Carregando métricas...</div>
@@ -85,6 +106,8 @@
     <div id="dashColaboradores" style="margin-bottom:15px;"></div>
     <h4 class="section-title" id="titleFilialPerf" style="display:none;"><i class="ph ph-buildings"></i> Desempenho por Filial</h4>
     <div id="dashFiliais" style="margin-bottom:15px; display:none;"></div>
+    <h4 class="section-title" id="titleHistUsuario"><i class="ph ph-clock-counter-clockwise"></i> Histórico de Atividade do Usuário</h4>
+    <div id="dashHistoricoUsuario" style="margin-bottom:15px; max-height:320px; overflow-y:auto;"></div>
     <div style="font-size: 10px; color: var(--teal); font-weight:bold; text-align: center; margin-top: 15px; background:var(--sub-bg); padding:8px; border-radius:20px;">
         <span class="live-dot"></span> Monitorização Live Ativa
     </div>
@@ -120,9 +143,9 @@
         </div>
         <p style="font-size:11px;color:#555;margin:0 0 8px 0;line-height:1.4">
             Cole do Excel ou digite uma linha por registro separando por <code>;</code> na ordem:<br>
-            <span style="color:var(--teal);font-weight:600">Veiculo | Nº O.S | Filial | Equipamento (Defeito)</span>
+            <span style="color:var(--teal);font-weight:600">Veiculo | Nº O.S | Filial | Defeito | Descrição (opcional)</span>
         </p>
-        <textarea id="txtLoteChamados" rows="5" placeholder="1045; OS-98412; PE; Vídeo / I.A. (Câmera fadiga desalinhada)&#10;2088; OS-98415; BA; Telemetria (GPS sem comunicação)&#10;3110; OS-98420; CE; Rede CAN (Manutenção Leitora)" style="font-size:12px;font-family:monospace"></textarea>
+        <textarea id="txtLoteChamados" rows="5" placeholder="1234; 654123; pe; gps inoperante&#10;1000; 22222; PEB; manutenção de cam aux; câmera traseira sem imagem&#10;2088; OS-98415; BA; GPS sem comunicação" style="font-size:12px;font-family:monospace"></textarea>
         <div style="display:flex;gap:8px;margin-top:8px">
             <button type="button" id="btnProcLote" class="btn-submit" style="margin:0;flex:2;padding:10px;font-size:13px" onclick="processarLoteChamados()"><i class="ph ph-paper-plane-tilt"></i> <span class="btn-text">Processar Lote</span><div class="btn-loader"></div></button>
             <button type="button" class="btn-submit" style="margin:0;flex:1;padding:10px;font-size:12px;background:#666" onclick="$('txtLoteChamados').value='';$('logLoteChamados').style.display='none'">Limpar</button>
@@ -179,6 +202,7 @@
     const $=id=>document.getElementById(id);
     let cImgs={comp:[],ant:[],dep:[]}, ed={t:'',i:0}, ctxEd, cvsEd, draw=false, imgF=new Image();
     window.lastSearchData=[]; window.lastChamadosData=[]; let selDefects=[];
+    window.painelRawCache = null;
 
     const idb={
         db:null,
@@ -217,7 +241,7 @@
         if(window.dashInterval) clearInterval(window.dashInterval);
         document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
         if(d==='auditoria'){$('navAuditoria').classList.add('active');switchView('viewApp')}
-        else if(d==='painel'){$('navPainel').classList.add('active');switchView('viewPainel');carregarDashboard();window.dashInterval=setInterval(carregarDashboard,30000)}
+        else if(d==='painel'){$('navPainel').classList.add('active');switchView('viewPainel');carregarDashboard(true);window.dashInterval=setInterval(()=>carregarDashboard(false),30000)}
         else{$(d==='equipe'?'navEquipe':(d==='historico'?'navHist':'navChamados')).classList.add('active');switchView('viewAdmin');$('abaAdminUsers').style.display=d==='equipe'?'block':'none';$('abaAdminHist').style.display=d==='historico'?'block':'none';$('abaAdminChamados').style.display=d==='chamados'?'block':'none';if(d==='historico'&&!window.lastSearchData.length)buscarHistoricoAdmin();if(d==='chamados'){if(ls.rcr_filial)$('loteFilial').value=ls.rcr_filial;buscarChamadosAdmin(true)}}
     };
 
@@ -232,27 +256,46 @@
 
     const classificarEquipamento = (txt, padraoSelect) => {
         const s = (txt || '').toLowerCase().trim();
-        if (s.includes('vídeo') || s.includes('video') || s.includes('câmera') || s.includes('camera') || s.includes('dvr') || s.includes('i.a') || s.includes('ia')) return "Vídeo / I.A.";
+        if (s.includes('vídeo') || s.includes('video') || s.includes('câmera') || s.includes('camera') || s.includes('cam ') || s.startsWith('cam') || s.includes('dvr') || s.includes('i.a') || s.includes('ia') || s.includes('fadiga') || s.includes('colisão') || s.includes('colisao') || s.includes('auxiliar') || s.includes('aux')) return "Vídeo / I.A.";
         if (s.includes('telemetria') || s.includes('gps') || s.includes('rastreador')) return "Telemetria";
         if (s.includes('can') || s.includes('leitor') || s.includes('sirene') || s.includes('velocidade') || s.includes('quilometragem')) return "Rede CAN";
         if (padraoSelect && padraoSelect !== 'AUTO') return padraoSelect;
-        return "Vídeo / I.A.";
+        return "";
     };
 
-    const parseEquipDefeito = (rawCol, padraoSelect) => {
+    const parseEquipDefeito = (rawCol, descricaoExtra, padraoSelect) => {
         const texto = (rawCol || '').trim();
+        let desc = (descricaoExtra || '').trim();
+
         const match = texto.match(/^([^\(]+)\(([^\)]+)\)\s*$/);
+        let eq = "";
+        let def = "";
+
         if (match) {
             const eqParte = match[1].trim();
             const defParte = match[2].trim();
-            return {
-                eq: classificarEquipamento(eqParte || defParte, padraoSelect),
-                def: defParte || eqParte
-            };
+            eq = classificarEquipamento(eqParte, padraoSelect) || classificarEquipamento(defParte, padraoSelect);
+            def = defParte || eqParte;
+        } else {
+            const sepMatch = texto.match(/^(.+?)\s+(?:—|–|\s-\s|\s\|\s)\s*(.+)$/);
+            if (sepMatch && !desc) {
+                def = sepMatch[1].trim();
+                desc = sepMatch[2].trim();
+                eq = classificarEquipamento(`${def} ${desc}`, padraoSelect);
+            } else {
+                def = texto;
+                eq = classificarEquipamento(`${def} ${desc}`, padraoSelect);
+            }
         }
+
+        const defUpper = def.toUpperCase();
+        const descUpper = desc.toUpperCase();
+        const defeitoFinal = descUpper ? `${defUpper}: ${descUpper}` : defUpper;
+
         return {
-            eq: classificarEquipamento(texto, padraoSelect),
-            def: texto
+            eq: eq || (padraoSelect && padraoSelect !== 'AUTO' ? padraoSelect : "-"),
+            defUpper,
+            defeitoFinal
         };
     };
 
@@ -280,29 +323,32 @@
             const linha=linhas[idx];
             const cols=linha.includes('\t') ? linha.split('\t').map(c=>c.trim()) : linha.split(';').map(c=>c.trim());
 
-            // Ordem: Veiculo | Nº O.S | Filial | Equipamento (Defeito)
-            let vtr="", osNum="", fil="", eqDefRaw="";
-            if(cols.length >= 4){
+            let vtr="", osNum="", fil="", eqDefRaw="", descExtra="";
+            if(cols.length >= 5){
+                [vtr, osNum, fil, eqDefRaw, ...rest] = cols;
+                descExtra = rest.join(' | ').trim();
+            } else if(cols.length === 4){
                 [vtr, osNum, fil, eqDefRaw] = cols;
             } else if(cols.length === 3){
                 [vtr, osNum, eqDefRaw] = cols;
             }
 
             fil = normalizarFilial(fil, filialPadrao);
-            const parsed = parseEquipDefeito(eqDefRaw, eqPadrao);
+            const parsed = parseEquipDefeito(eqDefRaw, descExtra, eqPadrao);
             const eq = parsed.eq;
-            const def = parsed.def;
+            const defUpper = parsed.defUpper;
+            const defeitoFinal = parsed.defeitoFinal;
 
-            if(!vtr || !def || !osNum){
+            if(!vtr || !defUpper || !osNum){
                 erros++;
-                logBox.innerHTML+=`<div style="color:var(--red);padding:3px 0;border-bottom:1px solid #eee">❌ Linha ${idx+1} inválida (use Veiculo | Nº O.S | Filial | Equipamento (Defeito)): <i>${linha}</i></div>`;
+                logBox.innerHTML+=`<div style="color:var(--red);padding:3px 0;border-bottom:1px solid #eee">❌ Linha ${idx+1} inválida (use Veiculo | Nº O.S | Filial | Defeito | Descrição): <i>${linha}</i></div>`;
                 continue;
             }
 
             vtr=vtr.toUpperCase().replace(/[^A-Z0-9-]/g,'');
             if(vtr.length===7 && /^[A-Z]{3}[0-9]{4}$/.test(vtr)) vtr=vtr.slice(0,3)+'-'+vtr.slice(3);
 
-            const chamadoTexto = `${def}: ${osNum}`;
+            const chamadoTexto = `${defeitoFinal}: ${osNum}`;
 
             const payload={
                 action:"salvar_inspecao",
@@ -315,7 +361,7 @@
                 email_logado:ls.rcr_email,
                 equipamento:eq,
                 osList:[osNum],
-                defeito:`⚠️ ${def}\nEquipamento: ${eq}\nParecer: Lançamento em lote`,
+                defeito:defeitoFinal,
                 solucao:"NAO",
                 fotosLinks:"Sem fotos"
             };
@@ -327,7 +373,7 @@
                     logBox.innerHTML+=`<div style="color:var(--red);padding:3px 0;border-bottom:1px solid #eee">⚠️ <b>${vtr}</b> (${fil}) [${eq}]: ${r.erro}</div>`;
                 } else {
                     sucessos++;
-                    logBox.innerHTML+=`<div style="color:var(--teal);padding:3px 0;border-bottom:1px solid #eee">✅ <b>${vtr}</b> | Nº O.S: <b>${osNum}</b> | <b>${fil}</b> | <b>${eq}</b> (${def})</div>`;
+                    logBox.innerHTML+=`<div style="color:var(--teal);padding:3px 0;border-bottom:1px solid #eee">✅ <b>${vtr}</b> | Nº O.S: <b>${osNum}</b> | <b>${fil}</b> | Defeito: <b>${defeitoFinal}</b></div>`;
                 }
             }catch(e){
                 erros++;
@@ -341,66 +387,303 @@
         if(sucessos>0) buscarChamadosAdmin(true);
     };
 
-    const qFilt = d => {
-        let n=new Date(), p=(x)=>x<10?'0'+x:x, f=(dt)=>dt.getFullYear()+'-'+p(dt.getMonth()+1)+'-'+p(dt.getDate());
-        if(d===0){$('dashDtIni').value='';$('dashDtFim').value=''}
-        else if(d==='hoje'){$('dashDtIni').value=f(n);$('dashDtFim').value=f(n)}
-        else if(d===1){n.setDate(n.getDate()-1);$('dashDtIni').value=f(n);$('dashDtFim').value=f(n)}
-        else if(d===7){let d7=new Date(); d7.setDate(d7.getDate()-7);$('dashDtIni').value=f(d7);$('dashDtFim').value=f(n)}
-        else if(d===30){$('dashDtIni').value=n.getFullYear()+'-'+p(n.getMonth()+1)+'-01';$('dashDtFim').value=f(n)}
-        carregarDashboard();
+    const normalizarDataISO = (raw) => {
+        if (!raw) return "";
+        const s = String(raw).trim();
+        const isoMatch = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+        if (isoMatch) return `${isoMatch[1]}-${isoMatch[2]}-${isoMatch[3]}`;
+        const brMatch = s.match(/^(\d{2})\/(\d{2})\/(\d{4})/);
+        if (brMatch) return `${brMatch[3]}-${brMatch[2]}-${brMatch[1]}`;
+        const dt = new Date(s);
+        if (!isNaN(dt.getTime())) {
+            return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+        }
+        return "";
     };
 
-    const carregarDashboard=async()=>{
-        let dtI = $('dashDtIni').value, dtF = $('dashDtFim').value;
-        if(!ls.rcr_filial) return $('painelSubtitle').innerHTML=`<span style="color:red;font-weight:bold;">⚠️ Filial não detectada. Faça logout e login novamente.</span>`;
-        $('dashInspHoje').innerText='-';$('dashInspOk').innerText='-';$('dashAnomalias').innerText='-';$('dashResolvido').innerText='-';$('dashChamAbertos').innerText='-';$('dashChamFechados').innerText='-';$('painelSubtitle').innerText="A Sincronizar Informação em Tempo Real...";
-        try{
-            const r=await api({action:"get_dashboard_stats", filial:ls.rcr_filial, dtIni:dtI, dtFim:dtF});
-            if(r.v!=="6.3"){$('painelSubtitle').innerHTML=`<span style="color:red;font-weight:bold;">⚠️ Atualize o Apps Script para a V6.3!</span>`;return}
-            if(r.sucesso){
-                let txtData = (dtI||dtF) ? "Filtro Ativo" : "Total (Histórico Completo)";
-                if(dtI===dtF && dtI!=="") txtData = `Dia ${dtI.split('-').reverse().join('/')}`;
-                $('titleOperacao').innerHTML = `<i class="ph ph-trend-up"></i> Operação (${txtData})`;
-                $('titleColabPerf').innerHTML = `<i class="ph ph-users"></i> Desempenho por Colaborador (${txtData})`;
-                $('titleTopDef').innerHTML = `<i class="ph ph-warning"></i> Top 5 Defeitos (${txtData})`;
+    const formatarDataBR = (iso) => {
+        const n = normalizarDataISO(iso);
+        if (!n) return iso || "-";
+        const [y, m, d] = n.split('-');
+        return `${d}/${m}/${y}`;
+    };
 
-                if (ls.rcr_filial === 'Matriz' || ls.rcr_filial === 'MATRIZ') {
-                    $('titleFilialPerf').style.display = 'flex'; $('dashFiliais').style.display = 'block';
-                    $('titleFilialPerf').innerHTML = `<i class="ph ph-buildings"></i> Desempenho por Filial (${txtData})`;
-                } else { $('titleFilialPerf').style.display = 'none'; $('dashFiliais').style.display = 'none'; }
+    const marcarBotaoPeriodo = (idBtn) => {
+        document.querySelectorAll('#viewPainel .btn-filter').forEach(b => b.classList.remove('active-filt'));
+        if (idBtn && $(idBtn)) $(idBtn).classList.add('active-filt');
+    };
 
-                $('dashInspHoje').innerText=r.stats.inspHoje;$('dashInspOk').innerText=r.stats.inspOkHoje;$('dashAnomalias').innerText=r.stats.anomaliasHoje;$('dashResolvido').innerText=r.stats.resolvidoLocal;$('dashChamAbertos').innerText=r.stats.chamAbertos;$('dashChamFechados').innerText=r.stats.chamFechados;
-                $('painelSubtitle').innerHTML=`Exibindo dados para: <b>${ls.rcr_filial==='Matriz'?'Todas as Filiais (Global)':'Filial '+ls.rcr_filial}</b> | ÚLTIMA SYNC: ${new Date().toLocaleTimeString('pt-BR')}`;
+    const qFilt = d => {
+        const n = new Date();
+        const f = (dt) => `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+        if (d === 0) {
+            $('dashDtIni').value = '';
+            $('dashDtFim').value = '';
+            marcarBotaoPeriodo('btnQFilt0');
+        } else if (d === 'hoje') {
+            const hoje = f(n);
+            $('dashDtIni').value = hoje;
+            $('dashDtFim').value = hoje;
+            marcarBotaoPeriodo('btnQFiltHoje');
+        } else if (d === 1) {
+            const ont = new Date(n.getFullYear(), n.getMonth(), n.getDate() - 1);
+            const ontem = f(ont);
+            $('dashDtIni').value = ontem;
+            $('dashDtFim').value = ontem;
+            marcarBotaoPeriodo('btnQFilt1');
+        } else if (d === 7) {
+            const d7 = new Date(n.getFullYear(), n.getMonth(), n.getDate() - 6);
+            $('dashDtIni').value = f(d7);
+            $('dashDtFim').value = f(n);
+            marcarBotaoPeriodo('btnQFilt7');
+        } else if (d === 30) {
+            const iniMes = `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-01`;
+            $('dashDtIni').value = iniMes;
+            $('dashDtFim').value = f(n);
+            marcarBotaoPeriodo('btnQFilt30');
+        }
+        aplicarFiltrosPainel();
+    };
 
-                let pctOk = r.stats.inspHoje > 0 ? Math.round((r.stats.inspOkHoje / r.stats.inspHoje) * 100) : 0;
-                $('donutOp').style.background = `conic-gradient(var(--teal) 0% ${pctOk}%, var(--red) ${pctOk}% 100%)`;
-                $('donutOpTxt').innerText = pctOk + '%';
+    const popularSelectUsuarios = (usuariosSet, selecionadoAtual) => {
+        const sel = $('dashUsuario');
+        if (!sel) return;
+        const lista = Array.from(usuariosSet).filter(Boolean).sort((a,b) => a.localeCompare(b, 'pt-BR'));
+        sel.innerHTML = `<option value="TODOS">Todos os Usuários (${lista.length})</option>` +
+            lista.map(u => `<option value="${u.replace(/"/g,'&quot;')}">${u}</option>`).join('');
+        if (selecionadoAtual && (selecionadoAtual === 'TODOS' || lista.includes(selecionadoAtual))) {
+            sel.value = selecionadoAtual;
+        } else {
+            sel.value = 'TODOS';
+        }
+    };
 
-                let totalCh = r.stats.chamAbertos + r.stats.chamFechados;
-                let pctFechado = totalCh > 0 ? Math.round((r.stats.chamFechados / totalCh) * 100) : 0;
-                $('donutCham').style.background = `conic-gradient(var(--teal) 0% ${pctFechado}%, var(--red) ${pctFechado}% 100%)`;
-                $('donutChamTxt').innerText = pctFechado + '%';
+    const renderPainelComRegistros = (registros, apiStats, dtIniRaw, dtFimRaw, usuarioFiltro) => {
+        let dtIni = normalizarDataISO(dtIniRaw);
+        let dtFim = normalizarDataISO(dtFimRaw);
+        if (dtIni && dtFim && dtIni > dtFim) {
+            const tmp = dtIni; dtIni = dtFim; dtFim = tmp;
+            $('dashDtIni').value = dtIni;
+            $('dashDtFim').value = dtFim;
+        }
 
-                let dArr = Object.keys(r.stats.byDefeito).sort((a,b)=>r.stats.byDefeito[b]-r.stats.byDefeito[a]).slice(0,5);
-                $('dashTopDefeitos').innerHTML = dArr.length ? dArr.map((k,i)=>{
-                    return `<div style="display:flex; justify-content:space-between; padding:8px 12px; background:var(--card-bg); border:1px solid var(--border); border-left:3px solid var(--red); border-radius:6px; margin-bottom:5px; font-size:11px; font-weight:700;"><span>${i+1}º - ${k}</span><span style="color:var(--red);">${r.stats.byDefeito[k]}x</span></div>`;
-                }).join('') : '<div style="text-align:center;color:#999;font-size:11px;">Sem anomalias registradas no período.</div>';
+        const todosUsuarios = new Set();
+        registros.forEach(r => {
+            const u = (r.responsavel || r.usuario || r.operador || 'Sem Responsável').trim();
+            if (u) todosUsuarios.add(u);
+        });
+        if (apiStats && apiStats.byUser) {
+            Object.keys(apiStats.byUser).forEach(u => { if (u) todosUsuarios.add(u.trim()); });
+        }
+        popularSelectUsuarios(todosUsuarios, usuarioFiltro);
 
-                let uArr = Object.keys(r.stats.byUser).sort((a,b)=>r.stats.byUser[b].total - r.stats.byUser[a].total);
-                $('dashColaboradores').innerHTML = uArr.length ? uArr.map(k=>{
-                    let d = r.stats.byUser[k], pctOkU = Math.round((d.ok/d.total)*100)||0, pctErrU = 100-pctOkU;
-                    return `<div class="perf-item" style="border-left:3px solid var(--teal);"><div style="width:100%;"><div style="display:flex; justify-content:space-between; margin-bottom:4px;"><b><i class="ph ph-user"></i> ${k}</b> <span style="font-weight:bold; color:var(--teal);">${d.total} Verificações</span></div><div style="font-size:10px; display:flex; gap:10px; color:#666;"><span style="color:var(--teal)">✔️ ${d.ok} OK</span><span style="color:var(--red)">⚠️ ${d.anom} Anomalias</span></div><div class="perf-bar-bg"><div class="perf-bar-ok" style="width:${pctOkU}%"></div><div class="perf-bar-err" style="width:${pctErrU}%"></div></div></div></div>`;
-                }).join('') : '<div style="text-align:center;color:#999;font-size:11px;">Sem verificações no período.</div>';
+        const filtrados = registros.filter(r => {
+            const iso = normalizarDataISO(r.data || r.dt);
+            if (dtIni && (!iso || iso < dtIni)) return false;
+            if (dtFim && (!iso || iso > dtFim)) return false;
+            if (usuarioFiltro && usuarioFiltro !== 'TODOS') {
+                const resp = (r.responsavel || r.usuario || r.operador || '').trim().toLowerCase();
+                if (resp !== usuarioFiltro.trim().toLowerCase()) return false;
+            }
+            return true;
+        });
 
-                if(ls.rcr_filial === 'Matriz' || ls.rcr_filial === 'MATRIZ') {
-                    let fArr = Object.keys(r.stats.byFilial).sort((a,b)=>r.stats.byFilial[b].total - r.stats.byFilial[a].total);
-                    $('dashFiliais').innerHTML = fArr.length ? fArr.map(k=>{
-                        let d = r.stats.byFilial[k], pctOkF = Math.round((d.ok/d.total)*100)||0, pctErrF = 100-pctOkF;
-                        return `<div class="perf-item" style="border-left:3px solid var(--teal);"><div style="width:100%;"><div style="display:flex; justify-content:space-between; margin-bottom:4px;"><b><i class="ph ph-map-pin"></i> ${k}</b> <span style="font-weight:bold; color:var(--teal);">${d.total} Verificações</span></div><div style="font-size:10px; display:flex; gap:10px; color:#666;"><span style="color:var(--teal)">✔️ ${d.ok} OK</span><span style="color:var(--red)">⚠️ ${d.anom} Anomalias</span></div><div class="perf-bar-bg"><div class="perf-bar-ok" style="width:${pctOkF}%"></div><div class="perf-bar-err" style="width:${pctErrF}%"></div></div></div></div>`;
-                    }).join('') : '<div style="text-align:center;color:#999;font-size:11px;">Sem verificações no período.</div>';
+        let txtData = "Total (Histórico Completo)";
+        if (dtIni && dtFim) {
+            txtData = dtIni === dtFim ? `Dia ${formatarDataBR(dtIni)}` : `${formatarDataBR(dtIni)} a ${formatarDataBR(dtFim)}`;
+        } else if (dtIni) {
+            txtData = `A partir de ${formatarDataBR(dtIni)}`;
+        } else if (dtFim) {
+            txtData = `Até ${formatarDataBR(dtFim)}`;
+        }
+        const txtUser = usuarioFiltro && usuarioFiltro !== 'TODOS' ? ` • Usuário: ${usuarioFiltro}` : "";
+
+        $('titleOperacao').innerHTML = `<i class="ph ph-trend-up"></i> Operação (${txtData}${txtUser})`;
+        $('titleColabPerf').innerHTML = `<i class="ph ph-users"></i> Desempenho por Colaborador (${txtData})`;
+        $('titleTopDef').innerHTML = `<i class="ph ph-warning"></i> Top 5 Defeitos (${txtData}${txtUser})`;
+        $('titleHistUsuario').innerHTML = `<i class="ph ph-clock-counter-clockwise"></i> ${usuarioFiltro && usuarioFiltro !== 'TODOS' ? `Histórico de Atividade — ${usuarioFiltro}` : `Histórico de Atividades (${txtData})`}`;
+
+        const isMatriz = ls.rcr_filial === 'Matriz' || ls.rcr_filial === 'MATRIZ';
+        if (isMatriz) {
+            $('titleFilialPerf').style.display = 'flex';
+            $('dashFiliais').style.display = 'block';
+            $('titleFilialPerf').innerHTML = `<i class="ph ph-buildings"></i> Desempenho por Filial (${txtData}${txtUser})`;
+        } else {
+            $('titleFilialPerf').style.display = 'none';
+            $('dashFiliais').style.display = 'none';
+        }
+
+        let inspTotal = 0, inspOk = 0, anomalias = 0, resolvidoLocal = 0, chamAbertos = 0, chamFechados = 0;
+        const byDefeito = {};
+        const byUser = {};
+        const byFilial = {};
+
+        filtrados.forEach(h => {
+            inspTotal++;
+            const defTxt = String(h.defeito || h.cat || '').trim();
+            const solTxt = String(h.solucao || '').trim().toUpperCase();
+            const osTxt = String(h.os || h.chamado || '').trim();
+            const statusTxt = String(h.status || '').trim().toUpperCase();
+            const resp = (h.responsavel || h.usuario || h.operador || 'Sem Responsável').trim();
+            const fil = (h.filial || 'Matriz').trim();
+
+            const isOk = defTxt.toUpperCase().includes('VISTORIA OK') || (!defTxt.startsWith('⚠️') && (!osTxt || osTxt === '-' || osTxt === 'N/A'));
+            if (!byUser[resp]) byUser[resp] = { total: 0, ok: 0, anom: 0 };
+            if (!byFilial[fil]) byFilial[fil] = { total: 0, ok: 0, anom: 0 };
+
+            byUser[resp].total++;
+            byFilial[fil].total++;
+
+            if (isOk) {
+                inspOk++;
+                byUser[resp].ok++;
+                byFilial[fil].ok++;
+            } else {
+                anomalias++;
+                byUser[resp].anom++;
+                byFilial[fil].anom++;
+
+                if (solTxt === 'SIM') resolvidoLocal++;
+
+                const isFechado = statusTxt.includes('FECHAD') || statusTxt.includes('CONCLU') || statusTxt.includes('RESOLV') || statusTxt.includes('FINALIZ');
+                if (solTxt !== 'SIM') {
+                    if (isFechado) chamFechados++;
+                    else chamAbertos++;
                 }
-            }else{$('painelSubtitle').innerText=r.erro || "Erro ao carregar."}
+
+                const categorias = defTxt
+                    .replace(/^⚠️\s*/i, '')
+                    .split('\n')[0]
+                    .split('+')
+                    .map(s => s.trim())
+                    .filter(Boolean);
+
+                (categorias.length ? categorias : ['Ocorrência não especificada']).forEach(catNome => {
+                    byDefeito[catNome] = (byDefeito[catNome] || 0) + 1;
+                });
+            }
+        });
+
+        const usarFallbackApi = registros.length === 0 && apiStats;
+        if (usarFallbackApi) {
+            inspTotal = apiStats.inspHoje || 0;
+            inspOk = apiStats.inspOkHoje || 0;
+            anomalias = apiStats.anomaliasHoje || 0;
+            resolvidoLocal = apiStats.resolvidoLocal || 0;
+            chamAbertos = apiStats.chamAbertos || 0;
+            chamFechados = apiStats.chamFechados || 0;
+            Object.assign(byDefeito, apiStats.byDefeito || {});
+            Object.assign(byUser, apiStats.byUser || {});
+            Object.assign(byFilial, apiStats.byFilial || {});
+        }
+
+        $('dashInspHoje').innerText = inspTotal;
+        $('dashInspOk').innerText = inspOk;
+        $('dashAnomalias').innerText = anomalias;
+        $('dashResolvido').innerText = resolvidoLocal;
+        $('dashChamAbertos').innerText = chamAbertos;
+        $('dashChamFechados').innerText = chamFechados;
+
+        $('painelSubtitle').innerHTML = `Filial: <b>${ls.rcr_filial === 'Matriz' ? 'Todas (Global)' : ls.rcr_filial}</b> • Período: <b>${txtData}</b> • Usuário: <b>${usuarioFiltro === 'TODOS' ? 'Todos' : usuarioFiltro}</b> • Sync: ${new Date().toLocaleTimeString('pt-BR')}`;
+
+        const pctOk = inspTotal > 0 ? Math.round((inspOk / inspTotal) * 100) : 0;
+        $('donutOp').style.background = `conic-gradient(var(--teal) 0% ${pctOk}%, var(--red) ${pctOk}% 100%)`;
+        $('donutOpTxt').innerText = pctOk + '%';
+
+        const totalCh = chamAbertos + chamFechados;
+        const pctFechado = totalCh > 0 ? Math.round((chamFechados / totalCh) * 100) : 0;
+        $('donutCham').style.background = `conic-gradient(var(--teal) 0% ${pctFechado}%, var(--red) ${pctFechado}% 100%)`;
+        $('donutChamTxt').innerText = pctFechado + '%';
+
+        const dArr = Object.keys(byDefeito).sort((a,b) => byDefeito[b] - byDefeito[a]).slice(0,5);
+        $('dashTopDefeitos').innerHTML = dArr.length ? dArr.map((k,i) =>
+            `<div style="display:flex; justify-content:space-between; padding:8px 12px; background:var(--card-bg); border:1px solid var(--border); border-left:3px solid var(--red); border-radius:6px; margin-bottom:5px; font-size:11px; font-weight:700;"><span>${i+1}º - ${k}</span><span style="color:var(--red);">${byDefeito[k]}x</span></div>`
+        ).join('') : '<div style="text-align:center;color:#999;font-size:11px;">Sem anomalias registradas para este filtro.</div>';
+
+        const uArr = Object.keys(byUser).sort((a,b) => byUser[b].total - byUser[a].total);
+        $('dashColaboradores').innerHTML = uArr.length ? uArr.map(k => {
+            const d = byUser[k];
+            const pctOkU = d.total > 0 ? Math.round((d.ok / d.total) * 100) : 0;
+            const pctErrU = 100 - pctOkU;
+            const isSel = usuarioFiltro && usuarioFiltro.toLowerCase() === k.toLowerCase();
+            return `<div class="perf-item" onclick="$('dashUsuario').value='${k.replace(/'/g,"\\'")}';aplicarFiltrosPainel();" style="cursor:pointer;border-left:3px solid ${isSel ? 'var(--orange)' : 'var(--teal)'};${isSel ? 'outline:1px solid var(--orange);' : ''}"><div style="width:100%;"><div style="display:flex; justify-content:space-between; margin-bottom:4px;"><b><i class="ph ph-user"></i> ${k}</b> <span style="font-weight:bold; color:var(--teal);">${d.total} Verificações</span></div><div style="font-size:10px; display:flex; gap:10px; color:#666;"><span style="color:var(--teal)">✔️ ${d.ok} OK</span><span style="color:var(--red)">⚠️ ${d.anom} Anomalias</span></div><div class="perf-bar-bg"><div class="perf-bar-ok" style="width:${pctOkU}%"></div><div class="perf-bar-err" style="width:${pctErrU}%"></div></div></div></div>`;
+        }).join('') : '<div style="text-align:center;color:#999;font-size:11px;">Sem verificações para este filtro.</div>';
+
+        if (isMatriz) {
+            const fArr = Object.keys(byFilial).sort((a,b) => byFilial[b].total - byFilial[a].total);
+            $('dashFiliais').innerHTML = fArr.length ? fArr.map(k => {
+                const d = byFilial[k];
+                const pctOkF = d.total > 0 ? Math.round((d.ok / d.total) * 100) : 0;
+                const pctErrF = 100 - pctOkF;
+                return `<div class="perf-item" style="border-left:3px solid var(--teal);"><div style="width:100%;"><div style="display:flex; justify-content:space-between; margin-bottom:4px;"><b><i class="ph ph-map-pin"></i> ${k}</b> <span style="font-weight:bold; color:var(--teal);">${d.total} Verificações</span></div><div style="font-size:10px; display:flex; gap:10px; color:#666;"><span style="color:var(--teal)">✔️ ${d.ok} OK</span><span style="color:var(--red)">⚠️ ${d.anom} Anomalias</span></div><div class="perf-bar-bg"><div class="perf-bar-ok" style="width:${pctOkF}%"></div><div class="perf-bar-err" style="width:${pctErrF}%"></div></div></div></div>`;
+            }).join('') : '<div style="text-align:center;color:#999;font-size:11px;">Sem verificações para este filtro.</div>';
+        }
+
+        window.painelHistoricoVisivel = filtrados;
+        if (!filtrados.length) {
+            $('dashHistoricoUsuario').innerHTML = '<div style="text-align:center;color:#999;font-size:11px;padding:12px;">Nenhuma atividade encontrada para os filtros selecionados.</div>';
+        } else {
+            $('dashHistoricoUsuario').innerHTML = filtrados.slice(0, 60).map((h, idx) => {
+                const defTxt = String(h.defeito || h.cat || '').trim();
+                const isOk = defTxt.toUpperCase().includes('VISTORIA OK') || (!defTxt.startsWith('⚠️') && (!h.os || h.os === '-' || h.os === 'N/A'));
+                const resp = (h.responsavel || h.usuario || h.operador || 'Sem Responsável').trim();
+                const resumoDef = defTxt.replace(/^⚠️\s*/i, '').replace(/^✔️\s*/i, '').split('\n')[0];
+                const tagHtml = isOk
+                    ? `<span class="pill-tag" style="background:rgba(20,123,106,0.12);color:var(--teal);">CONFORME</span>`
+                    : `<span class="pill-tag" style="background:rgba(217,48,37,0.12);color:var(--red);">${h.os && h.os !== '-' ? 'O.S: ' + h.os : 'ANOMALIA'}</span>`;
+                return `<div class="hist-user-item ${isOk ? '' : 'anomalia'}" onclick="abrirDetalhePainel(${idx})">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+                        <b><i class="ph ph-truck"></i> ${h.veiculo || '-'} <span style="font-weight:600;color:#666;">(${h.filial || '-'})</span></b>
+                        ${tagHtml}
+                    </div>
+                    <div style="color:#666;margin-bottom:3px;">
+                        <i class="ph ph-user"></i> <b>${resp}</b> • 📅 ${formatarDataBR(h.data)} ${h.hora ? 'às ' + h.hora : ''}
+                    </div>
+                    <div style="font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                        ${h.equipamento && h.equipamento !== '-' ? `[${h.equipamento}] ` : ''}${resumoDef || '-'}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+    };
+
+    const abrirDetalhePainel = (idx) => {
+        const h = (window.painelHistoricoVisivel || [])[idx];
+        if (!h) return;
+        window.lastSearchData = [h];
+        abrirDetalheOS(0);
+    };
+
+    const aplicarFiltrosPainel = () => {
+        if (!window.painelRawCache) return carregarDashboard(true);
+        renderPainelComRegistros(
+            window.painelRawCache.registros,
+            window.painelRawCache.stats,
+            $('dashDtIni').value,
+            $('dashDtFim').value,
+            $('dashUsuario').value || 'TODOS'
+        );
+    };
+
+    const carregarDashboard=async(forcarRede=true)=>{
+        let dtI = $('dashDtIni').value, dtF = $('dashDtFim').value, usrSel = $('dashUsuario').value || 'TODOS';
+        if(!ls.rcr_filial) return $('painelSubtitle').innerHTML=`<span style="color:red;font-weight:bold;">⚠️ Filial não detectada. Faça logout e login novamente.</span>`;
+        if (!forcarRede && window.painelRawCache) {
+            renderPainelComRegistros(window.painelRawCache.registros, window.painelRawCache.stats, dtI, dtF, usrSel);
+            return;
+        }
+        $('painelSubtitle').innerText="Sincronizando dados em tempo real...";
+        try{
+            const [rStats, rHist] = await Promise.all([
+                api({action:"get_dashboard_stats", filial:ls.rcr_filial, dtIni:"", dtFim:""}),
+                api({action:"consultar_historico", tipo:"operador", termo:"", dtIni:"", dtFim:"", filial:ls.rcr_filial}).catch(()=>null)
+            ]);
+            if(rStats && rStats.v !== "6.3"){$('painelSubtitle').innerHTML=`<span style="color:red;font-weight:bold;">⚠️ Atualize o Apps Script para a V6.3!</span>`;return}
+            if(rStats && rStats.sucesso){
+                const registros = (rHist && rHist.sucesso && Array.isArray(rHist.historico)) ? rHist.historico : [];
+                window.painelRawCache = { stats: rStats.stats, registros };
+                renderPainelComRegistros(registros, rStats.stats, dtI, dtF, usrSel);
+            }else{$('painelSubtitle').innerText=(rStats && rStats.erro) || "Erro ao carregar."}
         }catch(e){$('painelSubtitle').innerText="Falha de conexão: "+e.message}
     };
 
