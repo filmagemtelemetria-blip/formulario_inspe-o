@@ -687,10 +687,25 @@
         }catch(e){$('painelSubtitle').innerText="Falha de conexão: "+e.message}
     };
 
+    const isVazioOuTraco = (val) => {
+        const s = String(val ?? '').trim();
+        return !s || s === '-' || s === '--' || s.toUpperCase() === 'N/A' || s.toUpperCase() === 'NULL' || s.toUpperCase() === 'UNDEFINED';
+    };
+
+    const isChamadoValido = (h) => {
+        if (!h) return false;
+        const vtrOk = !isVazioOuTraco(h.veiculo);
+        const osOk = !isVazioOuTraco(h.os);
+        const dtOk = !isVazioOuTraco(h.data);
+        const defOk = !isVazioOuTraco(h.defeito);
+        return vtrOk || osOk || (dtOk && defOk);
+    };
+
     const getFilteredChamados=()=>{
         let f=$('filtroStatusChamado').value;
         return window.lastChamadosData.filter(h=>{
-            let s=h.status.toUpperCase(), isF=s.includes('FECHADA')||s.includes('FECHADO')||s.includes('CONCLU')||s.includes('RESOLV')||s.includes('FINALIZ');
+            if(!isChamadoValido(h)) return false;
+            let s=String(h.status || '').toUpperCase(), isF=s.includes('FECHADA')||s.includes('FECHADO')||s.includes('CONCLU')||s.includes('RESOLV')||s.includes('FINALIZ');
             if(f==='ABERTOS'&&isF)return false;
             if(f==='FECHADOS'&&!isF)return false;
             return true;
@@ -706,8 +721,8 @@
         }
         $('btnGroupChamados').style.display='flex';
         $('adminChamadosList').innerHTML=arr.map(h=>{
-            let stat=h.status.trim(), sUp=stat.toUpperCase(), isF=sUp.includes('FECHADA')||sUp.includes('FECHADO')||sUp.includes('CONCLU')||sUp.includes('RESOLV')||sUp.includes('FINALIZ'), bc=isF?'var(--teal)':'var(--red)';
-            return `<div class="user-manage-item"><div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-weight:bold;color:var(--teal);font-size:14px">${h.veiculo} - OS: ${h.os}</span><span style="display:inline-block;padding:3px 8px;background:${bc};color:#fff;border-radius:4px;font-size:9px;font-weight:bold;text-transform:uppercase">${stat}</span></div><div style="font-size:11px;color:#666;margin-bottom:5px">📅 ${h.data}</div><div style="font-size:11px;color:#333;font-weight:bold;background:rgba(0,0,0,0.03);padding:8px;border-radius:4px">${h.defeito}</div></div>`;
+            let stat=(h.status || 'ABERTA').trim(), sUp=stat.toUpperCase(), isF=sUp.includes('FECHADA')||sUp.includes('FECHADO')||sUp.includes('CONCLU')||sUp.includes('RESOLV')||sUp.includes('FINALIZ'), bc=isF?'var(--teal)':'var(--red)';
+            return `<div class="user-manage-item"><div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-weight:bold;color:var(--teal);font-size:14px">${h.veiculo || '-'} - OS: ${h.os || '-'}</span><span style="display:inline-block;padding:3px 8px;background:${bc};color:#fff;border-radius:4px;font-size:9px;font-weight:bold;text-transform:uppercase">${stat}</span></div><div style="font-size:11px;color:#666;margin-bottom:5px">📅 ${h.data || '-'}</div><div style="font-size:11px;color:#333;font-weight:bold;background:rgba(0,0,0,0.03);padding:8px;border-radius:4px">${h.defeito || '-'}</div></div>`;
         }).join('');
     };
 
@@ -726,7 +741,7 @@
             const r=await api({action:"consultar_todos_chamados_veiculo", veiculo:vtr, filial:filial});
             if(r.v!=="6.3"){$('adminChamadosList').innerHTML=`<div style="text-align:center;color:var(--red);padding:20px;font-weight:bold">⚠️ Atualize o Apps Script para a V6.3!</div>`;setBtn('btnBuscaChamadosFull',false);return}
             if(r.sucesso){
-                window.lastChamadosData=r.historico||[];
+                window.lastChamadosData=(r.historico||[]).filter(isChamadoValido);
                 renderChamados();
             }else{$('adminChamadosList').innerHTML=`<div style="text-align:center;color:var(--red);padding:20px">Erro.</div>`}
         }catch(e){$('adminChamadosList').innerHTML=`<div style="text-align:center;color:var(--red);padding:20px">Falha rede.</div>`}
