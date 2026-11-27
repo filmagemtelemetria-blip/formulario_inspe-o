@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="pt-br"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover"><title>RCR | Frota</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%230f7561' d='M4 16c0 .88.39 1.67 1 2.22V19.5c0 .83.67 1.5 1.5 1.5S8 20.33 8 19.5V19h8v.5c0 .82.67 1.5 1.5 1.5.82 0 1.5-.68 1.5-1.5v-1.28c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z'/%3E%3Ccircle cx='18' cy='18' r='6' fill='%23ffffff'/%3E%3Cpath fill='%2338a169' d='M18 13c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm1.16 7.51l-2.76-2.76 1.06-1.06 1.7 1.7 3.34-3.34 1.06 1.06-4.4 4.4z'/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet"><script src="https://unpkg.com/@phosphor-icons/web" defer></script><script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet"><script src="https://unpkg.com/@phosphor-icons/web" defer></script><script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" defer></script>
 <style>:root{--teal:#147b6a;--lime:#4eff7e;--bg:#faf8f5;--white:#ffffff;--text:#333;--border:#c4e1df;--red:#d93025;--orange:#f9ab00;--card-bg:var(--white);--sub-bg:rgba(20,123,106,0.04)}body.dark-mode{--bg:#121212;--text:#e0e0e0;--border:#2d4a43;--card-bg:#1e1e1e;--sub-bg:rgba(20,123,106,0.15)}*{box-sizing:border-box;font-family:'Inter',sans-serif}body{margin:0;padding:env(safe-area-inset-top) 15px calc(85px + env(safe-area-inset-bottom)) 15px;background:var(--bg);color:var(--text);display:flex;justify-content:center;min-height:100vh;flex-direction:column;align-items:center;transition:background 0.3s}.elvis-sig{position:fixed;bottom:calc(65px + env(safe-area-inset-bottom));right:10px;font-size:10px;color:var(--teal);opacity:0.7;font-weight:800;pointer-events:none;z-index:9998}.card{width:100%;max-width:580px;background:var(--card-bg);border-radius:14px;border:1px solid var(--border);padding:25px;display:none}.header{text-align:center;margin-bottom:20px;border-bottom:2px solid var(--teal);padding-bottom:10px}.header h2{margin:0;color:var(--teal);font-size:20px;font-weight:800}.form-row{display:flex;gap:10px}.form-row>div{flex:1}.form-group{margin-bottom:15px;position:relative}label{display:block;font-size:11px;font-weight:700;color:var(--teal);margin-bottom:5px;text-transform:uppercase}input,select,textarea{width:100%;padding:12px;border:1px solid var(--border);border-radius:8px;font-size:14px;background:var(--bg);color:var(--text);outline:none;transition:border 0.2s}input:focus,select:focus,textarea:focus{border-color:var(--teal);background:var(--card-bg)}.btn-submit{width:100%;padding:14px;background:var(--teal);color:#fff;border:none;border-radius:8px;font-weight:800;font-size:15px;cursor:pointer;margin-top:10px;display:flex;justify-content:center;align-items:center;gap:8px;text-decoration:none;transition:transform 0.1s}.btn-submit:active{transform:scale(0.98)}.btn-submit:disabled{background:#888!important;pointer-events:none}.btn-loader{display:none;width:18px;height:18px;border:2px solid rgba(255,255,255,0.3);border-radius:50%;border-top-color:#fff;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.msg{margin-top:10px;padding:10px;border-radius:8px;text-align:center;font-size:12px;font-weight:bold;display:none}.sync-banner{width:100%;max-width:580px;background:var(--orange);color:#fff;text-align:center;padding:8px;font-size:12px;font-weight:bold;border-radius:8px;margin-bottom:10px;display:none}.link-btn{display:block;text-align:center;margin-top:15px;color:var(--teal);text-decoration:underline;cursor:pointer;font-size:13px;font-weight:bold;background:none;border:none;width:100%}.user-badge{display:flex;justify-content:space-between;align-items:center;background:var(--sub-bg);padding:8px 12px;border-radius:8px;margin-bottom:15px;font-weight:400;font-size:13px;color:var(--teal)}.logout-btn{background:var(--red);color:#fff;border:none;padding:5px 10px;border-radius:4px;cursor:pointer;font-size:11px;font-weight:bold;display:flex;align-items:center;gap:4px}.chk-card{display:flex;align-items:center;justify-content:space-between;padding:12px 15px;border-radius:8px;border:2px solid var(--border);margin-bottom:10px;cursor:pointer;background:var(--card-bg);font-weight:700;font-size:12px;text-transform:uppercase}.chk-card.active{border-color:var(--teal);background:rgba(20,123,106,0.06);color:var(--teal)}.chk-card.defect{border-color:var(--red);background:rgba(217,48,37,0.06);color:var(--red)}.radio-box{display:flex;gap:20px;padding:10px;background:var(--sub-bg);border-radius:8px;border:1px dashed var(--border)}.radio-option{display:flex;align-items:center;gap:6px;font-weight:600;font-size:13px;cursor:pointer}.conditional-field{display:none;padding:15px;background:rgba(20,123,106,0.05);border-radius:8px;border-left:4px solid var(--teal);margin-top:10px}.sub-field-fotos{background:var(--sub-bg);padding:10px;border-radius:8px;border:1px solid var(--border);margin-bottom:10px;transition:border-color 0.2s}.preview-container{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.preview-item{width:75px;height:75px;border-radius:6px;overflow:hidden;border:2px solid var(--border);position:relative}.preview-item img{width:100%;height:100%;object-fit:cover}.btn-mic{position:absolute;right:10px;bottom:10px;background:var(--teal);color:#fff;border:none;border-radius:50%;width:32px;height:32px;display:flex;justify-content:center;align-items:center}.btn-mic.recording{background:var(--red);animation:pulse 1.5s infinite}.bottom-nav{position:fixed;bottom:0;left:0;width:100%;background:var(--card-bg);border-top:1px solid var(--border);display:none;justify-content:space-around;padding:8px 0 calc(8px + env(safe-area-inset-bottom));z-index:9999;box-shadow:0 -3px 15px rgba(0,0,0,0.06)}.nav-item{display:flex;flex-direction:column;align-items:center;font-size:10px;color:#777;cursor:pointer;font-weight:700;background:none;border:none}.nav-item.active{color:var(--teal)}.nav-item i{font-size:22px}#modalEditor,#modalAlert,#modalOS{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:10000;flex-direction:column;justify-content:center;align-items:center;padding:15px}.alert-box{background:var(--card-bg);border-radius:12px;width:100%;max-width:450px;padding:20px;border:1px solid var(--border);max-height:85vh;overflow-y:auto}.user-manage-item{border:1px solid var(--border);background:var(--card-bg);padding:12px;border-radius:8px;margin-bottom:10px;font-size:12px;cursor:default}#canvasEditor{touch-action:none;background:#fff;max-width:100%;max-height:65vh;border-radius:8px}.defect-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(217,48,37,0.1);color:var(--red);padding:6px 12px;border-radius:20px;font-size:12px;font-weight:800;margin:0 5px 8px 0;border:1px solid rgba(217,48,37,0.3)}.defect-badge span{cursor:pointer;font-size:16px;padding:0 4px;border-radius:50%}.chamado-alert-box{background:rgba(249,171,0,0.08);border:1px solid var(--orange);padding:12px;border-radius:8px;margin-top:10px;display:none}.chamado-alert-item{background:var(--card-bg);padding:8px;border-radius:6px;font-size:11px;color:var(--text);border:1px solid rgba(0,0,0,0.05);margin-bottom:5px;font-weight:600;line-height:1.4}
         .dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px; }
         .dash-card { background: var(--card-bg); border-radius: 8px; border-left: 4px solid; padding: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: center; text-align: left; transition: transform 0.2s; }
@@ -25,6 +25,15 @@
         .leg-item { display: flex; align-items: center; gap: 4px; }
         .dot { width: 8px; height: 8px; border-radius: 50%; }
         .lote-box { display: none; background: var(--sub-bg); border: 1px solid var(--teal); border-radius: 10px; padding: 15px; margin-bottom: 15px; }
+        .lote-planilha-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; background: var(--card-bg); border: 1px dashed var(--teal); border-radius: 8px; padding: 10px; margin-bottom: 10px; }
+        .lote-grid-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--card-bg); margin-bottom: 8px; }
+        .lote-table { width: 100%; border-collapse: collapse; min-width: 640px; font-size: 11px; }
+        .lote-table th { background: var(--teal); color: #fff; font-weight: 700; text-transform: uppercase; font-size: 10px; padding: 7px 6px; text-align: left; white-space: nowrap; }
+        .lote-table td { border-top: 1px solid var(--border); padding: 4px; vertical-align: middle; }
+        .lote-table input, .lote-table select { padding: 6px 7px; font-size: 11px; border-radius: 6px; }
+        .btn-lote-mini { background: var(--card-bg); border: 1px solid var(--border); color: var(--teal); border-radius: 6px; padding: 6px 10px; font-size: 11px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+        .btn-lote-mini:hover { border-color: var(--teal); background: var(--sub-bg); }
+        .btn-lote-del { background: rgba(217,48,37,0.1); color: var(--red); border: 1px solid rgba(217,48,37,0.25); border-radius: 6px; padding: 5px 8px; font-size: 11px; font-weight: 800; cursor: pointer; }
         .lote-log { max-height: 150px; overflow-y: auto; font-size: 11px; margin-top: 10px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; padding: 8px; display: none; }
         .hist-user-item { background: var(--card-bg); border: 1px solid var(--border); border-left: 3px solid var(--teal); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; font-size: 11px; cursor: pointer; transition: transform 0.15s; }
         .hist-user-item:hover { transform: translateX(2px); }
@@ -120,10 +129,21 @@
             <h3 style="margin:0;color:var(--teal);font-size:16px">Chamados</h3>
             <p style="font-size:11px;color:#666;margin:2px 0 0 0">Histórico e lançamentos de manutenções.</p>
         </div>
-        <button type="button" class="btn-submit" style="margin:0;width:auto;padding:8px 14px;font-size:12px;background:#0056b3" onclick="const b=$('boxLoteChamados');b.style.display=b.style.display==='block'?'none':'block'"><i class="ph ph-stack-plus"></i> + Lançar em Lote</button>
+        <button type="button" class="btn-submit" style="margin:0;width:auto;padding:8px 14px;font-size:12px;background:#0056b3" onclick="const b=$('boxLoteChamados');b.style.display=b.style.display==='block'?'none':'block';garantirLinhasLote();"><i class="ph ph-stack-plus"></i> + Lançar em Lote</button>
     </div>
 
     <div id="boxLoteChamados" class="lote-box">
+        <div class="lote-planilha-bar">
+            <button type="button" class="btn-lote-mini" style="background:var(--teal);color:#fff;border-color:var(--teal)" onclick="baixarPlanilhaModelo()">
+                <i class="ph ph-file-xls"></i> Baixar Modelo (.xlsx)
+            </button>
+            <label class="btn-lote-mini" style="margin:0;text-transform:none;font-size:11px">
+                <i class="ph ph-file-arrow-up"></i> Importar Planilha (.xlsx / .csv)
+                <input type="file" id="inputPlanilhaLote" accept=".xlsx,.xls,.csv" style="display:none" onchange="importarPlanilhaLote(event)">
+            </label>
+            <span id="statusPlanilhaLote" style="font-size:10px;color:#666;font-weight:600">Colunas: Veículo | Nº O.S. | Filial | Equipamento | Defeito | Descrição</span>
+        </div>
+
         <div class="form-row" style="margin-bottom:8px">
             <div>
                 <label style="margin:0 0 4px 0;font-size:10px">Filial Padrão (se vazio)</label>
@@ -141,14 +161,37 @@
                 </select>
             </div>
         </div>
-        <p style="font-size:11px;color:#555;margin:0 0 8px 0;line-height:1.4">
-            Cole do Excel ou digite uma linha por registro separando por <code>;</code> na ordem:<br>
-            <span style="color:var(--teal);font-weight:600">Veiculo | Nº O.S | Filial | Defeito | Descrição (opcional)</span>
-        </p>
-        <textarea id="txtLoteChamados" rows="5" placeholder="1234; 654123; pe; gps inoperante&#10;1000; 22222; PEB; manutenção de cam aux; câmera traseira sem imagem&#10;2088; OS-98415; BA; GPS sem comunicação" style="font-size:12px;font-family:monospace"></textarea>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:6px">
+            <span style="font-size:11px;color:#555;font-weight:600">
+                Preencha cada coluna por linha ou cole várias linhas do Excel (na 1ª caixa da linha):
+            </span>
+            <div style="display:flex;gap:6px">
+                <button type="button" class="btn-lote-mini" onclick="adicionarLinhaLote()"><i class="ph ph-plus"></i> Linha</button>
+                <button type="button" class="btn-lote-mini" onclick="limparGradeLote()"><i class="ph ph-trash"></i> Limpar</button>
+            </div>
+        </div>
+
+        <div class="lote-grid-wrap">
+            <table class="lote-table">
+                <thead>
+                    <tr>
+                        <th style="width:13%">Veículo *</th>
+                        <th style="width:15%">Nº O.S. *</th>
+                        <th style="width:12%">Filial</th>
+                        <th style="width:18%">Equipamento</th>
+                        <th style="width:20%">Defeito *</th>
+                        <th style="width:17%">Descrição</th>
+                        <th style="width:5%;text-align:center">×</th>
+                    </tr>
+                </thead>
+                <tbody id="tbodyLoteChamados"></tbody>
+            </table>
+        </div>
+
         <div style="display:flex;gap:8px;margin-top:8px">
             <button type="button" id="btnProcLote" class="btn-submit" style="margin:0;flex:2;padding:10px;font-size:13px" onclick="processarLoteChamados()"><i class="ph ph-paper-plane-tilt"></i> <span class="btn-text">Processar Lote</span><div class="btn-loader"></div></button>
-            <button type="button" class="btn-submit" style="margin:0;flex:1;padding:10px;font-size:12px;background:#666" onclick="$('txtLoteChamados').value='';$('logLoteChamados').style.display='none'">Limpar</button>
+            <button type="button" class="btn-submit" style="margin:0;flex:1;padding:10px;font-size:12px;background:#666" onclick="limparGradeLote()">Resetar</button>
         </div>
         <div id="logLoteChamados" class="lote-log"></div>
     </div>
@@ -227,7 +270,7 @@
         }),
         del:id=>new Promise(r=>{
             if(!idb.db)return r();
-            try{const tx=idb.db.transaction('fila','readwrite').objectStore('fila').delete(id);tx.transaction.oncomplete=r;tx.transaction.onerror=r}catch(e){r()}
+            try{const tx=idb.db.transaction('fila','readwrite').objectStore('fila').delete(id);tx.transaction.oncomplete=r;tx.transaction.onerror=r}catch(e){r([])}
         })
     };
 
@@ -242,7 +285,7 @@
         document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
         if(d==='auditoria'){$('navAuditoria').classList.add('active');switchView('viewApp')}
         else if(d==='painel'){$('navPainel').classList.add('active');switchView('viewPainel');carregarDashboard(true);window.dashInterval=setInterval(()=>carregarDashboard(false),30000)}
-        else{$(d==='equipe'?'navEquipe':(d==='historico'?'navHist':'navChamados')).classList.add('active');switchView('viewAdmin');$('abaAdminUsers').style.display=d==='equipe'?'block':'none';$('abaAdminHist').style.display=d==='historico'?'block':'none';$('abaAdminChamados').style.display=d==='chamados'?'block':'none';if(d==='historico'&&!window.lastSearchData.length)buscarHistoricoAdmin();if(d==='chamados'){if(ls.rcr_filial)$('loteFilial').value=ls.rcr_filial;buscarChamadosAdmin(true)}}
+        else{$(d==='equipe'?'navEquipe':(d==='historico'?'navHist':'navChamados')).classList.add('active');switchView('viewAdmin');$('abaAdminUsers').style.display=d==='equipe'?'block':'none';$('abaAdminHist').style.display=d==='historico'?'block':'none';$('abaAdminChamados').style.display=d==='chamados'?'block':'none';if(d==='historico'&&!window.lastSearchData.length)buscarHistoricoAdmin();if(d==='chamados'){if(ls.rcr_filial)$('loteFilial').value=ls.rcr_filial;garantirLinhasLote();buscarChamadosAdmin(true)}}
     };
 
     const normalizarFilial = (rawFilial, padraoSelect) => {
@@ -255,136 +298,344 @@
     };
 
     const classificarEquipamento = (txt, padraoSelect) => {
-        const s = (txt || '').toLowerCase().trim();
-        if (s.includes('vídeo') || s.includes('video') || s.includes('câmera') || s.includes('camera') || s.includes('cam ') || s.startsWith('cam') || s.includes('dvr') || s.includes('i.a') || s.includes('ia') || s.includes('fadiga') || s.includes('colisão') || s.includes('colisao') || s.includes('auxiliar') || s.includes('aux')) return "Vídeo / I.A.";
+        const raw = (txt || '').trim();
+        if (['Vídeo / I.A.', 'Telemetria', 'Rede CAN'].includes(raw)) return raw;
+        const s = raw.toLowerCase();
+        if (!s) return (padraoSelect && padraoSelect !== 'AUTO') ? padraoSelect : "";
         if (s.includes('telemetria') || s.includes('gps') || s.includes('rastreador')) return "Telemetria";
-        if (s.includes('can') || s.includes('leitor') || s.includes('sirene') || s.includes('velocidade') || s.includes('quilometragem')) return "Rede CAN";
+        if (s.includes('vídeo') || s.includes('video') || s.includes('câmera') || s.includes('camera') || /\bcam\b/.test(s) || s.includes('dvr') || /\bi\.?a\.?\b/.test(s) || s.includes('fadiga') || s.includes('colisão') || s.includes('colisao') || s.includes('auxiliar') || /\baux\b/.test(s)) return "Vídeo / I.A.";
+        if (/\bcan\b/.test(s) || s.includes('leitor') || s.includes('sirene') || s.includes('velocidade') || s.includes('quilometragem')) return "Rede CAN";
         if (padraoSelect && padraoSelect !== 'AUTO') return padraoSelect;
-        return "";
+        return raw;
     };
 
-    const parseEquipDefeito = (rawCol, descricaoExtra, padraoSelect) => {
-        const texto = (rawCol || '').trim();
-        let desc = (descricaoExtra || '').trim();
-
-        const match = texto.match(/^([^\(]+)\(([^\)]+)\)\s*$/);
-        let eq = "";
-        let def = "";
-
-        if (match) {
-            const eqParte = match[1].trim();
-            const defParte = match[2].trim();
-            eq = classificarEquipamento(eqParte, padraoSelect) || classificarEquipamento(defParte, padraoSelect);
-            def = defParte || eqParte;
+    const normalizarItemLote = (cols = []) => {
+        let item = { veiculo: '', os: '', filial: '', equipamento: '', defeito: '', descricao: '' };
+        if (cols.length >= 6) {
+            [item.veiculo, item.os, item.filial, item.equipamento, item.defeito, ...rest] = cols;
+            item.descricao = rest.join(' | ').trim();
+        } else if (cols.length === 5) {
+            [item.veiculo, item.os, item.filial, item.defeito, item.descricao] = cols;
+        } else if (cols.length === 4) {
+            [item.veiculo, item.os, item.filial, item.defeito] = cols;
+        } else if (cols.length === 3) {
+            [item.veiculo, item.os, item.defeito] = cols;
         } else {
-            const sepMatch = texto.match(/^(.+?)\s+(?:—|–|\s-\s|\s\|\s)\s*(.+)$/);
-            if (sepMatch && !desc) {
-                def = sepMatch[1].trim();
-                desc = sepMatch[2].trim();
-                eq = classificarEquipamento(`${def} ${desc}`, padraoSelect);
-            } else {
-                def = texto;
-                eq = classificarEquipamento(`${def} ${desc}`, padraoSelect);
-            }
+            item.veiculo = cols[0] || '';
         }
 
-        const defUpper = def.toUpperCase();
-        const descUpper = desc.toUpperCase();
-        const defeitoFinal = descUpper ? `${defUpper}: ${descUpper}` : defUpper;
-
-        return {
-            eq: eq || (padraoSelect && padraoSelect !== 'AUTO' ? padraoSelect : "-"),
-            defUpper,
-            defeitoFinal
-        };
+        const eqClass = classificarEquipamento(item.equipamento || item.defeito, 'AUTO');
+        item.equipamento = ['Vídeo / I.A.', 'Telemetria', 'Rede CAN'].includes(eqClass) ? eqClass : '';
+        return item;
     };
 
-    const processarLoteChamados=async()=>{
-        const raw=$('txtLoteChamados').value.trim();
-        if(!raw) return alert("⚠️ Cole ou digite os dados dos chamados primeiro.");
-        const linhas=raw.split('\n').map(l=>l.trim()).filter(l=>l.length>0);
-        if(!linhas.length) return;
+    const baixarPlanilhaModelo = () => {
+        const linhas = [
+            ["Veiculo", "N_OS", "Filial", "Equipamento", "Defeito", "Descricao"],
+            ["53042", "0000225", "BA", "Telemetria", "GPS sem comunicação", "Sem envio de posição há 2h"],
+            ["53070", "105040", "PEB", "Vídeo / I.A.", "Manutenção câmera auxiliar", "Câmera traseira sem imagem"],
+            ["2088", "98745", "MA", "Rede CAN", "Divergencia de velocidade", "Odômetro/velocidade divergente"]
+        ];
 
-        setBtn('btnProcLote',true);
-        const logBox=$('logLoteChamados');
-        logBox.style.display='block';
-        logBox.innerHTML=`<div style="color:var(--teal);font-weight:bold;margin-bottom:5px"><i class="ph ph-spinner spin"></i> Processando ${linhas.length} registro(s)...</div>`;
+        if (typeof XLSX !== 'undefined') {
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(linhas, { sheetStubs: true });
 
-        const nD=new Date();
-        const dtStr=nD.getFullYear()+'-'+String(nD.getMonth()+1).padStart(2,'0')+'-'+String(nD.getDate()).padStart(2,'0');
-        const hrStr=String(nD.getHours()).padStart(2,'0')+':'+String(nD.getMinutes()).padStart(2,'0');
-        const filialPadrao=$('loteFilial').value || ls.rcr_filial || "Matriz";
-        const eqPadrao=$('loteEquipamento').value || "AUTO";
-        const resp=(ls.rcr_user||ls.rcr_email||"Operador").split(' ')[0];
+            ws['!cols'] = [
+                { wch: 14 },
+                { wch: 14 },
+                { wch: 10 },
+                { wch: 18 },
+                { wch: 30 },
+                { wch: 36 }
+            ];
 
-        let sucessos=0, erros=0;
-
-        for(let idx=0; idx<linhas.length; idx++){
-            const linha=linhas[idx];
-            const cols=linha.includes('\t') ? linha.split('\t').map(c=>c.trim()) : linha.split(';').map(c=>c.trim());
-
-            let vtr="", osNum="", fil="", eqDefRaw="", descExtra="";
-            if(cols.length >= 5){
-                [vtr, osNum, fil, eqDefRaw, ...rest] = cols;
-                descExtra = rest.join(' | ').trim();
-            } else if(cols.length === 4){
-                [vtr, osNum, fil, eqDefRaw] = cols;
-            } else if(cols.length === 3){
-                [vtr, osNum, eqDefRaw] = cols;
+            for (let r = 0; r < linhas.length; r++) {
+                for (let c = 0; c < linhas[r].length; c++) {
+                    const addr = XLSX.utils.encode_cell({ r, c });
+                    if (ws[addr]) {
+                        ws[addr].t = 's';
+                        ws[addr].z = '@';
+                    }
+                }
             }
 
-            fil = normalizarFilial(fil, filialPadrao);
-            const parsed = parseEquipDefeito(eqDefRaw, descExtra, eqPadrao);
-            const eq = parsed.eq;
-            const defUpper = parsed.defUpper;
-            const defeitoFinal = parsed.defeitoFinal;
+            XLSX.utils.book_append_sheet(wb, ws, "Chamados");
+            XLSX.writeFile(wb, "Modelo_Chamados_Lote.xlsx");
+            if ($('statusPlanilhaLote')) {
+                $('statusPlanilhaLote').innerHTML = `<span style="color:var(--teal);font-weight:800">📥 Modelo_Chamados_Lote.xlsx baixado!</span>`;
+            }
+            return;
+        }
 
-            if(!vtr || !defUpper || !osNum){
+        const csv = linhas.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(";")).join("\r\n");
+        const blob = new Blob(["\ufeff", csv], { type: "text/csv;charset=utf-8;" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "Modelo_Chamados_Lote.csv";
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 1500);
+    };
+
+    const aplicarLinhasImportadas = (listaItens = []) => {
+        const tbody = $('tbodyLoteChamados');
+        if (!tbody) return;
+        const limpos = listaItens
+            .map(cols => cols.map(c => String(c ?? '').trim()))
+            .filter(cols => cols.some(Boolean));
+
+        if (!limpos.length) {
+            alert("⚠️ Nenhum dado válido encontrado na planilha.");
+            return;
+        }
+
+        const firstLower = limpos[0].map(c => c.toLowerCase());
+        const pareceCabecalho = firstLower.some(c =>
+            c.includes('veiculo') || c.includes('veículo') || c.includes('frota') ||
+            c === 'os' || c.includes('n_os') || c.includes('chamado') || c.includes('defeito')
+        );
+        const dados = pareceCabecalho ? limpos.slice(1) : limpos;
+        if (!dados.length) {
+            alert("⚠️ A planilha contém apenas o cabeçalho.");
+            return;
+        }
+
+        tbody.innerHTML = '';
+        dados.forEach(cols => {
+            tbody.appendChild(criarLinhaLote(normalizarItemLote(cols)));
+        });
+        if ($('statusPlanilhaLote')) {
+            $('statusPlanilhaLote').innerHTML = `<span style="color:var(--teal);font-weight:800">✅ ${dados.length} linha(s) carregada(s) da planilha.</span>`;
+        }
+    };
+
+    const importarPlanilhaLote = async (event) => {
+        const file = event.target.files && event.target.files[0];
+        if (!file) return;
+        const nomeLower = file.name.toLowerCase();
+
+        try {
+            if (nomeLower.endsWith('.csv') || nomeLower.endsWith('.txt')) {
+                const texto = await file.text();
+                const linhas = texto.split(/\r?\n/).filter(l => l.trim().length > 0);
+                const sep = linhas[0] && linhas[0].includes(';') ? ';' : (linhas[0] && linhas[0].includes('\t') ? '\t' : ',');
+                const parsed = linhas.map(l => {
+                    const out = [];
+                    let cur = '', inQ = false;
+                    for (let i = 0; i < l.length; i++) {
+                        const ch = l[i];
+                        if (ch === '"') {
+                            if (inQ && l[i + 1] === '"') { cur += '"'; i++; }
+                            else inQ = !inQ;
+                        } else if (ch === sep && !inQ) {
+                            out.push(cur.trim());
+                            cur = '';
+                        } else {
+                            cur += ch;
+                        }
+                    }
+                    out.push(cur.trim());
+                    return out;
+                });
+                aplicarLinhasImportadas(parsed);
+            } else {
+                if (typeof XLSX === 'undefined') {
+                    alert("⚠️ Biblioteca de planilha carregando ou indisponível. Salve como .CSV ou tente novamente.");
+                    return;
+                }
+                const buf = await file.arrayBuffer();
+                const wb = XLSX.read(buf, { type: 'array' });
+                const ws = wb.Sheets[wb.SheetNames[0]];
+                const rows = XLSX.utils.sheet_to_json(ws, { header: 1, raw: false, defval: '' });
+                aplicarLinhasImportadas(rows);
+            }
+        } catch (err) {
+            alert("⚠️ Erro ao ler a planilha: " + err.message);
+        } finally {
+            event.target.value = '';
+        }
+    };
+
+    const criarLinhaLote = (dados = {}) => {
+        const tr = document.createElement('tr');
+        const eqVal = dados.equipamento || "";
+        tr.innerHTML = `
+            <td><input type="text" class="lote-vtr" placeholder="1234" value="${(dados.veiculo || '').replace(/"/g,'&quot;')}" onpaste="handlePasteLinhaLote(event, this)"></td>
+            <td><input type="text" class="lote-os" placeholder="654123" value="${(dados.os || '').replace(/"/g,'&quot;')}"></td>
+            <td><input type="text" class="lote-fil" placeholder="PE" value="${(dados.filial || '').replace(/"/g,'&quot;')}" style="text-transform:uppercase"></td>
+            <td>
+                <select class="lote-eq">
+                    <option value="" ${eqVal===''?'selected':''}>Padrão / Auto</option>
+                    <option value="Vídeo / I.A." ${eqVal==='Vídeo / I.A.'?'selected':''}>Vídeo / I.A.</option>
+                    <option value="Telemetria" ${eqVal==='Telemetria'?'selected':''}>Telemetria</option>
+                    <option value="Rede CAN" ${eqVal==='Rede CAN'?'selected':''}>Rede CAN</option>
+                </select>
+            </td>
+            <td><input type="text" class="lote-def" placeholder="GPS sem comunicação" value="${(dados.defeito || '').replace(/"/g,'&quot;')}"></td>
+            <td><input type="text" class="lote-desc" placeholder="Opcional" value="${(dados.descricao || '').replace(/"/g,'&quot;')}"></td>
+            <td style="text-align:center"><button type="button" class="btn-lote-del" onclick="removerLinhaLote(this)">×</button></td>
+        `;
+        return tr;
+    };
+
+    const garantirLinhasLote = (qtdMinima = 3) => {
+        const tbody = $('tbodyLoteChamados');
+        if (!tbody) return;
+        while (tbody.children.length < qtdMinima) {
+            tbody.appendChild(criarLinhaLote());
+        }
+    };
+
+    const adicionarLinhaLote = (dados = {}) => {
+        const tbody = $('tbodyLoteChamados');
+        if (!tbody) return;
+        tbody.appendChild(criarLinhaLote(dados));
+    };
+
+    const removerLinhaLote = (btn) => {
+        const tbody = $('tbodyLoteChamados');
+        if (!tbody) return;
+        const tr = btn.closest('tr');
+        if (tbody.children.length > 1) {
+            tr.remove();
+        } else {
+            tr.querySelectorAll('input').forEach(i => i.value = '');
+            tr.querySelectorAll('select').forEach(s => s.value = '');
+        }
+    };
+
+    const limparGradeLote = () => {
+        const tbody = $('tbodyLoteChamados');
+        if (tbody) {
+            tbody.innerHTML = '';
+            garantirLinhasLote(3);
+        }
+        if ($('statusPlanilhaLote')) {
+            $('statusPlanilhaLote').innerHTML = 'Colunas: Veículo | Nº O.S. | Filial | Equipamento | Defeito | Descrição';
+        }
+        if ($('logLoteChamados')) {
+            $('logLoteChamados').innerHTML = '';
+            $('logLoteChamados').style.display = 'none';
+        }
+    };
+
+    const handlePasteLinhaLote = (e, inputEl) => {
+        const clip = e.clipboardData ? e.clipboardData.getData('text') : '';
+        if (!clip || (!clip.includes('\n') && !clip.includes('\t') && !clip.includes(';'))) return;
+        e.preventDefault();
+
+        const linhas = clip.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+        if (!linhas.length) return;
+
+        const tbody = $('tbodyLoteChamados');
+        const startTr = inputEl.closest('tr');
+        const startIdx = Array.from(tbody.children).indexOf(startTr);
+
+        linhas.forEach((linha, offset) => {
+            const cols = linha.includes('\t') ? linha.split('\t').map(c => c.trim()) : linha.split(';').map(c => c.trim());
+            const item = normalizarItemLote(cols);
+            const targetIdx = startIdx + offset;
+            if (targetIdx < tbody.children.length) {
+                const tr = tbody.children[targetIdx];
+                tr.querySelector('.lote-vtr').value = item.veiculo;
+                tr.querySelector('.lote-os').value = item.os;
+                tr.querySelector('.lote-fil').value = item.filial;
+                tr.querySelector('.lote-eq').value = item.equipamento;
+                tr.querySelector('.lote-def').value = item.defeito;
+                tr.querySelector('.lote-desc').value = item.descricao;
+            } else {
+                tbody.appendChild(criarLinhaLote(item));
+            }
+        });
+    };
+
+    const processarLoteChamados = async () => {
+        const tbody = $('tbodyLoteChamados');
+        const rows = tbody ? Array.from(tbody.querySelectorAll('tr')) : [];
+
+        const registros = rows.map((tr, idx) => {
+            const vtrRaw = tr.querySelector('.lote-vtr').value.trim();
+            const osRaw = tr.querySelector('.lote-os').value.trim();
+            const filRaw = tr.querySelector('.lote-fil').value.trim();
+            const eqSelect = tr.querySelector('.lote-eq').value.trim();
+            const defRaw = tr.querySelector('.lote-def').value.trim();
+            const descRaw = tr.querySelector('.lote-desc').value.trim();
+            const temAlgo = vtrRaw || osRaw || filRaw || eqSelect || defRaw || descRaw;
+            return { linhaNum: idx + 1, vtrRaw, osRaw, filRaw, eqSelect, defRaw, descRaw, temAlgo };
+        }).filter(r => r.temAlgo);
+
+        if (!registros.length) return alert("⚠️ Preencha, importe uma planilha ou cole pelo menos uma linha.");
+
+        setBtn('btnProcLote', true);
+        const logBox = $('logLoteChamados');
+        logBox.style.display = 'block';
+        logBox.innerHTML = `<div style="color:var(--teal);font-weight:bold;margin-bottom:5px"><i class="ph ph-spinner spin"></i> Processando ${registros.length} registro(s)...</div>`;
+
+        const nD = new Date();
+        const dtStr = nD.getFullYear() + '-' + String(nD.getMonth() + 1).padStart(2, '0') + '-' + String(nD.getDate()).padStart(2, '0');
+        const hrStr = String(nD.getHours()).padStart(2, '0') + ':' + String(nD.getMinutes()).padStart(2, '0');
+        const filialPadrao = $('loteFilial').value || ls.rcr_filial || "Matriz";
+        const eqPadrao = $('loteEquipamento').value || "AUTO";
+        const resp = (ls.rcr_user || ls.rcr_email || "Operador").split(' ')[0];
+
+        let sucessos = 0, erros = 0;
+
+        for (const item of registros) {
+            if (!item.vtrRaw || !item.osRaw || !item.defRaw) {
                 erros++;
-                logBox.innerHTML+=`<div style="color:var(--red);padding:3px 0;border-bottom:1px solid #eee">❌ Linha ${idx+1} inválida (use Veiculo | Nº O.S | Filial | Defeito | Descrição): <i>${linha}</i></div>`;
+                logBox.innerHTML += `<div style="color:var(--red);padding:3px 0;border-bottom:1px solid #eee">❌ Linha ${item.linhaNum}: informe <b>Veículo</b>, <b>Nº O.S.</b> e <b>Defeito</b>.</div>`;
                 continue;
             }
 
-            vtr=vtr.toUpperCase().replace(/[^A-Z0-9-]/g,'');
-            if(vtr.length===7 && /^[A-Z]{3}[0-9]{4}$/.test(vtr)) vtr=vtr.slice(0,3)+'-'+vtr.slice(3);
+            let vtr = item.vtrRaw.toUpperCase().replace(/[^A-Z0-9-]/g, '');
+            if (vtr.length === 7 && /^[A-Z]{3}[0-9]{4}$/.test(vtr)) vtr = vtr.slice(0, 3) + '-' + vtr.slice(3);
 
-            const chamadoTexto = `${defeitoFinal}: ${osNum}`;
+            const osLimpa = item.osRaw.toUpperCase().trim();
+            const fil = normalizarFilial(item.filRaw, filialPadrao);
+            const eqFinal = item.eqSelect
+                ? item.eqSelect
+                : (classificarEquipamento(`${item.defRaw} ${item.descRaw}`, eqPadrao) || "-");
+            const defUpper = item.defRaw.toUpperCase().trim();
+            const descUpper = item.descRaw.toUpperCase().trim();
+            const defeitoFinal = descUpper && descUpper !== defUpper ? `${defUpper}: ${descUpper}` : defUpper;
 
-            const payload={
-                action:"salvar_inspecao",
-                veiculo:vtr,
-                data:dtStr,
-                hora:hrStr,
-                filial:fil,
-                responsavel:resp,
-                chamado:chamadoTexto,
-                email_logado:ls.rcr_email,
-                equipamento:eq,
-                osList:[osNum],
-                defeito:defeitoFinal,
-                solucao:"NAO",
-                fotosLinks:"Sem fotos"
+            const payload = {
+                action: "salvar_inspecao",
+                veiculo: vtr,
+                data: dtStr,
+                hora: hrStr,
+                filial: fil,
+                responsavel: resp,
+                chamado: osLimpa,
+                os: osLimpa,
+                email_logado: ls.rcr_email,
+                equipamento: eqFinal,
+                osList: [osLimpa],
+                defeito: defeitoFinal,
+                descricao: descUpper,
+                solucao: "NAO",
+                fotosLinks: "Sem fotos"
             };
 
-            try{
-                const r=await api(payload);
-                if(r.erro){
+            try {
+                const r = await api(payload);
+                if (r.erro) {
                     erros++;
-                    logBox.innerHTML+=`<div style="color:var(--red);padding:3px 0;border-bottom:1px solid #eee">⚠️ <b>${vtr}</b> (${fil}) [${eq}]: ${r.erro}</div>`;
+                    logBox.innerHTML += `<div style="color:var(--red);padding:3px 0;border-bottom:1px solid #eee">⚠️ Linha ${item.linhaNum} (<b>${vtr}</b>): ${r.erro}</div>`;
                 } else {
                     sucessos++;
-                    logBox.innerHTML+=`<div style="color:var(--teal);padding:3px 0;border-bottom:1px solid #eee">✅ <b>${vtr}</b> | Nº O.S: <b>${osNum}</b> | <b>${fil}</b> | Defeito: <b>${defeitoFinal}</b></div>`;
+                    logBox.innerHTML += `<div style="color:var(--teal);padding:3px 0;border-bottom:1px solid #eee">✅ <b>${vtr}</b> | O.S: <b>${osLimpa}</b> | ${fil} | ${eqFinal} | ${defeitoFinal}</div>`;
                 }
-            }catch(e){
+            } catch (e) {
                 erros++;
-                logBox.innerHTML+=`<div style="color:var(--red);padding:3px 0;border-bottom:1px solid #eee">❌ <b>${vtr}</b>: Falha de rede ao enviar.</div>`;
+                logBox.innerHTML += `<div style="color:var(--red);padding:3px 0;border-bottom:1px solid #eee">❌ Linha ${item.linhaNum} (<b>${vtr}</b>): Falha de rede ao enviar.</div>`;
             }
-            logBox.scrollTop=logBox.scrollHeight;
+            logBox.scrollTop = logBox.scrollHeight;
         }
 
-        logBox.innerHTML+=`<div style="margin-top:8px;padding:6px;background:var(--sub-bg);border-radius:4px;font-weight:bold;text-align:center">Concluído: ${sucessos} gravado(s) | ${erros} falha(s)</div>`;
-        setBtn('btnProcLote',false);
-        if(sucessos>0) buscarChamadosAdmin(true);
+        logBox.innerHTML += `<div style="margin-top:8px;padding:6px;background:var(--sub-bg);border-radius:4px;font-weight:bold;text-align:center">Concluído: ${sucessos} gravado(s) | ${erros} falha(s)</div>`;
+        setBtn('btnProcLote', false);
+        if (sucessos > 0) buscarChamadosAdmin(true);
     };
 
     const normalizarDataISO = (raw) => {
@@ -838,6 +1089,7 @@
         try{
             await idb.init();
             initCanvasEvents();
+            garantirLinhasLote(3);
             if(ls.rcr_dark==='1'){
                 document.body.classList.add('dark-mode');
                 const tBtn=document.querySelector('.theme-toggle-btn');
